@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>七下 L6 課文句子翻譯理解講義二</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Noto Sans TC (Chinese) & Lexend (English Dyslexia-friendly style) -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    
+    .font-chinese {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    
+    .font-english {
+      font-family: 'Lexend', sans-serif;
+    }
+    
+    /* 嚴格 A4 尺寸限制與無障礙留白（微調上下邊距釋放空間，防止底端文字被遮擋） */
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      padding: 8mm 15mm;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 列印專用配置 */
+    @media print {
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      body {
+        background-color: #ffffff;
+        margin: 0;
+      }
+      .page-a4 {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 8mm 15mm;
+        box-shadow: none;
+        border: none;
+        overflow: hidden;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* 特教無障礙高對比聚焦效果 */
+    .answer-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+      background-color: #f0f9ff;
+    }
+    
+    .break-avoid {
+      break-inside: avoid;
+    }
+  </style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <!-- 頂端控制列（列印時自動隱藏） -->
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-wrap gap-3 items-center justify-between border border-slate-200">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-3 h-3 bg-indigo-500 rounded-full animate-pulse"></span>
+      <span class="text-slate-700 font-medium text-sm font-chinese">💡 貼心設計：點擊英文句子可聽「慢速發音」！輸入 A~C 自動轉大寫。</span>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="toggleAnswers()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition shadow-sm flex items-center gap-1 font-chinese">
+        顯示 / 隱藏答案
+      </button>
+      <button onclick="clearAnswers()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-sm transition border border-slate-300 font-chinese">
+        重設清除
+      </button>
+      <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition shadow-sm flex items-center gap-1 font-chinese">
+        列印學習單
+      </button>
+    </div>
+  </div>
+
+  <!-- A4 靜態列印主結構 -->
+  <div class="page-a4 flex flex-col justify-between">
+    
+    <!-- 頂部標頭與學生資料填寫區 -->
+    <div class="pb-2 mb-2 border-b-2 border-slate-200">
+      <div class="flex justify-between items-end">
+        <div>
+          <h1 class="text-[23px] font-bold text-slate-800 tracking-wider font-chinese text-left leading-none">七下 L6 課文句子翻譯理解講義二</h1>
+        </div>
+        <div class="flex gap-6 text-[15px] font-medium text-slate-700 text-right leading-none mb-1 font-chinese">
+          <div>班級/座號：______</div>
+          <div>姓名：__________</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 核心作答連續區區塊 (10題分配：3題、5題、2題) -->
+    <div class="flex-grow flex flex-col justify-between space-y-2 overflow-hidden">
+      
+      <!-- ================= LEVEL 1 基礎字詞理解 (3 題) ================= -->
+      <div class="break-avoid">
+        <h2 class="text-[15px] font-bold text-green-800 bg-green-50 px-2.5 py-0.5 rounded mb-1.5 font-chinese flex items-center gap-2">
+          <span class="px-1.5 py-0.2 bg-green-600 text-white text-[10px] rounded font-english">Level 1</span>
+          <span>基礎字詞理解：</span>
+        </h2>
+        
+        <div class="space-y-2.5 font-english text-slate-800 pl-1">
+          <!-- Q1 -->
+          <div class="flex flex-col leading-tight">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">) 1.</span>
+              <span onclick="speakWord('The Taj Mahal is a famous building in India.')" class="cursor-pointer hover:text-blue-600 transition text-[17px] pl-1 font-medium">
+                The Taj Mahal is a <strong class="text-red-600 font-bold">famous</strong> building in India.
+              </span>
+            </div>
+            <div class="pl-14 flex gap-12 text-[14.5px] font-chinese text-slate-500 font-medium">
+              <div>(A) 著名的</div>
+              <div>(B) 昂貴的</div>
+              <div>(C) 奇怪的</div>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="flex flex-col leading-tight">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">) 2.</span>
+              <span onclick="speakWord('The color of the walls changes at different times of the day.')" class="cursor-pointer hover:text-blue-600 transition text-[17px] pl-1 font-medium">
+                The color of the walls <strong class="text-red-600 font-bold">changes</strong> at different times of the day.
+              </span>
+            </div>
+            <div class="pl-14 flex gap-12 text-[14.5px] font-chinese text-slate-500 font-medium">
+              <div>(A) 掉落</div>
+              <div>(B) 改變/變化</div>
+              <div>(C) 保持不變</div>
+            </div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="flex flex-col leading-tight">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">(</span>
+              <input type="text" maxlength="1" data-answer="C" class="answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">) 3.</span>
+              <span onclick="speakWord('King Shah Jahan had three wives, and Mumtaz Mahal was his favorite.')" class="cursor-pointer hover:text-blue-600 transition text-[17px] pl-1 font-medium">
+                King Shah Jahan had three wives, and Mumtaz Mahal was his <strong class="text-red-600 font-bold">favorite</strong>.
+              </span>
+            </div>
+            <div class="pl-14 flex gap-12 text-[14.5px] font-chinese text-slate-500 font-medium">
+              <div>(A) 最討厭的</div>
+              <div>(B) 最小的</div>
+              <div>(C) 最喜愛的</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= LEVEL 2 句意翻譯理解 (5 題) ================= -->
+      <div class="break-avoid">
+        <h2 class="text-[15px] font-bold text-blue-800 bg-blue-50 px-2.5 py-0.5 rounded mb-1.5 font-chinese flex items-center gap-2">
+          <span class="px-1.5 py-0.2 bg-blue-600 text-white text-[10px] rounded font-english">Level 2</span>
+          <span>句意翻譯理解：</span>
+        </h2>
+        
+        <div class="space-y-2.5 font-english text-slate-800 pl-1">
+          <!-- Q4 -->
+          <div class="flex flex-col leading-tight">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">) 4.</span>
+              <span onclick="speakWord('During the day, it changes to white, and it is golden at night.')" class="cursor-pointer hover:text-blue-600 transition text-[17px] pl-1 font-medium">
+                During the day, it changes to white, and it is golden at night.
+              </span>
+            </div>
+            <div class="pl-14 flex flex-col gap-1 text-[14.5px] font-chinese text-slate-500 font-medium">
+              <div>(A) 清晨時它是白色的，而下午它是金色的。</div>
+              <div>(B) 白天時，它變成白色，而到了晚上，它是金色的。</div>
+              <div>(C) 每天它都是白色的，晚上則是紅色的。</div>
+            </div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="flex flex-col leading-tight">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">) 5.</span>
+              <span onclick="speakWord('Besides the building, the story behind the Taj Mahal is well known, too.')" class="cursor-pointer hover:text-blue-600 transition text-[17px] pl-1 font-medium">
+                Besides the building, the story behind the Taj Mahal is well known, too.
+              </span>
+            </div>
+            <div class="pl-14 flex flex-col gap-1 text-[14.5px] font-chinese text-slate-500 font-medium">
+              <div>(A) 除了建築物本身，泰姬瑪哈陵背後的故事也是家喻戶曉。</div>
+              <div>(B) 在這棟建築裡面，泰姬瑪哈陵的歷史故事非常的神祕。</div>
+              <div>(C) 雖然這棟建築很大，但大家都不知道它的由來。</div>
+            </div>
+          </div>
+
+          <!-- Q6 -->
+          <div class="flex flex-col leading-tight">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">) 6.</span>
+              <span onclick="speakWord('They fell in love at a young age, and they went to many places together.')" class="cursor-pointer hover:text-blue-600 transition text-[17px] pl-1 font-medium">
+                They fell in love at a young age, and they went to many places together.
+              </span>
+            </div>
+            <div class="pl-14 flex flex-col gap-1 text-[14.5px] font-chinese text-slate-500 font-medium">
+              <div>(A) 他們在老年的時候相遇，並一起去很多地方旅行。</div>
+              <div>(B) 他們在年輕時相愛，也一起去了很多地方。</div>
+              <div>(C) 他們年輕時喜歡畫畫，也常常一起去書店。</div>
+            </div>
+          </div>
+
+          <!-- Q7 -->
+          <div class="flex flex-col leading-tight">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">) 7.</span>
+              <span onclick="speakWord('Sadly, Mumtaz Mahal lost her life at the age of 38.')" class="cursor-pointer hover:text-blue-600 transition text-[17px] pl-1 font-medium">
+                Sadly, Mumtaz Mahal lost her life at the age of 38.
+              </span>
+            </div>
+            <div class="pl-14 flex flex-col gap-1 text-[14.5px] font-chinese text-slate-500 font-medium">
+              <div>(A) 令人傷心的是，慕塔芝・瑪哈在三十八歲去世。</div>
+              <div>(B) 幸運的是，慕塔芝・瑪哈在三十八歲時活了下來。</div>
+              <div>(C) 令人驚訝的是，慕塔芝・瑪哈三十八歲就去旅行了。</div>
+            </div>
+          </div>
+
+          <!-- Q8 -->
+          <div class="flex flex-col leading-tight">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">) 8.</span>
+              <span onclick="speakWord('The work was not easy, so it lasted twenty years.')" class="cursor-pointer hover:text-blue-600 transition text-[17px] pl-1 font-medium">
+                The work was not easy, so it lasted twenty years.
+              </span>
+            </div>
+            <div class="pl-14 flex flex-col gap-1 text-[14.5px] font-chinese text-slate-500 font-medium">
+              <div>(A) 這份工作非常輕鬆，所以他做了二十年。</div>
+              <div>(B) 這項工程並不容易，所以它持續了二十年。</div>
+              <div>(C) 建造過程非常困難，所以他們蓋了兩年。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= LEVEL 3 翻譯挑戰 (2 題) ================= -->
+      <div class="break-avoid">
+        <h2 class="text-[15px] font-bold text-purple-800 bg-purple-50 px-2.5 py-0.5 rounded mb-1.5 font-chinese flex items-center gap-2">
+          <span class="px-1.5 py-0.2 bg-purple-600 text-white text-[10px] rounded font-english">Level 3</span>
+          <span>翻譯挑戰：</span>
+        </h2>
+        
+        <div class="space-y-2.5 font-english text-slate-800 pl-1">
+          <!-- Q9 -->
+          <div class="flex flex-col leading-tight">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">) 9.</span>
+              <span class="text-[16px] pl-1 font-chinese font-semibold text-slate-700">
+                中文：沙・迦罕哭了好幾天，且<strong class="text-purple-700 underline decoration-2">躲避</strong>所有人。
+              </span>
+            </div>
+            <div class="pl-14 flex flex-col gap-1 text-[15px] font-medium text-slate-500">
+              <div class="cursor-pointer hover:text-blue-600 transition" onclick="speakWord('Shah Jahan cried for days and hid from everyone.')">
+                (A) Shah Jahan cried for days and <strong class="text-red-600 font-bold">hid</strong> from everyone.
+              </div>
+              <div class="cursor-pointer hover:text-blue-600 transition" onclick="speakWord('Shah Jahan cried for days and heard from everyone.')">
+                (B) Shah Jahan cried for days and <strong class="text-red-600 font-bold">heard</strong> from everyone.
+              </div>
+              <div class="cursor-pointer hover:text-blue-600 transition" onclick="speakWord('Shah Jahan cried for days and helped everyone.')">
+                (C) Shah Jahan cried for days and <strong class="text-red-600 font-bold">helped</strong> everyone.
+              </div>
+            </div>
+          </div>
+
+          <!-- Q10 -->
+          <div class="flex flex-col leading-tight">
+            <div class="flex items-start">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5">
+              <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">) 10.</span>
+              <span class="text-[16px] pl-1 font-chinese font-semibold text-slate-700">
+                中文：後來，這位國王為他一生的摯愛<strong class="text-purple-700 underline decoration-2">建造了</strong>泰姬瑪哈陵。
+              </span>
+            </div>
+            <div class="pl-14 flex flex-col gap-1 text-[15px] font-medium text-slate-500">
+              <div class="cursor-pointer hover:text-blue-600 transition" onclick="speakWord('Later, the king bought the Taj Mahal for the love of his life.')">
+                (A) Later, the king <strong class="text-red-600 font-bold">bought</strong> the Taj Mahal for the love of his life.
+              </div>
+              <div class="cursor-pointer hover:text-blue-600 transition" onclick="speakWord('Later, the king built the Taj Mahal for the love of his life.')">
+                (B) Later, the king <strong class="text-red-600 font-bold">built</strong> the Taj Mahal for the love of his life.
+              </div>
+              <div class="cursor-pointer hover:text-blue-600 transition" onclick="speakWord('Later, the king brought the Taj Mahal for the love of his life.')">
+                (C) Later, the king <strong class="text-red-600 font-bold">brought</strong> the Taj Mahal for the love of his life.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript 輔助作答與慢速發音邏輯 -->
+  <script>
+    let showAnswersState = false;
+
+    // 清晰慢速發音輔助（0.8 語速專為特教需求、初學者設計）
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8; 
+        window.speechSynthesis.speak(utterance);
+      } else {
+        console.log("當前瀏覽器不支援 TTS 語音播放功能。");
+      }
+    }
+
+    // 線上核對/切換隱藏答案功能
+    function toggleAnswers() {
+      showAnswersState = !showAnswersState;
+      const inputs = document.querySelectorAll('.answer-input');
+      inputs.forEach(input => {
+        const correctAnswer = input.getAttribute('data-answer');
+        if (showAnswersState) {
+          input.value = correctAnswer;
+          input.classList.add('bg-blue-100', 'text-blue-800', 'border-blue-500');
+        } else {
+          input.value = '';
+          input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-500');
+        }
+      });
+    }
+
+    // 重設清除所有作答輸入
+    function clearAnswers() {
+      const inputs = document.querySelectorAll('.answer-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-500');
+      });
+      showAnswersState = false;
+    }
+
+    // 作答限制與大寫自動轉換
+    const inputsArray = Array.from(document.querySelectorAll('.answer-input'));
+    inputsArray.forEach((input, index) => {
+      input.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+        if (!/^[A-C]$/.test(this.value)) {
+          this.value = '';
+        }
+
+        // 輸入完成後自動跳到下一題
+        if (this.value !== '') {
+          if (index < inputsArray.length - 1) {
+            inputsArray[index + 1].focus();
+          }
+        }
+      });
+
+      // 支援退格鍵刪除並返回上一題
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && this.value === '' && index > 0) {
+          inputsArray[index - 1].focus();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
