@@ -15,62 +15,121 @@
 <body class="min-h-screen py-8 px-4 flex flex-col items-center">
 
   <!-- 標題 -->
-  <div class="w-full max-w-4xl text-center mb-8">
+  <div class="w-full max-w-4xl text-center mb-10">
     <h1 class="text-2xl font-bold text-slate-800 tracking-wide">📚 英語線上互動教材庫</h1>
     <div class="h-1 w-16 bg-indigo-500 mx-auto mt-3 rounded-full"></div>
   </div>
 
-  <!-- 主要內容區：按年級分區 -->
-  <div class="w-full max-w-4xl space-y-10">
+  <!-- 主要內容區 -->
+  <div class="w-full max-w-4xl space-y-12">
 
-    <!-- ==================== 八年級下學期 ==================== -->
+    <!-- ==================== 八年級 下學期 ==================== -->
     <div>
-      <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
-        <span class="text-lg font-bold text-slate-700">📌 八年級 下學期</span>
+      <div class="flex items-center gap-2 mb-6 border-b border-slate-200 pb-2">
+        <span class="text-xl font-bold text-slate-800">📌 八年級 下學期</span>
       </div>
-      <!-- 緊湊格線：一行最多可以放3個卡片 -->
+      
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         
-        <!-- 【範本/已完成】L1 課文藍色框 -->
-        <a href="114-8-2-1read.html" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-blue-600 mb-1">【課文理解】</div>
-          <div class="text-base font-bold text-slate-800 group-hover:text-blue-600 transition">L1 課文句子翻譯</div>
+        <!-- 【單字 - 藍色】L5 -->
+        <a href="114-8-2-5voc.html" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-blue-50 text-blue-500 rounded-lg group-hover:bg-blue-100 transition shrink-0">
+            <!-- 字典圖示 -->
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-blue-400 text-blue-600 rounded-full">八下 L5</span>
+              <span class="text-xs font-bold text-blue-600">【單字配對】</span>
+            </div>
+            <div class="text-base font-bold text-slate-800 group-hover:text-blue-600 transition">L5 單字配對學習單</div>
+          </div>
         </a>
 
-        <!-- L5 課文藍色框 -->
-        <a href="#" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-blue-600 mb-1">【課文理解】</div>
-          <div class="text-base font-bold text-slate-400 group-hover:text-blue-600 transition">L5 課文理解 (尚未上傳)</div>
+        <!-- 【單字 - 藍色】L6 -->
+        <a href="114-8-2-6voc.html" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-blue-50 text-blue-500 rounded-lg group-hover:bg-blue-100 transition shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-blue-400 text-blue-600 rounded-full">八下 L6</span>
+              <span class="text-xs font-bold text-blue-600">【單字配對】</span>
+            </div>
+            <div class="text-base font-bold text-slate-800 group-hover:text-blue-600 transition">L6 單字配對學習單</div>
+          </div>
         </a>
 
-        <!-- L5 單字綠色框 (已連線) -->
-        <a href="114-8-2-5voc.html" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-emerald-600 mb-1">【單字配對】</div>
-          <div class="text-base font-bold text-slate-800 group-hover:text-emerald-600 transition">L5 單字配對學習單</div>
+        <!-- 【課文 - 綠色】L1 -->
+        <a href="114-8-2-1read.html" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-emerald-50 text-emerald-500 rounded-lg group-hover:bg-emerald-100 transition shrink-0">
+            <!-- 書本圖示 -->
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-emerald-400 text-emerald-600 rounded-full">八下 L1</span>
+              <span class="text-xs font-bold text-emerald-600">【課文理解】</span>
+            </div>
+            <div class="text-base font-bold text-slate-800 group-hover:text-emerald-600 transition">L1 課文句子翻譯</div>
+          </div>
         </a>
 
-        <!-- L5 文法橘色框 -->
-        <a href="#" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-orange-600 mb-1">【文法挑戰】</div>
-          <div class="text-base font-bold text-slate-400 group-hover:text-orange-600 transition">L5 核心文法練習</div>
+        <!-- 【課文 - 綠色】L5 -->
+        <a href="114-8-2-5read1.html" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-emerald-50 text-emerald-500 rounded-lg group-hover:bg-emerald-100 transition shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-emerald-400 text-emerald-600 rounded-full">八下 L5</span>
+              <span class="text-xs font-bold text-emerald-600">【課文理解】</span>
+            </div>
+            <div class="text-base font-bold text-slate-800 group-hover:text-emerald-600 transition">L5 課文理解</div>
+          </div>
         </a>
 
-        <!-- L6 課文藍色框 -->
-        <a href="#" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-blue-600 mb-1">【課文理解】</div>
-          <div class="text-base font-bold text-slate-400 group-hover:text-blue-600 transition">L6 課文理解 (尚未上傳)</div>
+        <!-- 【課文 - 綠色】L6 -->
+        <a href="#" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-emerald-50 text-slate-300 rounded-lg shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-emerald-400 text-emerald-600 rounded-full">八下 L6</span>
+              <span class="text-xs font-bold text-emerald-600">【課文理解】</span>
+            </div>
+            <div class="text-base font-bold text-slate-400 group-hover:text-emerald-600 transition">L6 課文理解 (尚未上傳)</div>
+          </div>
         </a>
 
-        <!-- L6 單字綠色框 (已連線) -->
-        <a href="114-8-2-6voc.html" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-emerald-600 mb-1">【單字配對】</div>
-          <div class="text-base font-bold text-slate-800 group-hover:text-emerald-600 transition">L6 單字配對學習單</div>
+        <!-- 【文法 - 橘色】L5 -->
+        <a href="#" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-orange-50 text-slate-300 rounded-lg shrink-0">
+            <!-- 測驗板圖示 -->
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-orange-400 text-orange-600 rounded-full">八下 L5</span>
+              <span class="text-xs font-bold text-orange-600">【文法挑戰】</span>
+            </div>
+            <div class="text-base font-bold text-slate-400 group-hover:text-orange-600 transition">L5 核心文法練習</div>
+          </div>
         </a>
 
-        <!-- L6 文法橘色框 -->
-        <a href="time farm.html" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-orange-600 mb-1">【文法挑戰】</div>
-          <div class="text-base font-bold text-slate-400 group-hover:text-orange-600 transition">小啾的時光農場</div>
+        <!-- 【文法 - 橘色】L6 -->
+        <a href="time farm.html" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-orange-50 text-orange-500 rounded-lg group-hover:bg-orange-100 transition shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-orange-400 text-orange-600 rounded-full">八下 L6</span>
+              <span class="text-xs font-bold text-orange-600">【文法挑戰】</span>
+            </div>
+            <div class="text-base font-bold text-slate-800 group-hover:text-orange-600 transition">小啾的時光農場</div>
+          </div>
         </a>
 
       </div>
@@ -79,45 +138,108 @@
 
     <!-- ==================== 七年級 下學期 ==================== -->
     <div>
-      <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
-        <span class="text-lg font-bold text-slate-700">📌 七年級 下學期</span>
+      <div class="flex items-center gap-2 mb-6 border-b border-slate-200 pb-2">
+        <span class="text-xl font-bold text-slate-800">📌 七年級 下學期</span>
       </div>
+      
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         
-        <!-- L5 課文藍色框 -->
-        <a href="#" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-blue-600 mb-1">【課文理解】</div>
-          <div class="text-base font-bold text-slate-400 group-hover:text-blue-600 transition">L5 課文理解 (尚未上傳)</div>
+        <!-- 【單字 - 藍色】L5 -->
+        <a href="114-7-2-5voc.html" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-blue-50 text-blue-500 rounded-lg group-hover:bg-blue-100 transition shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-blue-400 text-blue-600 rounded-full">七下 L5</span>
+              <span class="text-xs font-bold text-blue-600">【單字配對】</span>
+            </div>
+            <div class="text-base font-bold text-slate-800 group-hover:text-blue-600 transition">L5 單字配對學習單</div>
+          </div>
         </a>
 
-        <!-- L5 單字綠色框 -->
-        <a href="#" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-emerald-600 mb-1">【單字配對】</div>
-          <div class="text-base font-bold text-slate-400 group-hover:text-emerald-600 transition">L5 單字配對學習單</div>
+        <!-- 【單字 - 藍色】L6 -->
+        <a href="114-7-2-6voc.html" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-blue-50 text-blue-500 rounded-lg group-hover:bg-blue-100 transition shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-blue-400 text-blue-600 rounded-full">七下 L6</span>
+              <span class="text-xs font-bold text-blue-600">【單字配對】</span>
+            </div>
+            <div class="text-base font-bold text-slate-800 group-hover:text-blue-600 transition">L6 單字配對學習單</div>
+          </div>
         </a>
 
-        <!-- L5 文法橘色框 -->
-        <a href="#" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-orange-600 mb-1">【文法挑戰】</div>
-          <div class="text-base font-bold text-slate-400 group-hover:text-orange-600 transition">L5 核心文法練習</div>
+        <!-- 【課文 - 綠色】L5 -->
+        <a href="114-7-2-5read1.html" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-emerald-50 text-emerald-500 rounded-lg group-hover:bg-emerald-100 transition shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-emerald-400 text-emerald-600 rounded-full">七下 L5</span>
+              <span class="text-xs font-bold text-emerald-600">【課文理解】</span>
+            </div>
+            <div class="text-base font-bold text-slate-800 group-hover:text-emerald-600 transition">L5 課文理解</div>
+          </div>
         </a>
 
-        <!-- L6 課文藍色框 -->
-        <a href="#" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-blue-600 mb-1">【課文理解】</div>
-          <div class="text-base font-bold text-slate-400 group-hover:text-blue-600 transition">L6 課文理解 (尚未上傳)</div>
+        <!-- 【課文 - 綠色】L6 (頁面1) -->
+        <a href="114-7-2-6read1.html" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-emerald-50 text-emerald-500 rounded-lg group-hover:bg-emerald-100 transition shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-emerald-400 text-emerald-600 rounded-full">七下 L6</span>
+              <span class="text-xs font-bold text-emerald-600">【課文理解 1】</span>
+            </div>
+            <div class="text-base font-bold text-slate-800 group-hover:text-emerald-600 transition">L6 課文理解 (一)</div>
+          </div>
         </a>
 
-        <!-- L6 單字綠色框 -->
-        <a href="#" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-emerald-600 mb-1">【單字配對】</div>
-          <div class="text-base font-bold text-slate-400 group-hover:text-emerald-600 transition">L6 單字配對學習單</div>
+        <!-- 【課文 - 綠色】L6 (頁面2) -->
+        <a href="114-7-2-6read2.html" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-emerald-50 text-emerald-500 rounded-lg group-hover:bg-emerald-100 transition shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-emerald-400 text-emerald-600 rounded-full">七下 L6</span>
+              <span class="text-xs font-bold text-emerald-600">【課文理解 2】</span>
+            </div>
+            <div class="text-base font-bold text-slate-800 group-hover:text-emerald-600 transition">L6 課文理解 (二)</div>
+          </div>
         </a>
 
-        <!-- L6 文法橘色框 -->
-        <a href="#" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group">
-          <div class="text-xs font-bold text-orange-600 mb-1">【文法挑戰】</div>
-          <div class="text-base font-bold text-slate-400 group-hover:text-orange-600 transition">L6 核心文法練習</div>
+        <!-- 【文法 - 橘色】L5 -->
+        <a href="#" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-orange-50 text-slate-300 rounded-lg shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-orange-400 text-orange-600 rounded-full">七下 L5</span>
+              <span class="text-xs font-bold text-orange-600">【文法挑戰】</span>
+            </div>
+            <div class="text-base font-bold text-slate-400 group-hover:text-orange-600 transition">L5 核心文法練習</div>
+          </div>
+        </a>
+
+        <!-- 【文法 - 橘色】L6 -->
+        <a href="#" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group flex items-start gap-3">
+          <div class="p-2 bg-orange-50 text-slate-300 rounded-lg shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 text-xs font-bold border border-orange-400 text-orange-600 rounded-full">七下 L6</span>
+              <span class="text-xs font-bold text-orange-600">【文法挑戰】</span>
+            </div>
+            <div class="text-base font-bold text-slate-400 group-hover:text-orange-600 transition">L6 核心文法練習</div>
+          </div>
         </a>
 
       </div>
