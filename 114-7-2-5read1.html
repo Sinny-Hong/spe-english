@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>七下 U5 課文翻譯理解講義</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Noto Sans TC & Lexend -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    
+    .font-chinese {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    
+    .font-english {
+      font-family: 'Lexend', sans-serif;
+    }
+    
+    /* 嚴格 A4 尺寸限制與高密度防跨頁溢出 */
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 15px auto;
+      padding: 10mm 12mm; /* 黃金高密度留白 */
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 列印專用樣式配置 */
+    @media print {
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      body {
+        background-color: #ffffff;
+        margin: 0;
+      }
+      .page-a4 {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 10mm 12mm;
+        box-shadow: none;
+        border: none;
+        overflow: hidden;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* 全面精簡微調的字級與行高規範（符合特教高密度大字體規範） */
+    .title-large { font-size: 24px; font-weight: 700; }
+    .text-main { font-size: 15.5px; font-weight: 500; }
+    .text-helper { font-size: 14px; font-weight: 400; }
+    
+    /* 無障礙作答框視覺聚焦 */
+    .answer-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+      background-color: #eff6ff;
+    }
+  </style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <!-- 上方功能控制列（列印時自動隱藏） -->
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-3 rounded-xl shadow-md flex flex-wrap gap-2 items-center justify-between border border-slate-200">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse"></span>
+      <span class="text-slate-700 font-medium text-[13px] font-chinese">💡 貼心設計：點擊英文句子可聽「慢速發音」！支援線上直接作答。</span>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="toggleAnswers()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-xs transition shadow-sm flex items-center gap-1 font-chinese">
+        顯示 / 隱藏答案
+      </button>
+      <button onclick="clearAnswers()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">
+        重設清除
+      </button>
+      <button onclick="window.print()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm flex items-center gap-1 font-chinese">
+        列印學習單
+      </button>
+    </div>
+  </div>
+
+  <!-- A4 靜態列印主結構 -->
+  <div class="page-a4 flex flex-col justify-between">
+    
+    <!-- 頂部標頭與學生資料填寫區 -->
+    <div class="pb-2 border-b-2 border-slate-200 mb-2 shrink-0">
+      <div class="flex justify-between items-end">
+        <h1 class="title-large text-slate-800 tracking-wider font-chinese leading-none">七下 U5 課文翻譯理解講義</h1>
+        <div class="flex gap-4 text-[16px] font-medium text-slate-700 leading-none pb-0.5 font-chinese">
+          <div>班級/座號：______</div>
+          <div>姓名：__________</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 單欄高密度排版 (Level 1 至 Level 3 連續排列，緊湊無留白) -->
+    <div class="flex-grow flex flex-col justify-between overflow-hidden">
+      
+      <div class="p-0 bg-white space-y-4">
+        
+        <!-- ================= LEVEL 1 基礎字詞理解 (3題) ================= -->
+        <div>
+          <h2 class="text-[14.5px] font-bold text-green-800 bg-green-50 px-2 py-1 rounded mb-2.5 font-chinese flex items-center gap-2">
+            <span class="px-1 py-0.2 bg-green-600 text-white text-[10px] rounded">Level 1</span>
+            <span>基礎字詞理解 (第 1-3 題)</span>
+          </h2>
+          
+          <div class="space-y-3 font-english text-slate-800 pl-1">
+            <!-- Q1 -->
+            <div class="flex flex-col">
+              <div class="flex items-start">
+                <span class="text-slate-700 font-bold mr-0.5 shrink-0 text-main">(</span>
+                <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-main shrink-0">
+                <span class="text-slate-700 font-bold mr-1 shrink-0">) 1.</span>
+                <span onclick="speakWord('I was at my grandparents house by the beach.')" class="cursor-pointer hover:text-blue-600 transition leading-tight text-main">
+                  I was at my grandparents' house by the <strong class="text-red-600 font-bold border-b border-red-200">beach</strong>.
+                </span>
+              </div>
+              <div class="pl-12 grid grid-cols-3 text-helper font-chinese text-slate-600 mt-1">
+                <div>(A) 海灘</div>
+                <div>(B) 學校</div>
+                <div>(C) 醫院</div>
+              </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="flex flex-col">
+              <div class="flex items-start">
+                <span class="text-slate-700 font-bold mr-0.5 shrink-0 text-main">(</span>
+                <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-main shrink-0">
+                <span class="text-slate-700 font-bold mr-1 shrink-0">) 2.</span>
+                <span onclick="speakWord('The coral reefs there are all dead because the sea water was too warm.')" class="cursor-pointer hover:text-blue-600 transition leading-tight text-main">
+                  The coral reefs there are all <strong class="text-red-600 font-bold border-b border-red-200">dead</strong> because the sea water was too warm.
+                </span>
+              </div>
+              <div class="pl-12 grid grid-cols-3 text-helper font-chinese text-slate-600 mt-1">
+                <div>(A) 有活力的</div>
+                <div>(B) 死亡的</div>
+                <div>(C) 漂亮的</div>
+              </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="flex flex-col">
+              <div class="flex items-start">
+                <span class="text-slate-700 font-bold mr-0.5 shrink-0 text-main">(</span>
+                <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-main shrink-0">
+                <span class="text-slate-700 font-bold mr-1 shrink-0">) 3.</span>
+                <span onclick="speakWord('Many years ago, the water was very clean.')" class="cursor-pointer hover:text-blue-600 transition leading-tight text-main">
+                  Many years ago, the water was very <strong class="text-red-600 font-bold border-b border-red-200">clean</strong>.
+                </span>
+              </div>
+              <div class="pl-12 grid grid-cols-3 text-helper font-chinese text-slate-600 mt-1">
+                <div>(A) 乾淨的</div>
+                <div>(B) 髒的</div>
+                <div>(C) 鹹的</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= LEVEL 2 句意翻譯理解 (5題) ================= -->
+        <div>
+          <h2 class="text-[14.5px] font-bold text-blue-800 bg-blue-50 px-2 py-1 rounded mb-2.5 font-chinese flex items-center gap-2">
+            <span class="px-1 py-0.2 bg-blue-600 text-white text-[10px] rounded">Level 2</span>
+            <span>句意翻譯理解 (第 4-8 題)</span>
+          </h2>
+          
+          <div class="space-y-3.5 font-english text-slate-800 pl-1">
+            <!-- Q4 -->
+            <div class="flex flex-col">
+              <div class="flex items-start">
+                <span class="text-slate-700 font-bold mr-0.5 shrink-0 text-main">(</span>
+                <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-main shrink-0">
+                <span class="text-slate-700 font-bold mr-1 shrink-0">) 4.</span>
+                <span onclick="speakWord('The beach was okay, but the water wasnt so nice.')" class="cursor-pointer hover:text-blue-600 transition leading-tight text-main">
+                  The beach was okay, but the water <strong class="text-red-600 font-bold">wasn't so nice</strong>.
+                </span>
+              </div>
+              <div class="pl-12 flex flex-col space-y-0.5 text-helper font-chinese text-slate-600 leading-tight mt-1">
+                <div>(A) 海灘很漂亮，海水也極乾淨。</div>
+                <div>(B) 海灘還可以，但海水就不太好。</div>
+                <div>(C) 海灘很髒，但海水很溫暖。</div>
+              </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="flex flex-col">
+              <div class="flex items-start">
+                <span class="text-slate-700 font-bold mr-0.5 shrink-0 text-main">(</span>
+                <input type="text" maxlength="1" data-answer="C" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-main shrink-0">
+                <span class="text-slate-700 font-bold mr-1 shrink-0">) 5.</span>
+                <span onclick="speakWord('There was a lot of trash in it.')" class="cursor-pointer hover:text-blue-600 transition leading-tight text-main">
+                  There was <strong class="text-red-600 font-bold">a lot of trash</strong> in it.
+                </span>
+              </div>
+              <div class="pl-12 flex flex-col space-y-0.5 text-helper font-chinese text-slate-600 leading-tight mt-1">
+                <div>(A) 當時海裡有很多可愛小魚。</div>
+                <div>(B) 當時有很多人在海裡玩。</div>
+                <div>(C) 當時海水裡面有非常多垃圾。</div>
+              </div>
+            </div>
+
+            <!-- Q6 -->
+            <div class="flex flex-col">
+              <div class="flex items-start">
+                <span class="text-slate-700 font-bold mr-0.5 shrink-0 text-main">(</span>
+                <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-main shrink-0">
+                <span class="text-slate-700 font-bold mr-1 shrink-0">) 6.</span>
+                <span onclick="speakWord('We visited an island.')" class="cursor-pointer hover:text-blue-600 transition leading-tight text-main">
+                  We <strong class="text-red-600 font-bold">visited an island</strong>.
+                </span>
+              </div>
+              <div class="pl-12 flex flex-col space-y-0.5 text-helper font-chinese text-slate-600 leading-tight mt-1">
+                <div>(A) 我們參觀了一座森林區。</div>
+                <div>(B) 我們造訪了一座島嶼。</div>
+                <div>(C) 我們去參觀了海邊圖書館。</div>
+              </div>
+            </div>
+
+            <!-- Q7 -->
+            <div class="flex flex-col">
+              <div class="flex items-start">
+                <span class="text-slate-700 font-bold mr-0.5 shrink-0 text-main">(</span>
+                <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-main shrink-0">
+                <span class="text-slate-700 font-bold mr-1 shrink-0">) 7.</span>
+                <span onclick="speakWord('Many years ago, the water was very clean.')" class="cursor-pointer hover:text-blue-600 transition leading-tight text-main">
+                  Many years ago, <strong class="text-red-600 font-bold">the water was very clean</strong>.
+                </span>
+              </div>
+              <div class="pl-12 flex flex-col space-y-0.5 text-helper font-chinese text-slate-600 leading-tight mt-1">
+                <div>(A) 很多年前，海水是非常乾淨的。</div>
+                <div>(B) 很久以前，我們在海邊露營。</div>
+                <div>(C) 當時海水裡面有非常多垃圾。</div>
+              </div>
+            </div>
+
+            <!-- Q8 -->
+            <div class="flex flex-col">
+              <div class="flex items-start">
+                <span class="text-slate-700 font-bold mr-0.5 shrink-0 text-main">(</span>
+                <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-main shrink-0">
+                <span class="text-slate-700 font-bold mr-1 shrink-0">) 8.</span>
+                <span onclick="speakWord('Coral reefs are like the rainforests of the sea.')" class="cursor-pointer hover:text-blue-600 transition leading-tight text-main">
+                  Coral reefs are like the <strong class="text-red-600 font-bold">rainforests</strong> of the sea.
+                </span>
+              </div>
+              <div class="pl-12 flex flex-col space-y-0.5 text-helper font-chinese text-slate-600 leading-tight mt-1">
+                <div>(A) 珊瑚礁就跟海裡的垃圾一樣多。</div>
+                <div>(B) 珊瑚礁就像海洋中的雨林一樣。</div>
+                <div>(C) 珊瑚礁喜歡熱帶多雨氣候。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= LEVEL 3 綜合翻譯挑戰 (2題) ================= -->
+        <div>
+          <h2 class="text-[14.5px] font-bold text-purple-800 bg-purple-50 px-2 py-1 rounded mb-2.5 font-chinese flex items-center gap-2">
+            <span class="px-1 py-0.2 bg-purple-600 text-white text-[10px] rounded">Level 3</span>
+            <span>綜合翻譯挑戰 (第 9-10 題)</span>
+          </h2>
+          
+          <div class="space-y-3.5 font-english text-slate-800 pl-1">
+            <!-- Q9 -->
+            <div class="flex flex-col">
+              <div class="flex items-start">
+                <span class="text-slate-700 font-bold mr-0.5 shrink-0 text-main">(</span>
+                <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-main shrink-0">
+                <span class="text-slate-700 font-bold mr-1 shrink-0">) 9.</span>
+                <span class="text-main font-chinese text-slate-800 leading-tight">
+                  你<strong class="text-blue-600 font-bold border-b border-blue-200">昨天在海灘哪裡</strong>？
+                </span>
+              </div>
+              <div class="pl-12 flex flex-col space-y-0.5 text-helper text-slate-600 leading-tight mt-1">
+                <div onclick="speakWord('Jamie, where were you yesterday?')" class="cursor-pointer hover:text-blue-600 transition">(A) Jamie, where <strong class="text-red-600 font-bold">were you yesterday</strong>?</div>
+                <div onclick="speakWord('Jamie, where are you now?')" class="cursor-pointer hover:text-blue-600 transition">(B) Jamie, where <strong class="text-red-600 font-bold">are you now</strong>?</div>
+                <div onclick="speakWord('Jamie, where was he yesterday?')" class="cursor-pointer hover:text-blue-600 transition">(C) Jamie, where <strong class="text-red-600 font-bold">was he yesterday</strong>?</div>
+              </div>
+            </div>
+
+            <!-- Q10 -->
+            <div class="flex flex-col">
+              <div class="flex items-start">
+                <span class="text-slate-700 font-bold mr-0.5 shrink-0 text-main">(</span>
+                <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-main shrink-0">
+                <span class="text-slate-700 font-bold mr-1 shrink-0">) 10.</span>
+                <span class="text-main font-chinese text-slate-800 leading-tight">
+                  <strong class="text-blue-600 font-bold border-b border-blue-200">一點也沒錯</strong>！世界各處的珊瑚礁正瀕臨死亡。
+                </span>
+              </div>
+              <div class="pl-12 flex flex-col space-y-0.5 text-helper text-slate-600 leading-tight mt-1">
+                <div onclick="speakWord('You can say that again! Coral reefs around the world are dying.')" class="cursor-pointer hover:text-blue-600 transition">(A) <strong class="text-red-600 font-bold">You can say that again</strong>! Coral reefs around the world are dying.</div>
+                <div onclick="speakWord('That is sad! Coral reefs around the world are dying.')" class="cursor-pointer hover:text-blue-600 transition">(B) <strong class="text-red-600 font-bold">That's sad</strong>! Coral reefs around the world are dying.</div>
+                <div onclick="speakWord('How come? Coral reefs around the world are dying.')" class="cursor-pointer hover:text-blue-600 transition">(C) <strong class="text-red-600 font-bold">How come</strong>? Coral reefs around the world are dying.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 頁尾宣告與安全防溢出間距 -->
+    <footer class="pt-1.5 border-t border-slate-200 flex justify-between items-end shrink-0">
+      
+    </footer>
+    
+  </div>
+
+  <!-- JavaScript 輔助作答與慢速發音發聲邏輯 -->
+  <script>
+    let showAnswersState = false;
+
+    // 清晰、放慢語速的語音發音輔助（0.80 語速極佳）
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // 先停止之前的播放
+        // 清理一下文字中多餘的 HTML 標籤
+        const cleanWord = word.replace(/<[^>]*>/g, '').replace(/\.\.\./g, '');
+        const utterance = new SpeechSynthesisUtterance(cleanWord);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8; // 特教學習慢速標準
+        window.speechSynthesis.speak(utterance);
+      } else {
+        console.log("當前瀏覽器不支援 Web Speech TTS 功能。");
+      }
+    }
+
+    // 線上核對/切換隱藏答案功能
+    function toggleAnswers() {
+      showAnswersState = !showAnswersState;
+      const inputs = document.querySelectorAll('.answer-input');
+      inputs.forEach(input => {
+        const correctAnswer = input.getAttribute('data-answer');
+        if (showAnswersState) {
+          input.value = correctAnswer;
+          input.classList.add('bg-blue-100', 'text-blue-800', 'border-blue-500');
+        } else {
+          input.value = '';
+          input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-500');
+        }
+      });
+    }
+
+    // 重設清除所有作答
+    function clearAnswers() {
+      const inputs = document.querySelectorAll('.answer-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-500');
+      });
+      showAnswersState = false;
+    }
+
+    // 線上作答自動化邏輯：大寫 A~C 限制、自動跳格
+    const inputsArray = Array.from(document.querySelectorAll('.answer-input'));
+    inputsArray.forEach((input, index) => {
+      input.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+        
+        // 限制只能輸入 A~C
+        if (!/^[A-C]$/.test(this.value)) {
+          this.value = '';
+        }
+
+        // 自動跳轉到下一題
+        if (this.value !== '') {
+          if (index < inputsArray.length - 1) {
+            inputsArray[index + 1].focus();
+          }
+        }
+      });
+
+      // 支援退格鍵刪除並自動返回上一題
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && this.value === '' && index > 0) {
+          inputsArray[index - 1].focus();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
