@@ -9,73 +9,124 @@
   <!-- Google Fonts: Noto Sans TC -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Noto Sans TC', sans-serif;
-      background-color: #f8fafc;
-    }
+    body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
   </style>
 </head>
-<body class="min-h-screen py-10 px-4 flex flex-col items-center">
+<body class="min-h-screen py-8 px-4 flex flex-col items-center">
 
-  <!-- 標題大外框 -->
-  <div class="w-full max-w-4xl text-center mb-10">
-    <h1 class="text-3xl font-bold text-slate-800 tracking-wide mb-3">📚 英語線上互動教材庫</h1>
-    <p class="text-slate-600 text-sm">點選下方講義卡片，即可進入線上語音互動學習單</p>
-    <div class="h-1 w-20 bg-indigo-500 mx-auto mt-4 rounded-full"></div>
+  <!-- 標題 -->
+  <div class="w-full max-w-4xl text-center mb-8">
+    <h1 class="text-2xl font-bold text-slate-800 tracking-wide">📚 英語線上互動教材庫</h1>
+    <div class="h-1 w-16 bg-indigo-500 mx-auto mt-3 rounded-full"></div>
   </div>
 
-  <!-- 目錄卡片清單 -->
-  <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- 主要內容區：按年級分區 -->
+  <div class="w-full max-w-4xl space-y-10">
 
-    <!-- 卡片 1：L1 課文講義 -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between hover:shadow-md transition">
-      <div>
-        <div class="flex items-center gap-2 mb-3">
-          <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">八年級下學期</span>
-          <span class="text-slate-400 text-xs">第一單元</span>
-        </div>
-        <h3 class="text-lg font-bold text-slate-800 mb-2">L1 課文句子翻譯理解講義</h3>
-        <p class="text-slate-500 text-xs leading-relaxed mb-4">支援特教慢速發音輔助、線上即時輸入解答，適合基礎文法與句意理解訓練。</p>
+    <!-- ==================== 八年級下學期 ==================== -->
+    <div>
+      <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+        <span class="text-lg font-bold text-slate-700">📌 八年級 下學期</span>
       </div>
-      <a href="114-8-2-1read.html" class="w-full text-center py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl text-sm transition shadow-sm block">
-        進入互動講義 ➔
-      </a>
+      <!-- 緊湊格線：一行最多可以放3個卡片 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        
+        <!-- 【範本/已完成】L1 課文藍色框 -->
+        <a href="114-8-2-1read.html" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-blue-600 mb-1">【課文理解】</div>
+          <div class="text-base font-bold text-slate-800 group-hover:text-blue-600 transition">L1 課文句子翻譯</div>
+        </a>
+
+        <!-- L5 課文藍色框 -->
+        <a href="#" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-blue-600 mb-1">【課文理解】</div>
+          <div class="text-base font-bold text-slate-400 group-hover:text-blue-600 transition">L5 課文理解 (尚未上傳)</div>
+        </a>
+
+        <!-- L5 單字綠色框 (已連線) -->
+        <a href="114-8-2-5voc.html" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-emerald-600 mb-1">【單字配對】</div>
+          <div class="text-base font-bold text-slate-800 group-hover:text-emerald-600 transition">L5 單字配對學習單</div>
+        </a>
+
+        <!-- L5 文法橘色框 -->
+        <a href="#" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-orange-600 mb-1">【文法挑戰】</div>
+          <div class="text-base font-bold text-slate-400 group-hover:text-orange-600 transition">L5 核心文法練習</div>
+        </a>
+
+        <!-- L6 課文藍色框 -->
+        <a href="#" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-blue-600 mb-1">【課文理解】</div>
+          <div class="text-base font-bold text-slate-400 group-hover:text-blue-600 transition">L6 課文理解 (尚未上傳)</div>
+        </a>
+
+        <!-- L6 單字綠色框 (已連線) -->
+        <a href="114-8-2-6voc.html" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-emerald-600 mb-1">【單字配對】</div>
+          <div class="text-base font-bold text-slate-800 group-hover:text-emerald-600 transition">L6 單字配對學習單</div>
+        </a>
+
+        <!-- L6 文法橘色框 -->
+        <a href="#" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-orange-600 mb-1">【文法挑戰】</div>
+          <div class="text-base font-bold text-slate-400 group-hover:text-orange-600 transition">L6 核心文法練習</div>
+        </a>
+
+      </div>
     </div>
 
-    <!-- 卡片 2：L5 單字學習單 -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between hover:shadow-md transition">
-      <div>
-        <div class="flex items-center gap-2 mb-3">
-          <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">八年級下學期</span>
-          <span class="text-slate-400 text-xs">第五單元</span>
-        </div>
-        <h3 class="text-lg font-bold text-slate-800 mb-2">L5 中英文單字配對學習單</h3>
-        <p class="text-slate-500 text-xs leading-relaxed mb-4">實用核心單字配對練習，加深核心字彙印象，支援無障礙操作與大寫自動轉譯。</p>
-      </div>
-      <a href="114-8-2-5voc.html" class="w-full text-center py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl text-sm transition shadow-sm block">
-        進入互動講義 ➔
-      </a>
-    </div>
 
-    <!-- 卡片 3：L6 單字學習單 -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between hover:shadow-md transition">
-      <div>
-        <div class="flex items-center gap-2 mb-3">
-          <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">八年級下學期</span>
-          <span class="text-slate-400 text-xs">第六單元</span>
-        </div>
-        <h3 class="text-lg font-bold text-slate-800 mb-2">L6 中英文單字配對學習單</h3>
-        <p class="text-slate-500 text-xs leading-relaxed mb-4">最新上傳的單字學習挑戰！配合課堂進度進行複習，線上作答與慢速發音引導。</p>
+    <!-- ==================== 七年級 下學期 ==================== -->
+    <div>
+      <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+        <span class="text-lg font-bold text-slate-700">📌 七年級 下學期</span>
       </div>
-      <a href="114-8-2-6voc.html" class="w-full text-center py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl text-sm transition shadow-sm block">
-        進入互動講義 ➔
-      </a>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        
+        <!-- L5 課文藍色框 -->
+        <a href="#" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-blue-600 mb-1">【課文理解】</div>
+          <div class="text-base font-bold text-slate-400 group-hover:text-blue-600 transition">L5 課文理解 (尚未上傳)</div>
+        </a>
+
+        <!-- L5 單字綠色框 -->
+        <a href="#" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-emerald-600 mb-1">【單字配對】</div>
+          <div class="text-base font-bold text-slate-400 group-hover:text-emerald-600 transition">L5 單字配對學習單</div>
+        </a>
+
+        <!-- L5 文法橘色框 -->
+        <a href="#" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-orange-600 mb-1">【文法挑戰】</div>
+          <div class="text-base font-bold text-slate-400 group-hover:text-orange-600 transition">L5 核心文法練習</div>
+        </a>
+
+        <!-- L6 課文藍色框 -->
+        <a href="#" class="block bg-white border-2 border-blue-400 hover:bg-blue-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-blue-600 mb-1">【課文理解】</div>
+          <div class="text-base font-bold text-slate-400 group-hover:text-blue-600 transition">L6 課文理解 (尚未上傳)</div>
+        </a>
+
+        <!-- L6 單字綠色框 -->
+        <a href="#" class="block bg-white border-2 border-emerald-400 hover:bg-emerald-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-emerald-600 mb-1">【單字配對】</div>
+          <div class="text-base font-bold text-slate-400 group-hover:text-emerald-600 transition">L6 單字配對學習單</div>
+        </a>
+
+        <!-- L6 文法橘色框 -->
+        <a href="#" class="block bg-white border-2 border-orange-400 hover:bg-orange-50/50 rounded-xl p-4 shadow-sm transition group">
+          <div class="text-xs font-bold text-orange-600 mb-1">【文法挑戰】</div>
+          <div class="text-base font-bold text-slate-400 group-hover:text-orange-600 transition">L6 核心文法練習</div>
+        </a>
+
+      </div>
     </div>
 
   </div>
 
-  <!-- 頁尾宣告 -->
-  <div class="w-full max-w-4xl text-center mt-12 text-xs text-slate-400">
+  <!-- 頁尾 -->
+  <div class="w-full max-w-4xl text-center mt-16 text-xs text-slate-400">
     © 2026 英語線上互動教材庫. All rights reserved.
   </div>
 
