@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>七下 Unit 5 中英文單字配對學習單</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Noto Sans TC & Lexend -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    
+    .font-chinese {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    
+    .font-english {
+      font-family: 'Lexend', sans-serif;
+    }
+    
+    /* 嚴格限制 A4 紙張大小，防止任何內容溢出 */
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      padding: 10mm 12mm;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 列印專用高對比色彩與防溢位設定 */
+    @media print {
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      body {
+        background-color: #ffffff;
+        margin: 0;
+      }
+      .page-a4 {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 10mm 12mm;
+        box-shadow: none;
+        border: none;
+        overflow: hidden;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* 輸入框高對比聚焦，利於低視能與學習障礙生定位 */
+    .answer-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+      background-color: #f0f9ff;
+    }
+  </style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-wrap gap-3 items-center justify-between border border-slate-200">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-3 h-3 bg-blue-500 rounded-full animate-pulse"></span>
+      <span class="text-slate-700 font-medium text-sm font-chinese">💡 貼心設計：點擊英文單字可聽「慢速發音」！支援線上直接作答。</span>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="toggleAnswers()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition shadow-sm flex items-center gap-1 font-chinese">
+        顯示 / 隱藏答案
+      </button>
+      <button onclick="clearAnswers()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-sm transition border border-slate-300 font-chinese">
+        重設清除
+      </button>
+      <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition shadow-sm flex items-center gap-1 font-chinese">
+        列印學習單
+      </button>
+    </div>
+  </div>
+
+  <!-- 主 A4 列印頁面容器 -->
+  <div class="page-a4 flex flex-col justify-between">
+    
+    <div>
+      <div class="pb-1.5 border-b-2 border-slate-200 mb-2 shrink-0">
+        <div class="flex justify-between items-end">
+          <h1 class="text-[22px] font-bold text-slate-800 tracking-wider font-chinese text-left leading-none m-0">七上 Unit 5 中英文單字配對學習單</h1>
+          <div class="flex gap-6 text-[15px] font-medium text-slate-700 text-right leading-none pb-0.5 font-chinese">
+            <div>班級/座號：______</div>
+            <div>姓名：__________</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 💡 作答說明 -->
+      <div class="bg-blue-50 border border-blue-100 p-2 rounded-lg shadow-sm mb-2 shrink-0">
+        <h2 class="text-[14px] font-bold text-blue-800 leading-tight flex items-center gap-1.5 font-chinese">
+          <span>💡 作答說明：</span>
+          <span class="text-blue-700 font-normal text-[13.5px]">請將左側中文選項的代號填寫入右側括號中。</span>
+        </h2>
+      </div>
+
+      <!-- ================= 主內容 2 欄 x 4 列對稱格局 ================= -->
+      <div class="grid grid-cols-2 gap-x-3.5 gap-y-2.5 flex-grow content-start overflow-hidden">
+
+        <!-- Block 1 (1-5) -->
+        <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
+          <div class="bg-blue-100 text-blue-800 text-[14px] font-bold px-2 py-0.5 font-chinese shrink-0">◎ 第一組 (1-5)</div>
+          <div class="flex flex-row flex-grow">
+            <!-- Left: Chinese Options (莫蘭迪淡藍色) -->
+            <div class="w-[38%] bg-blue-50/50 p-1.5 flex flex-col justify-evenly border-r border-dashed border-gray-300 font-chinese text-[13.5px] text-slate-700 leading-tight">
+              <div>(A) 拜訪</div>
+              <div>(B) 海灘</div>
+              <div>(C) 昨天</div>
+              <div>(D) 前；以前</div>
+              <div>(E) 垃圾</div>
+            </div>
+            <!-- Right: English Questions (純白底防修正帶透光，使用防折行 78px 盒子) -->
+            <div class="w-[62%] bg-white p-1.5 pl-2 flex flex-col justify-evenly space-y-1">
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="C" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 1.</span>
+                </div>
+                <span onclick="speakWord('yesterday')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">yesterday</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 2.</span>
+                </div>
+                <span onclick="speakWord('beach')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">beach</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="E" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 3.</span>
+                </div>
+                <span onclick="speakWord('trash')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">trash</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="D" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 4.</span>
+                </div>
+                <span onclick="speakWord('ago')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">ago</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 5.</span>
+                </div>
+                <span onclick="speakWord('visit')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">visit</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Block 2 (6-10) -->
+        <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
+          <div class="bg-blue-100 text-blue-800 text-[14px] font-bold px-2 py-0.5 font-chinese shrink-0">◎ 第二組 (6-10)</div>
+          <div class="flex flex-row flex-grow">
+            <!-- Left: Chinese Options -->
+            <div class="w-[38%] bg-blue-50/50 p-1.5 flex flex-col justify-evenly border-r border-dashed border-gray-300 font-chinese text-[13.5px] text-slate-700 leading-tight">
+              <div>(A) 幾個；一些</div>
+              <div>(B) 發生</div>
+              <div>(C) 海</div>
+              <div>(D) 島嶼</div>
+              <div>(E) 停止</div>
+            </div>
+            <!-- Right: English Questions -->
+            <div class="w-[62%] bg-white p-1.5 pl-2 flex flex-col justify-evenly space-y-1">
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="D" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 6.</span>
+                </div>
+                <span onclick="speakWord('island')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">island</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 7.</span>
+                </div>
+                <span onclick="speakWord('a few')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">a few</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="C" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 8.</span>
+                </div>
+                <span onclick="speakWord('sea')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">sea</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="E" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 9.</span>
+                </div>
+                <span onclick="speakWord('stop')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">stop</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 10.</span>
+                </div>
+                <span onclick="speakWord('happen')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">happen</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Block 3 (11-15) -->
+        <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
+          <div class="bg-blue-100 text-blue-800 text-[14px] font-bold px-2 py-0.5 font-chinese shrink-0">◎ 第三組 (11-15)</div>
+          <div class="flex flex-row flex-grow">
+            <!-- Left: Chinese Options -->
+            <div class="w-[38%] bg-blue-50/50 p-1.5 flex flex-col justify-evenly border-r border-dashed border-gray-300 font-chinese text-[13.5px] text-slate-700 leading-tight">
+              <div>(A) 溫暖的</div>
+              <div>(B) 死亡的</div>
+              <div>(C) 在…旁邊</div>
+              <div>(D) 死亡</div>
+              <div>(E) 雨林</div>
+            </div>
+            <!-- Right: English Questions -->
+            <div class="w-[62%] bg-white p-1.5 pl-2 flex flex-col justify-evenly space-y-1">
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 11.</span>
+                </div>
+                <span onclick="speakWord('dead')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">dead</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 12.</span>
+                </div>
+                <span onclick="speakWord('warm')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">warm</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="E" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 13.</span>
+                </div>
+                <span onclick="speakWord('rainforest')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">rainforest</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="D" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 14.</span>
+                </div>
+                <span onclick="speakWord('die')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">die</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="C" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 15.</span>
+                </div>
+                <span onclick="speakWord('by')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">by</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Block 4 (16-20) -->
+        <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
+          <div class="bg-blue-100 text-blue-800 text-[14px] font-bold px-2 py-0.5 font-chinese shrink-0">◎ 第四組 (16-20)</div>
+          <div class="flex flex-row flex-grow">
+            <!-- Left: Chinese Options -->
+            <div class="w-[38%] bg-blue-50/50 p-1.5 flex flex-col justify-evenly border-r border-dashed border-gray-300 font-chinese text-[13px] text-slate-700 leading-tight">
+              <div>(A) 忙碌的</div>
+              <div>(B) 河流</div>
+              <div>(C) 那時候</div>
+              <div>(D) 湖泊</div>
+              <div>(E) 怎麼會？！為什麼？</div>
+            </div>
+            <!-- Right: English Questions -->
+            <div class="w-[62%] bg-white p-1.5 pl-2 flex flex-col justify-evenly space-y-1">
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="E" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 16.</span>
+                </div>
+                <span onclick="speakWord('How come?')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[14.5px] font-english truncate flex-grow">How come?</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="C" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 17.</span>
+                </div>
+                <span onclick="speakWord('then')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">then</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 18.</span>
+                </div>
+                <span onclick="speakWord('busy')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">busy</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 19.</span>
+                </div>
+                <span onclick="speakWord('river')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">river</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="D" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 20.</span>
+                </div>
+                <span onclick="speakWord('lake')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">lake</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Block 5 (21-25) -->
+        <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
+          <div class="bg-blue-100 text-blue-800 text-[14px] font-bold px-2 py-0.5 font-chinese shrink-0">◎ 第五組 (21-25)</div>
+          <div class="flex flex-row flex-grow">
+            <!-- Left: Chinese Options -->
+            <div class="w-[38%] bg-blue-50/50 p-1.5 flex flex-col justify-evenly border-r border-dashed border-gray-300 font-chinese text-[13.5px] text-slate-700 leading-tight">
+              <div>(A) 露營；紮營</div>
+              <div>(B) 劃船</div>
+              <div>(C) 爬（山）</div>
+              <div>(D) 山丘</div>
+              <div>(E) 山</div>
+            </div>
+            <!-- Right: English Questions -->
+            <div class="w-[62%] bg-white p-1.5 pl-2 flex flex-col justify-evenly space-y-1">
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="D" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 21.</span>
+                </div>
+                <span onclick="speakWord('hill')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">hill</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="E" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 22.</span>
+                </div>
+                <span onclick="speakWord('mountain')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">mountain</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 23.</span>
+                </div>
+                <span onclick="speakWord('camp')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">camp</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="C" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 24.</span>
+                </div>
+                <span onclick="speakWord('climb')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">climb</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 25.</span>
+                </div>
+                <span onclick="speakWord('row a boat')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[14.5px] font-english truncate flex-grow">row a boat</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Block 6 (26-30) -->
+        <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
+          <div class="bg-blue-100 text-blue-800 text-[14px] font-bold px-2 py-0.5 font-chinese shrink-0">◎ 第六組 (26-30)</div>
+          <div class="flex flex-row flex-grow">
+            <!-- Left: Chinese Options -->
+            <div class="w-[38%] bg-blue-50/50 p-1.5 flex flex-col justify-evenly border-r border-dashed border-gray-300 font-chinese text-[13.5px] text-slate-700 leading-tight">
+              <div>(A) 野餐</div>
+              <div>(B) 上一個的</div>
+              <div>(C) 居住</div>
+              <div>(D) 種植；植物</div>
+              <div>(E) 健行</div>
+            </div>
+            <!-- Right: English Questions -->
+            <div class="w-[62%] bg-white p-1.5 pl-2 flex flex-col justify-evenly space-y-1">
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="D" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 26.</span>
+                </div>
+                <span onclick="speakWord('plant')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">plant</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="E" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 27.</span>
+                </div>
+                <span onclick="speakWord('hike')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">hike</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 28.</span>
+                </div>
+                <span onclick="speakWord('picnic')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">picnic</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 29.</span>
+                </div>
+                <span onclick="speakWord('last')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">last</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="C" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 30.</span>
+                </div>
+                <span onclick="speakWord('live')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">live</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Block 7 (31-35) -->
+        <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
+          <div class="bg-blue-100 text-blue-800 text-[14px] font-bold px-2 py-0.5 font-chinese shrink-0">◎ 第七組 (31-35)</div>
+          <div class="flex flex-row flex-grow">
+            <!-- Left: Chinese Options -->
+            <div class="w-[38%] bg-blue-50/50 p-1.5 flex flex-col justify-evenly border-r border-dashed border-gray-300 font-chinese text-[13.5px] text-slate-700 leading-tight">
+              <div>(A) 燃燒</div>
+              <div>(B) 遊樂場；操場</div>
+              <div>(C) 油</div>
+              <div>(D) 每樣事物</div>
+              <div>(E) 改變</div>
+            </div>
+            <!-- Right: English Questions -->
+            <div class="w-[62%] bg-white p-1.5 pl-2 flex flex-col justify-evenly space-y-1">
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 31.</span>
+                </div>
+                <span onclick="speakWord('playground')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[14.5px] font-english truncate flex-grow">playground</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="D" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 32.</span>
+                </div>
+                <span onclick="speakWord('everything')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[14.5px] font-english truncate flex-grow">everything</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="E" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 33.</span>
+                </div>
+                <span onclick="speakWord('change')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">change</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 34.</span>
+                </div>
+                <span onclick="speakWord('burn')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">burn</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="C" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 35.</span>
+                </div>
+                <span onclick="speakWord('oil')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">oil</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Block 8 (36-41) -->
+        <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col shadow-sm">
+          <div class="bg-blue-100 text-blue-800 text-[14px] font-bold px-2 py-0.5 font-chinese shrink-0">◎ 第八組 (36-41)</div>
+          <div class="flex flex-row flex-grow">
+            <!-- Left: Chinese Options -->
+            <div class="w-[38%] bg-blue-50/50 p-1.5 flex flex-col justify-evenly border-r border-dashed border-gray-300 font-chinese text-[12.5px] text-slate-700 leading-tight">
+              <div>(A) 想念</div>
+              <div>(B) 賣</div>
+              <div>(C) 方式</div>
+              <div>(D) 小的</div>
+              <div>(E) 賺錢</div>
+              <div>(F) 一點…逐漸</div>
+            </div>
+            <!-- Right: English Questions -->
+            <div class="w-[62%] bg-white p-1.5 pl-2 flex flex-col justify-evenly space-y-1">
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="B" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 36.</span>
+                </div>
+                <span onclick="speakWord('sell')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">sell</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="E" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 37.</span>
+                </div>
+                <span onclick="speakWord('make money')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[14px] font-english truncate flex-grow">make money</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="A" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 38.</span>
+                </div>
+                <span onclick="speakWord('miss')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">miss</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="D" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 39.</span>
+                </div>
+                <span onclick="speakWord('little')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">little</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="F" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 40.</span>
+                </div>
+                <span onclick="speakWord('little by little')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[13.5px] font-english truncate flex-grow">little by little</span>
+              </div>
+              <div class="flex items-center py-0.5 whitespace-nowrap">
+                <div class="flex items-center w-[78px] shrink-0">
+                  <span class="text-slate-700 font-bold text-[15px]">(</span>
+                  <input type="text" maxlength="1" data-answer="C" class="answer-input w-6 h-6 text-center font-bold text-blue-600 border-b-2 border-slate-300 focus:outline-none uppercase bg-transparent text-[15px] mx-0.5">
+                  <span class="text-slate-700 font-bold text-[15px] min-w-[32px] text-right">) 41.</span>
+                </div>
+                <span onclick="speakWord('way')" class="cursor-pointer hover:text-blue-600 transition pl-2.5 text-[15px] font-english truncate flex-grow">way</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer Area -->
+    <footer class="pt-1.5 border-t border-slate-200 flex justify-between items-end shrink-0">
+      <div>
+        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest leading-none mb-1 font-english">Vocabulary Matching Practice</p>
+      </div>
+      <div class="bg-blue-600 text-white text-[12px] px-3 py-1 rounded font-bold font-english shadow-sm">
+        KEEP IT UP!
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    let showAnswersState = false;
+
+    // TTS slow rate 0.85 for SpEd
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const cleanWord = word.replace(/\.\.\./g, '');
+        const utterance = new SpeechSynthesisUtterance(cleanWord);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85; 
+        window.speechSynthesis.speak(utterance);
+      } else {
+        console.log("TTS is not supported in this browser.");
+      }
+    }
+
+    // Toggle showing correct answers
+    function toggleAnswers() {
+      showAnswersState = !showAnswersState;
+      const inputs = document.querySelectorAll('.answer-input');
+      inputs.forEach(input => {
+        const correctAnswer = input.getAttribute('data-answer');
+        if (showAnswersState) {
+          input.value = correctAnswer;
+          input.classList.add('bg-blue-100', 'text-blue-800', 'border-blue-500');
+        } else {
+          input.value = '';
+          input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-500');
+        }
+      });
+    }
+
+    // Clear all inputs
+    function clearAnswers() {
+      const inputs = document.querySelectorAll('.answer-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-500');
+      });
+      showAnswersState = false;
+    }
+
+    // Input handling: Auto-uppercase, validation (A-F), and auto-advance
+    const inputsArray = Array.from(document.querySelectorAll('.answer-input'));
+    inputsArray.forEach((input, index) => {
+      input.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+        
+        // Validate input (A-F)
+        if (!/^[A-F]$/.test(this.value)) {
+          this.value = '';
+        }
+
+        // Auto-advance
+        if (this.value !== '') {
+          if (index < inputsArray.length - 1) {
+            inputsArray[index + 1].focus();
+          }
+        }
+      });
+
+      // Handle Backspace for correction
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && this.value === '' && index > 0) {
+          inputsArray[index - 1].focus();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
