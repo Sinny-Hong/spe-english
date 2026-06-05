@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>八下 L6 英文科講義 聽力選擇卷</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Noto Sans TC & Lexend -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background-color: #f1f5f9;
+    }
+    
+    .font-chinese {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    
+    .font-english {
+      font-family: 'Lexend', sans-serif;
+    }
+    
+    /* 嚴格 A4 尺寸限制 */
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      padding: 12mm 12mm; /* 安全列印邊距 */
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 列印專用樣式 */
+    @media print {
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      body {
+        background-color: #ffffff;
+        margin: 0;
+      }
+      .page-a4 {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 12mm 12mm;
+        box-shadow: none;
+        border: none;
+        overflow: hidden;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* 字級與行高規範 */
+    .title-large { font-size: 24px; font-weight: 700; }
+    .text-reminder { font-size: 14px; font-weight: 500; }
+    .text-main { font-size: 16px; font-weight: 500; }
+    
+    /* 輸入框視覺聚焦效果 */
+    .answer-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+      background-color: #eff6ff;
+    }
+  </style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <!-- 頂部功能列 (列印時自動隱藏) -->
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-wrap gap-3 items-center justify-between border border-slate-200">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-3 h-3 bg-blue-500 rounded-full animate-pulse"></span>
+      <span class="text-slate-700 font-medium text-sm font-chinese">🎧 提示：點擊個別英文單字可聽慢速發音。考前點選「🎧 完整導讀」；小考點選「📢 聽力小考」。</span>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="toggleAnswers()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition shadow-sm flex items-center gap-1 font-chinese">
+        顯示 / 隱藏答案
+      </button>
+      <button onclick="clearAnswers()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-sm transition border border-slate-300 font-chinese">
+        重設清除
+      </button>
+      <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition shadow-sm flex items-center gap-1 font-chinese">
+        列印學習單
+      </button>
+    </div>
+  </div>
+
+  <!-- A4 本體 -->
+  <div class="page-a4 flex flex-col justify-between">
+    
+    <!-- 頂部標頭與學生資料填寫區（精準對照 image_7beb22.png 格式） -->
+    <div class="border-b-4 border-double border-slate-400 pb-1.5 mb-2">
+      <div class="flex justify-between items-end">
+        <h1 class="title-large text-slate-800 tracking-wider font-chinese">八下 L6 英文科講義 聽力選擇卷</h1>
+        <div class="flex gap-4 text-main text-slate-700 mb-1 font-chinese">
+          <div class="border-b-2 border-slate-400 w-28 pb-0.5">＿＿＿班</div>
+          <div class="border-b-2 border-slate-400 w-32 pb-0.5">姓名：＿＿＿＿＿</div>
+        </div>
+      </div>
+      
+      <!-- 作答說明（精準對照 image_7beb22.png 格式） -->
+      <div class="mt-1.5 flex justify-between items-center bg-slate-100 px-3 py-1 rounded-lg border-l-4 border-slate-500">
+        <span class="text-reminder text-slate-700 font-chinese">
+          ◎錯字用紅筆訂正，中文、英文各 1 次。
+        </span>
+      </div>
+    </div>
+
+    <!-- 2 欄 x 2 列 = 共 4 大組 -->
+    <div class="grid grid-cols-2 gap-x-4 gap-y-3 flex-grow mb-1">
+      
+      <!-- ==================== ◎ 第一組 (1-10) ==================== -->
+      <div class="border-2 border-blue-200 rounded-xl p-3 bg-white flex flex-col justify-start">
+        <div class="flex justify-between items-center border-b border-blue-100 pb-1.5 mb-3">
+          <h3 class="text-[15px] font-bold text-blue-800 font-chinese">◎ 第一組 (1-10)</h3>
+          <div class="flex gap-1.5">
+            <button onclick="startGroupPreview(1)" class="no-print bg-sky-500/80 hover:bg-sky-600/90 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow flex items-center gap-1">🎧 完整導讀</button>
+            <button onclick="startGroupQuiz(1)" class="no-print bg-orange-400/90 hover:bg-orange-500/90 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow flex items-center gap-1">📢 聽力小考</button>
+          </div>
+        </div>
+        <div class="flex flex-col space-y-3.5 font-english text-slate-800 text-main">
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('straw')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="1" data-word="straw" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold ml-1">)</span>
+            <span class="ml-2 font-medium">1. straw</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">吸管；稻草</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('carry')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="1" data-word="carry" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold ml-1">)</span>
+            <span class="ml-2 font-medium">2. carry</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">攜帶</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('metal')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="1" data-word="metal" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold ml-1">)</span>
+            <span class="ml-2 font-medium">3. metal</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">金屬</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('spoon')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="1" data-word="spoon" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">4. spoon</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">湯匙</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('chopsticks')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="1" data-word="chopsticks" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">5. chopsticks</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">筷子</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('paper')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="1" data-word="paper" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">6. paper</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">紙</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('stair')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="1" data-word="stair" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">7. stair</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">樓梯</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('instead')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="1" data-word="instead" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">8. instead</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">作為....替代</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('jog')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="1" data-word="jog" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">9. jog</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">慢跑</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('newspaper')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="1" data-word="newspaper" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">10. newspaper</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">報紙</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== ◎ 第二組 (11-20) ==================== -->
+      <div class="border-2 border-blue-200 rounded-xl p-3 bg-white flex flex-col justify-start">
+        <div class="flex justify-between items-center border-b border-blue-100 pb-1.5 mb-3">
+          <h3 class="text-[15px] font-bold text-blue-800 font-chinese">◎ 第二組 (11-20)</h3>
+          <div class="flex gap-1.5">
+            <button onclick="startGroupPreview(2)" class="no-print bg-sky-500/80 hover:bg-sky-600/90 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow flex items-center gap-1">🎧 完整導讀</button>
+            <button onclick="startGroupQuiz(2)" class="no-print bg-orange-400/90 hover:bg-orange-500/90 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow flex items-center gap-1">📢 聽力小考</button>
+          </div>
+        </div>
+        <div class="flex flex-col space-y-3.5 font-english text-slate-800 text-main">
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('postcard')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="2" data-word="postcard" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">11. postcard</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">明信片</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('businessman')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="2" data-word="businessman" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">12. businessman</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">商人</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('workbook')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="2" data-word="workbook" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">13. workbook</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">習作</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('bother')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="2" data-word="bother" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">14. bother</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">費心</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('end up')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="2" data-word="end up" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">15. end up</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">最後成為</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('ocean')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="2" data-word="ocean" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">16. ocean</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">海洋</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('turtle')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="2" data-word="turtle" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">17. turtle</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">海龜；龜</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('perhaps')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="2" data-word="perhaps" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">18. perhaps</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">也許</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('if')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="2" data-word="if" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">19. if</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">如果</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('take / took action')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="2" data-word="take / took action" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">20. take / took action</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">採取行動</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== ◎ 第三組 (21-30) ==================== -->
+      <div class="border-2 border-blue-200 rounded-xl p-3 bg-white flex flex-col justify-start">
+        <div class="flex justify-between items-center border-b border-blue-100 pb-1.5 mb-3">
+          <h3 class="text-[15px] font-bold text-blue-800 font-chinese">◎ 第三組 (21-30)</h3>
+          <div class="flex gap-1.5">
+            <button onclick="startGroupPreview(3)" class="no-print bg-sky-500/80 hover:bg-sky-600/90 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow flex items-center gap-1">🎧 完整導讀</button>
+            <button onclick="startGroupQuiz(3)" class="no-print bg-orange-400/90 hover:bg-orange-500/90 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow flex items-center gap-1">📢 聽力小考</button>
+          </div>
+        </div>
+        <div class="flex flex-col space-y-3.5 font-english text-slate-800 text-main">
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('though / although')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="3" data-word="though / although" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">21. though / although</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">雖然</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('break / broke down')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="3" data-word="break / broke down" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">22. break / broke down</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">分解</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('correct')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="3" data-word="correct" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">23. correct</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">正確的；更正</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('feed / fed')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="3" data-word="feed / fed" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">24. feed / fed</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">餵</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('baby')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="3" data-word="baby" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">25. baby</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">幼鳥；嬰兒</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('jellyfish')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="3" data-word="jellyfish" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">26. jellyfish</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">水母</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('die')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="3" data-word="die" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">27. die</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">死亡</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('crazy about')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="3" data-word="crazy about" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">28. crazy about</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">非常喜歡...</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('service')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="3" data-word="service" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">29. service</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">服務</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('excellent')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="3" data-word="excellent" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">30. excellent</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">優秀的</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== ◎ 第四組 (31-40) ==================== -->
+      <div class="border-2 border-blue-200 rounded-xl p-3 bg-white flex flex-col justify-start">
+        <div class="flex justify-between items-center border-b border-blue-100 pb-1.5 mb-3">
+          <h3 class="text-[15px] font-bold text-blue-800 font-chinese">◎ 第四組 (31-40)</h3>
+          <div class="flex gap-1.5">
+            <button onclick="startGroupPreview(4)" class="no-print bg-sky-500/80 hover:bg-sky-600/90 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow flex items-center gap-1">🎧 完整導讀</button>
+            <button onclick="startGroupQuiz(4)" class="no-print bg-orange-400/90 hover:bg-orange-500/90 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow flex items-center gap-1">📢 聽力小考</button>
+          </div>
+        </div>
+        <div class="flex flex-col space-y-3.5 font-english text-slate-800 text-main">
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('wish')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="4" data-word="wish" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">31. wish</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">願望；希望</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('garbage')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="4" data-word="garbage" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">32. garbage</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">垃圾</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('somewhere')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="4" data-word="somewhere" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">33. somewhere</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">在某處</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('enter')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="4" data-word="enter" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">34. enter</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">進入；輸入</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('knife')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="4" data-word="knife" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">35. knife</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">刀子</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('fork')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="4" data-word="fork" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">36. fork</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">叉子</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('choice')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="4" data-word="choice" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">37. choice</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">選擇</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('possible')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="4" data-word="possible" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">38. possible</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">可能的</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('no longer')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="4" data-word="no longer" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">39. no longer</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">不再</span>
+          </div>
+          <div class="flex items-center px-1 py-0.5 hover:bg-slate-50/80 rounded transition cursor-pointer" onclick="speakWord('gladly')">
+            <span class="text-blue-700 font-bold mr-1">(</span>
+            <input type="text" maxlength="2" data-group="4" data-word="gladly" onclick="event.stopPropagation();" class="answer-input w-7 h-6 text-center font-bold text-blue-600 border-b-2 border-blue-300 focus:outline-none bg-transparent">
+            <span class="text-blue-700 font-bold mr-1">)</span>
+            <span class="ml-2 font-medium">40. gladly</span>
+            <span class="font-chinese text-slate-500 text-[14px] ml-auto pr-2">樂意地</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 頁底安全留白 -->
+    <div class="h-1"></div>
+
+  </div>
+
+  <script>
+    let showAnswersState = false;
+    let groupOrders = {}; 
+    const chineseTitles = ["第一題", "第二題", "第三題", "第四題", "第五題", "第六題", "第七題", "第八題", "第九題", "第十題"];
+
+    // 基礎美式發音輔助功能 (語速設定 0.85 慢速)[cite: 1]
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85; // 慢速語速[cite: 1]
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    // 雙語交叉且「重複唸兩次」英文的核心音訊鏈[cite: 1]
+    function speakQuizChain(chineseNum, englishText, onDone) {
+      window.speechSynthesis.cancel();
+
+      const uChinese = new SpeechSynthesisUtterance(chineseNum);
+      uChinese.lang = 'zh-TW';
+      uChinese.rate = 1.0;
+
+      uChinese.onend = function() {
+        setTimeout(() => {
+          const uEng1 = new SpeechSynthesisUtterance(englishText);
+          uEng1.lang = 'en-US';
+          uEng1.rate = 0.85; // 小考時英文維持慢速[cite: 1]
+
+          uEng1.onend = function() {
+            setTimeout(() => {
+              const uEng2 = new SpeechSynthesisUtterance(englishText);
+              uEng2.lang = 'en-US';
+              uEng2.rate = 0.85;
+
+              if (onDone) uEng2.onend = onDone;
+              window.speechSynthesis.speak(uEng2);
+            }, 1200);
+          };
+          window.speechSynthesis.speak(uEng1);
+        }, 400);
+      };
+      window.speechSynthesis.speak(uChinese);
+    }
+
+    // 按順序完整導讀預習功能
+    function startGroupPreview(groupId) {
+      const inputs = document.querySelectorAll(`input[data-group="${groupId}"]`);
+      let words = [];
+      inputs.forEach(input => {
+        words.push(input.getAttribute('data-word'));
+      });
+      executePreviewLoop(words, 0);
+    }
+
+    function executePreviewLoop(wordsArray, index) {
+      if (index < wordsArray.length) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(wordsArray[index]);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85;
+        
+        utterance.onend = function() {
+          setTimeout(() => {
+            executePreviewLoop(wordsArray, index + 1);
+          }, 1500);
+        };
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    // 啟動指定組別的 10 題隨機小考
+    function startGroupQuiz(groupId) {
+      const inputs = document.querySelectorAll(`input[data-group="${groupId}"]`);
+      let words = [];
+      inputs.forEach(input => {
+        words.push(input.getAttribute('data-word'));
+        input.value = ''; 
+      });
+
+      // Fisher-Yates 隨機洗牌演算法
+      for (let i = words.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [words[i], words[j]] = [words[j], words[i]];
+      }
+
+      groupOrders[groupId] = words;
+      executeAudioLoop(groupId, 0);
+    }
+
+    // 隨機測驗遞迴播放控制鏈
+    function executeAudioLoop(groupId, index) {
+      const currentList = groupOrders[groupId];
+      if (index < currentList.length) {
+        speakQuizChain(chineseTitles[index], currentList[index], () => {
+          setTimeout(() => {
+            executeAudioLoop(groupId, index + 1);
+          }, 3500);
+        });
+      }
+    }
+
+    // 投影/行政核對專用：顯示或隱藏隨機小考的答案[cite: 2]
+    function toggleAnswers() {
+      showAnswersState = !showAnswersState;
+      const inputs = document.querySelectorAll('.answer-input');
+      
+      inputs.forEach(input => {
+        const groupId = input.getAttribute('data-group');
+        const word = input.getAttribute('data-word');
+        
+        if (showAnswersState) {
+          if (groupOrders[groupId]) {
+            input.value = groupOrders[groupId].indexOf(word) + 1;
+          } else {
+            input.value = "-";
+          }
+          input.classList.add('bg-blue-100', 'text-blue-800', 'border-blue-400');
+        } else {
+          input.value = '';
+          input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-400');
+        }
+      });
+    }
+
+    // 清除重設所有狀態[cite: 2]
+    function clearAnswers() {
+      groupOrders = {};
+      const inputs = document.querySelectorAll('.answer-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-400');
+      });
+      showAnswersState = false;
+      window.speechSynthesis.cancel();
+    }
+
+    // 輸入框防呆控制：僅允許輸入實體數字 1 到 10
+    document.querySelectorAll('.answer-input').forEach(input => {
+      input.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        const val = parseInt(this.value);
+        if (val < 1 || val > 10) {
+          this.value = '';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
