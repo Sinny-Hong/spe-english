@@ -1,0 +1,606 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>八下 L5 中英文單字配對學習單</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Noto Sans TC & Lexend -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans TC', 'Lexend', sans-serif;
+      background-color: #f1f5f9;
+    }
+    
+    .font-chinese {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+    
+    .font-english {
+      font-family: 'Lexend', sans-serif;
+    }
+    
+    /* 嚴格 A4 尺寸限制與溢出控制 */
+    .page-a4 {
+      width: 210mm;
+      height: 297mm;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      padding: 10mm 12mm;
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 列印專用樣式 */
+    @media print {
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      body {
+        background-color: #ffffff;
+        margin: 0;
+      }
+      .page-a4 {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 10mm 12mm;
+        box-shadow: none;
+        border: none;
+        overflow: hidden;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    /* 特教無障礙輸入框聚焦效果 */
+    .match-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+      background-color: #eff6ff;
+    }
+  </style>
+</head>
+<body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
+
+  <!-- 上方功能控制列（列印時自動隱藏） -->
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-wrap gap-3 items-center justify-between border border-slate-200">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-3 h-3 bg-blue-500 rounded-full animate-pulse"></span>
+      <span class="text-slate-700 font-medium text-sm font-chinese">💡 貼心引導：點擊右側英文單字可聽「慢速發音」！支援線上直接輸入作答。</span>
+    </div>
+    <div class="flex gap-2">
+      <button onclick="toggleAnswers()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition shadow-sm flex items-center gap-1 font-chinese">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+        顯示 / 隱藏答案
+      </button>
+      <button onclick="clearAnswers()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-sm transition border border-slate-300 font-chinese">
+        重設清除
+      </button>
+      <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-sm transition shadow-sm flex items-center gap-1 font-chinese">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4" />
+        </svg>
+        列印學習單
+      </button>
+    </div>
+  </div>
+
+  <!-- A4 靜態列印主結構 -->
+  <div class="page-a4 flex flex-col justify-between">
+    
+    <!-- 頂部標頭與學生資料填寫區 -->
+    <div class="pb-1 border-b-2 border-slate-200">
+      <div class="flex justify-between items-end">
+        <h1 class="text-[24px] font-bold text-slate-800 tracking-wider font-chinese leading-none">“八下 L5” 中英文單字配對學習單</h1>
+        <div class="flex gap-6 text-[20px] font-bold text-slate-700 font-chinese leading-none">
+          <div class="border-b border-slate-400 w-32 pb-0.5">班級：</div>
+          <div class="border-b border-slate-400 w-36 pb-0.5">姓名：</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 學習引導語 -->
+    <div class="my-1.5 py-1 px-3 bg-slate-50 rounded border-l-4 border-slate-400">
+      <p class="text-[15px] font-medium text-slate-700 font-chinese leading-relaxed">
+        📋 <strong class="text-slate-900">作答說明與提醒：</strong>請將代號填入右側的括號中。
+      </p>
+    </div>
+
+    <!-- 八個配對群組大網格 (2 欄 x 4 列) -->
+    <div class="grid grid-cols-2 gap-x-4 gap-y-3 flex-grow">
+      
+      <!-- 第一組 -->
+      <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col h-[218px]">
+        <div class="bg-blue-100/50 px-3 py-1 border-b border-blue-200 flex justify-between items-center">
+          <span class="text-[15px] font-bold text-blue-900 font-chinese">◎ 第一組 (1-5 題)</span>
+        </div>
+        <div class="flex flex-grow">
+          <!-- 左側：中文選項 (Morandi 粉藍底) -->
+          <div class="w-[45%] bg-blue-50/40 p-2 flex flex-col justify-between border-r border-dashed border-slate-300 text-[14px] font-chinese text-slate-700">
+            <div class="leading-tight"><strong>(A)</strong> 煙霧警報器</div>
+            <div class="leading-tight"><strong>(B)</strong> 地震</div>
+            <div class="leading-tight"><strong>(C)</strong> 颱風</div>
+            <div class="leading-tight"><strong>(D)</strong> 遮蓋 / 封面</div>
+            <div class="leading-tight"><strong>(E)</strong> 蠟燭</div>
+          </div>
+          <!-- 右側：英文題目 (純白作答區) -->
+          <div class="w-[55%] bg-white p-2 flex flex-col justify-between text-[18px] font-english text-slate-800">
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 1.</span>
+              <span onclick="speakWord('earthquake')" class="cursor-pointer hover:text-blue-600 truncate">earthquake</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="D" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 2.</span>
+              <span onclick="speakWord('cover')" class="cursor-pointer hover:text-blue-600 truncate">cover</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="C" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 3.</span>
+              <span onclick="speakWord('typhoon')" class="cursor-pointer hover:text-blue-600 truncate">typhoon</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="E" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 4.</span>
+              <span onclick="speakWord('candle')" class="cursor-pointer hover:text-blue-600 truncate">candle</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 5.</span>
+              <span onclick="speakWord('smoke alarm')" class="cursor-pointer hover:text-blue-600 truncate text-[16px]">smoke alarm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第二組 -->
+      <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col h-[218px]">
+        <div class="bg-blue-100/50 px-3 py-1 border-b border-blue-200 flex justify-between items-center">
+          <span class="text-[15px] font-bold text-blue-900 font-chinese">◎ 第二組 (6-10 題)</span>
+        </div>
+        <div class="flex flex-grow">
+          <!-- 左側：中文選項 (Morandi 粉藍底) -->
+          <div class="w-[45%] bg-blue-50/40 p-2 flex flex-col justify-between border-r border-dashed border-slate-300 text-[14px] font-chinese text-slate-700">
+            <div class="leading-tight"><strong>(A)</strong> 舉起 / 增加</div>
+            <div class="leading-tight"><strong>(B)</strong> 推 / 按</div>
+            <div class="leading-tight"><strong>(C)</strong> 富有的 / 豐富</div>
+            <div class="leading-tight"><strong>(D)</strong> 電梯</div>
+            <div class="leading-tight"><strong>(E)</strong> 拉 / 抽出</div>
+          </div>
+          <!-- 右側：英文題目 (純白作答區) -->
+          <div class="w-[55%] bg-white p-2 flex flex-col justify-between text-[18px] font-english text-slate-800">
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="D" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 6.</span>
+              <span onclick="speakWord('elevator')" class="cursor-pointer hover:text-blue-600 truncate">elevator</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 7.</span>
+              <span onclick="speakWord('raise')" class="cursor-pointer hover:text-blue-600 truncate">raise</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="E" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 8.</span>
+              <span onclick="speakWord('pull')" class="cursor-pointer hover:text-blue-600 truncate">pull</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 9.</span>
+              <span onclick="speakWord('push')" class="cursor-pointer hover:text-blue-600 truncate">push</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="C" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 10.</span>
+              <span onclick="speakWord('rich')" class="cursor-pointer hover:text-blue-600 truncate">rich</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第三組 -->
+      <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col h-[218px]">
+        <div class="bg-blue-100/50 px-3 py-1 border-b border-blue-200 flex justify-between items-center">
+          <span class="text-[15px] font-bold text-blue-900 font-chinese">◎ 第三組 (11-15 題)</span>
+        </div>
+        <div class="flex flex-grow">
+          <!-- 左側：中文選項 (Morandi 粉藍底) -->
+          <div class="w-[45%] bg-blue-50/40 p-2 flex flex-col justify-between border-r border-dashed border-slate-300 text-[14px] font-chinese text-slate-700">
+            <div class="leading-tight"><strong>(A)</strong> 時刻</div>
+            <div class="leading-tight"><strong>(B)</strong> 深的</div>
+            <div class="leading-tight"><strong>(C)</strong> 在國外</div>
+            <div class="leading-tight"><strong>(D)</strong> 緊緊抓牢 / 堅持</div>
+            <div class="leading-tight"><strong>(E)</strong> 危險的</div>
+          </div>
+          <!-- 右側：英文題目 (純白作答區) -->
+          <div class="w-[55%] bg-white p-2 flex flex-col justify-between text-[18px] font-english text-slate-800">
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 11.</span>
+              <span onclick="speakWord('deep')" class="cursor-pointer hover:text-blue-600 truncate">deep</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="D" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 12.</span>
+              <span onclick="speakWord('hold on')" class="cursor-pointer hover:text-blue-600 truncate">hold on</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="C" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 13.</span>
+              <span onclick="speakWord('abroad')" class="cursor-pointer hover:text-blue-600 truncate">abroad</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="E" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 14.</span>
+              <span onclick="speakWord('dangerous')" class="cursor-pointer hover:text-blue-600 truncate text-[16px]">dangerous</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 15.</span>
+              <span onclick="speakWord('moment')" class="cursor-pointer hover:text-blue-600 truncate">moment</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第四組 -->
+      <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col h-[218px]">
+        <div class="bg-blue-100/50 px-3 py-1 border-b border-blue-200 flex justify-between items-center">
+          <span class="text-[15px] font-bold text-blue-900 font-chinese">◎ 第四組 (16-20 題)</span>
+        </div>
+        <div class="flex flex-grow">
+          <!-- 左側：中文選項 (Morandi 粉藍底) -->
+          <div class="w-[45%] bg-blue-50/40 p-2 flex flex-col justify-between border-r border-dashed border-slate-300 text-[14px] font-chinese text-slate-700">
+            <div class="leading-tight"><strong>(A)</strong> 嚇人的</div>
+            <div class="leading-tight"><strong>(B)</strong> 聽到</div>
+            <div class="leading-tight"><strong>(C)</strong> 割傷 / 切</div>
+            <div class="leading-tight"><strong>(D)</strong> 某人</div>
+            <div class="leading-tight"><strong>(E)</strong> 掉下</div>
+          </div>
+          <!-- 右側：英文題目 (純白作答區) -->
+          <div class="w-[55%] bg-white p-2 flex flex-col justify-between text-[18px] font-english text-slate-800">
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 16.</span>
+              <span onclick="speakWord('hear')" class="cursor-pointer hover:text-blue-600 truncate">hear</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="D" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 17.</span>
+              <span onclick="speakWord('someone')" class="cursor-pointer hover:text-blue-600 truncate">someone</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 18.</span>
+              <span onclick="speakWord('scary')" class="cursor-pointer hover:text-blue-600 truncate">scary</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="E" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 19.</span>
+              <span onclick="speakWord('fall off')" class="cursor-pointer hover:text-blue-600 truncate">fall off</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="C" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 20.</span>
+              <span onclick="speakWord('cut')" class="cursor-pointer hover:text-blue-600 truncate">cut</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第五組 -->
+      <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col h-[218px]">
+        <div class="bg-blue-100/50 px-3 py-1 border-b border-blue-200 flex justify-between items-center">
+          <span class="text-[15px] font-bold text-blue-900 font-chinese">◎ 第五組 (21-25 題)</span>
+        </div>
+        <div class="flex flex-grow">
+          <!-- 左側：中文選項 (Morandi 粉藍底) -->
+          <div class="w-[45%] bg-blue-50/40 p-2 flex flex-col justify-between border-r border-dashed border-slate-300 text-[14px] font-chinese text-slate-700">
+            <div class="leading-tight"><strong>(A)</strong> 主要的</div>
+            <div class="leading-tight"><strong>(B)</strong> 在任何時候 / 曾經</div>
+            <div class="leading-tight"><strong>(C)</strong> 沒有東西 / 沒有事</div>
+            <div class="leading-tight"><strong>(D)</strong> 場景</div>
+            <div class="leading-tight"><strong>(E)</strong> 真實生活中的</div>
+          </div>
+          <!-- 右側：英文題目 (純白作答區) -->
+          <div class="w-[55%] bg-white p-2 flex flex-col justify-between text-[18px] font-english text-slate-800">
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="C" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 21.</span>
+              <span onclick="speakWord('nothing')" class="cursor-pointer hover:text-blue-600 truncate">nothing</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="D" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 22.</span>
+              <span onclick="speakWord('scene')" class="cursor-pointer hover:text-blue-600 truncate">scene</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 23.</span>
+              <span onclick="speakWord('leading')" class="cursor-pointer hover:text-blue-600 truncate">leading</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="E" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 24.</span>
+              <span onclick="speakWord('real-life')" class="cursor-pointer hover:text-blue-600 truncate text-[16px]">real-life</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 25.</span>
+              <span onclick="speakWord('ever')" class="cursor-pointer hover:text-blue-600 truncate">ever</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第六組 -->
+      <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col h-[218px]">
+        <div class="bg-blue-100/50 px-3 py-1 border-b border-blue-200 flex justify-between items-center">
+          <span class="text-[15px] font-bold text-blue-900 font-chinese">◎ 第六組 (26-30 題)</span>
+        </div>
+        <div class="flex flex-grow">
+          <!-- 左側：中文選項 (Morandi 粉藍底) -->
+          <div class="w-[45%] bg-blue-50/40 p-2 flex flex-col justify-between border-r border-dashed border-slate-300 text-[14px] font-chinese text-slate-700">
+            <div class="leading-tight"><strong>(A)</strong> 陸地 / 降落</div>
+            <div class="leading-tight"><strong>(B)</strong> (燈、火) 熄滅</div>
+            <div class="leading-tight"><strong>(C)</strong> 成長 / 增加</div>
+            <div class="leading-tight"><strong>(D)</strong> 數個的</div>
+            <div class="leading-tight"><strong>(E)</strong> 教訓 / 一節課</div>
+          </div>
+          <!-- 右側：英文題目 (純白作答區) -->
+          <div class="w-[55%] bg-white p-2 flex flex-col justify-between text-[18px] font-english text-slate-800">
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 26.</span>
+              <span onclick="speakWord('go out')" class="cursor-pointer hover:text-blue-600 truncate">go out</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="E" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 27.</span>
+              <span onclick="speakWord('lesson')" class="cursor-pointer hover:text-blue-600 truncate">lesson</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 28.</span>
+              <span onclick="speakWord('land')" class="cursor-pointer hover:text-blue-600 truncate">land</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="D" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 29.</span>
+              <span onclick="speakWord('several')" class="cursor-pointer hover:text-blue-600 truncate">several</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="C" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 30.</span>
+              <span onclick="speakWord('grow')" class="cursor-pointer hover:text-blue-600 truncate">grow</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第七組 -->
+      <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col h-[218px]">
+        <div class="bg-blue-100/50 px-3 py-1 border-b border-blue-200 flex justify-between items-center">
+          <span class="text-[15px] font-bold text-blue-900 font-chinese">◎ 第七組 (31-35 題)</span>
+        </div>
+        <div class="flex flex-grow">
+          <!-- 左側：中文選項 (Morandi 粉藍底) -->
+          <div class="w-[45%] bg-blue-50/40 p-2 flex flex-col justify-between border-r border-dashed border-slate-300 text-[14px] font-chinese text-slate-700">
+            <div class="leading-tight"><strong>(A)</strong> 窗戶</div>
+            <div class="leading-tight"><strong>(B)</strong> 灰色的</div>
+            <div class="leading-tight"><strong>(C)</strong> 景象</div>
+            <div class="leading-tight"><strong>(D)</strong> 感到害怕的</div>
+            <div class="leading-tight"><strong>(E)</strong> 一打 (十二個)</div>
+          </div>
+          <!-- 右側：英文題目 (純白作答區) -->
+          <div class="w-[55%] bg-white p-2 flex flex-col justify-between text-[18px] font-english text-slate-800">
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 31.</span>
+              <span onclick="speakWord('gray')" class="cursor-pointer hover:text-blue-600 truncate">gray</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="E" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 32.</span>
+              <span onclick="speakWord('dozen')" class="cursor-pointer hover:text-blue-600 truncate">dozen</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="D" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 33.</span>
+              <span onclick="speakWord('scared')" class="cursor-pointer hover:text-blue-600 truncate">scared</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 34.</span>
+              <span onclick="speakWord('window')" class="cursor-pointer hover:text-blue-600 truncate">window</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="C" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 35.</span>
+              <span onclick="speakWord('sight')" class="cursor-pointer hover:text-blue-600 truncate">sight</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 第八組 -->
+      <div class="border border-blue-200 rounded-lg overflow-hidden flex flex-col h-[218px]">
+        <div class="bg-blue-100/50 px-3 py-1 border-b border-blue-200 flex justify-between items-center">
+          <span class="text-[15px] font-bold text-blue-900 font-chinese">◎ 第八組 (36-40 題)</span>
+        </div>
+        <div class="flex flex-grow">
+          <!-- 左側：中文選項 (Morandi 粉藍底) -->
+          <div class="w-[45%] bg-blue-50/40 p-2 flex flex-col justify-between border-r border-dashed border-slate-300 text-[14px] font-chinese text-slate-700">
+            <div class="leading-tight"><strong>(A)</strong> 餅乾</div>
+            <div class="leading-tight"><strong>(B)</strong> 驚訝 / 使驚訝</div>
+            <div class="leading-tight"><strong>(C)</strong> 公寓</div>
+            <div class="leading-tight"><strong>(D)</strong> 洪水 / 淹沒</div>
+            <div class="leading-tight"><strong>(E)</strong> 除了...之外</div>
+          </div>
+          <!-- 右側：英文題目 (純白作答區) -->
+          <div class="w-[55%] bg-white p-2 flex flex-col justify-between text-[18px] font-english text-slate-800">
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="B" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 36.</span>
+              <span onclick="speakWord('surprise')" class="cursor-pointer hover:text-blue-600 truncate text-[16px]">surprise</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="D" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 37.</span>
+              <span onclick="speakWord('flood')" class="cursor-pointer hover:text-blue-600 truncate">flood</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="C" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 38.</span>
+              <span onclick="speakWord('apartment')" class="cursor-pointer hover:text-blue-600 truncate text-[16px]">apartment</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="E" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 39.</span>
+              <span onclick="speakWord('except')" class="cursor-pointer hover:text-blue-600 truncate">except</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="shrink-0">(</span>
+              <input type="text" maxlength="1" data-answer="A" class="match-input w-6 h-6 text-center font-bold text-blue-600 border-b border-blue-400 focus:outline-none uppercase text-base">
+              <span class="shrink-0">) 40.</span>
+              <span onclick="speakWord('cookie')" class="cursor-pointer hover:text-blue-600 truncate">cookie</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 頁尾安全防溢位間距 -->
+    <div class="h-1"></div>
+
+  </div>
+
+  <!-- JavaScript 輔助作答與發音邏輯 -->
+  <script>
+    let showAnswersState = false;
+
+    // 清晰、慢速發音輔助功能 (特教專用放慢語速)
+    function speakWord(word) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85; // 專為特教設定：清晰、偏慢的語速
+        window.speechSynthesis.speak(utterance);
+      } else {
+        console.log("此瀏覽器不支援網頁語音發音。");
+      }
+    }
+
+    // 切換顯示答案與樣式
+    function toggleAnswers() {
+      showAnswersState = !showAnswersState;
+      const inputs = document.querySelectorAll('.match-input');
+      inputs.forEach(input => {
+        const correctAnswer = input.getAttribute('data-answer');
+        if (showAnswersState) {
+          input.value = correctAnswer;
+          input.classList.add('bg-blue-100', 'text-blue-800', 'border-blue-500');
+          input.classList.remove('text-blue-600');
+        } else {
+          input.value = '';
+          input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-500');
+          input.classList.add('text-blue-600');
+        }
+      });
+    }
+
+    // 清除並重設所有欄位
+    function clearAnswers() {
+      const inputs = document.querySelectorAll('.match-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-500');
+        input.classList.add('text-blue-600');
+      });
+      showAnswersState = false;
+    }
+
+    // 當輸入非大寫或非 A-E 時自動處理，並在輸入完畢後自動跳到下一個輸入框
+    const allInputs = Array.from(document.querySelectorAll('.match-input'));
+    allInputs.forEach((input, index) => {
+      input.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+        // 限制只能輸入 A 到 E，其餘字元清空
+        if (!/^[A-E]$/.test(this.value)) {
+          this.value = '';
+        } else {
+          // 輸入正確字母後自動跳轉至下一個輸入框 (優化特教體驗)
+          if (index < allInputs.length - 1) {
+            allInputs[index + 1].focus();
+          }
+        }
+      });
+      
+      // 支援退格鍵 Backspace 回到上一個輸入框
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && this.value === '') {
+          if (index > 0) {
+            allInputs[index - 1].focus();
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
