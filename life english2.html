@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>實用英文能力評估</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fdf8f1; /* 暖色系背景 */
+            color: #434a54;
+            scroll-behavior: smooth;
+        }
+
+        .logo-container {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(180, 160, 140, 0.1);
+            overflow: hidden;
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nav-btn {
+            transition: all 0.2s ease;
+            border: 1px solid #e9e0d5;
+            background-color: #ffffff;
+            color: #8c7e6d;
+        }
+
+        .nav-btn.active {
+            background-color: #8c7e6d;
+            color: white;
+            border-color: #8c7e6d;
+            transform: translateY(-1px);
+        }
+
+        .question-card {
+            background: white;
+            border: 1px solid #eee4d9;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .explanation-box {
+            border-left: 4px solid #d4a373;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .option-label {
+            border: 1px solid #f3ece4;
+            transition: all 0.2s ease;
+        }
+
+        /* 選中狀態樣式 (未提交時) */
+        .option-input:checked + .option-ui:not(.submitted-ui) {
+            border-color: #d4a373;
+            background-color: #fffaf5;
+        }
+        .option-input:checked + .option-ui:not(.submitted-ui) .option-text {
+            color: #d4a373;
+            font-weight: 600;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="pb-24">
+
+    <!-- Header Section -->
+    <header class="py-16 text-center">
+        <div class="container mx-auto px-4">
+            <div class="logo-container">
+                <img src="icon.png" alt="異想教室" class="logo-img" onerror="this.src='https://via.placeholder.com/80/fdf8f1/8c7e6d?text=Icon'">
+            </div>
+            <h1 class="text-3xl font-bold text-stone-800 tracking-tight">實用英文能力評估</h1>
+        </div>
+    </header>
+
+    <!-- Navigation Section -->
+    <div class="container mx-auto px-4 mb-12">
+        <div class="flex flex-wrap justify-center gap-2 no-scrollbar" id="nav-container">
+            <!-- JS 產生分頁按鈕 -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 max-w-3xl">
+        <div id="quiz-wrapper" class="space-y-8">
+            <!-- 題目內容由 JS 填充 -->
+        </div>
+
+        <!-- Submit Section -->
+        <div id="action-area" class="mt-20 text-center">
+            <button onclick="handlePreSubmit()" id="btn-submit" class="bg-stone-800 hover:bg-stone-900 text-stone-100 px-12 py-4 rounded-2xl font-medium text-lg transition-all shadow-lg active:scale-95">
+                送出測驗
+            </button>
+
+            <!-- Result Display -->
+            <div id="result-display" class="hidden">
+                <div class="bg-white border border-stone-200 p-12 rounded-[2rem] shadow-xl text-center">
+                    <p class="text-stone-400 font-medium mb-2">評估總結得分</p>
+                    <div class="text-7xl font-bold text-stone-800 mb-8" id="score-text">0 / 100</div>
+                    <p id="comment-text" class="text-stone-600 mb-10 max-w-sm mx-auto leading-relaxed"></p>
+                    <button onclick="location.reload()" class="text-stone-400 hover:text-stone-600 text-sm transition underline underline-offset-8">
+                        重新開始測驗
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Sharing -->
+    <footer class="mt-32 py-16 border-t border-stone-200/50 text-center">
+        <div class="container mx-auto px-4">
+            <p class="text-stone-400 text-[10px] font-bold uppercase tracking-[0.3em] mb-8">Share This Evaluation</p>
+            <div class="inline-block p-5 bg-white border border-stone-100 rounded-3xl shadow-sm">
+                <img id="qr-image" src="" alt="QR Code" class="w-32 h-32">
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const questionBank = [
+            // 第一部分：公共場所與安全標示 (1-20)
+            { id: 1, q: "小華在捷運站看到標示寫著「EXIT」。請問這代表什麼意思？", options: ["廁所", "入口", "出口", "服務台"], ans: 2, explain: "EXIT 即為「出口」的意思。" },
+            { id: 2, q: "小明在門口看到「PUSH」的牌子。請問他應該怎麼做才能把門打開？", options: ["用手推", "用手拉", "用腳踢", "用身體靠"], ans: 0, explain: "PUSH 是指「推」。" },
+            { id: 3, q: "在百貨公司看到電梯旁的「UP」和「DOWN」按鈕。「DOWN」是指電梯要往哪裡去？", options: ["往上", "往下", "往左", "往右"], ans: 1, explain: "DOWN 代表「往下」。" },
+            { id: 4, q: "在馬路上看到一個紅色的八角形標誌寫著「STOP」。請問這表示什麼？", options: ["可以快走", "禁止通行", "停車或停止", "小心地滑"], ans: 2, explain: "STOP 指的是「停止」或「停車」。" },
+            { id: 5, q: "在咖啡店看到告示牌寫著「NO SMOKING」。這是提醒大家什麼？", options: ["可以吸菸", "禁止吸菸", "請保持安靜", "廁所在這裡"], ans: 1, explain: "NO SMOKING 意思為「禁止吸菸」。" },
+            { id: 6, q: "商店門口掛著牌子寫「OPEN」。這是指這間店？", options: ["正在休息", "正在營業", "準備打烊", "不能進入"], ans: 1, explain: "OPEN 代表店鋪「正在營業」。" },
+            { id: 7, q: "飯店房間的門上寫著「DO NOT DISTURB」。這是告訴服務人員？", options: ["請送餐點", "請勿打擾", "請進來打掃", "請幫忙開門"], ans: 1, explain: "DO NOT DISTURB 意指「請勿打擾」。" },
+            { id: 8, q: "在公共廁所，看到標示「GENTLEMEN」。這是指哪個性別的廁所？", options: ["女士", "男士", "寵物", "小孩"], ans: 1, explain: "GENTLEMEN 指的是「男士」。" },
+            { id: 9, q: "在火車站想要找「TICKET」櫃檯。請問 TICKET 是什麼意思？", options: ["行李", "座位", "車票/門票", "廣播"], ans: 2, explain: "TICKET 是指「車票」或「門票」。" },
+            { id: 10, q: "在路邊看到「DANGER」的標示。這是提醒我們？", options: ["可以拍照", "有免費禮物", "附近很危險", "路口有警察"], ans: 2, explain: "DANGER 代表「危險」。" },
+            { id: 11, q: "小華要進入門口時，看到「PULL」的牌子。他應該怎麼做？", options: ["用手推", "用手拉", "用腳踢", "用身體靠"], ans: 1, explain: "PULL 的意思是「拉」。" },
+            { id: 12, q: "看到標示寫著「ENTRANCE」。這是指哪裡？", options: ["出口", "入口", "洗手間", "停車場"], ans: 1, explain: "ENTRANCE 代表「入口」。" },
+            { id: 13, q: "在百貨公司看到電梯旁的「UP」按鈕。「UP」是指電梯要往哪裡去？", options: ["往上", "往下", "往左", "往右"], ans: 0, explain: "UP 代表「往上」。" },
+            { id: 14, q: "在商場走道看到黃色的立牌寫著「WET FLOOR」。這是什麼意思？", options: ["可以跳舞", "小心地滑/地板濕滑", "正在清洗", "地板很燙"], ans: 1, explain: "WET FLOOR 意指「地板濕滑」。" },
+            { id: 15, q: "在圖書館或捷運車廂內看到「NO EATING OR DRINKING」。這是提醒我們？", options: ["可以大聲說話", "禁止飲食", "可以打電話", "請勿奔跑"], ans: 1, explain: "NO EATING OR DRINKING 意指「禁止飲食」。" },
+            { id: 16, q: "在醫院或學校看到「FIRE EXIT」。這是指什麼？", options: ["廁所", "員工入口", "緊急出口", "停車場"], ans: 2, explain: "FIRE EXIT 意指「緊急出口/逃生口」。" },
+            { id: 17, q: "在公共廁所，看到標示「LADIES」。這是指哪個性別的廁所？", options: ["女士", "男士", "寵物", "小孩"], ans: 0, explain: "LADIES 指的是「女士」。" },
+            { id: 18, q: "在路邊看到「BUS STOP」的標示。這是指什麼？", options: ["計程車招呼站", "公車站", "火車站", "捷運站"], ans: 1, explain: "BUS STOP 為「公車站」。" },
+            { id: 19, q: "在藥品或危險物品上看到「CAUTION」的字樣。請問這是什麼意思？", options: ["可以隨意碰觸", "請小心/警告", "有特價", "免費"], ans: 1, explain: "CAUTION 代表「小心/警告」。" },
+            { id: 20, q: "在餐廳桌上看到「RESERVED」的牌子。這是指？", options: ["這個位子沒人用", "這個位子已預訂", "這裡是廚房", "請自取餐具"], ans: 1, explain: "RESERVED 意指「已預訂」。" },
+
+            // 第二部分：生活與服務詞彙 (21-40)
+            { id: 21, q: "想找服務台詢問，他應該找寫著「INFO」的地方。請問 INFO 是指？", options: ["廁所", "資訊/服務", "停車場", "提款機"], ans: 1, explain: "INFO 是 Information 的縮寫，代表「資訊/服務」。" },
+            { id: 22, q: "喝飲料時，看到杯子外面寫著「HOT」。這是說裡面的飲料是？", options: ["冰的", "熱的", "甜的", "苦的"], ans: 1, explain: "HOT 意為「熱的」。" },
+            { id: 23, q: "小美在超商看到飲料包裝上寫著「MILK」。請問這是什麼？", options: ["果汁", "牛奶", "汽水", "水"], ans: 1, explain: "MILK 意為「牛奶」。" },
+            { id: 24, q: "小芬看到廣告單寫著「FREE」。請問這是指？", options: ["很貴", "免費", "特價", "快壞了"], ans: 1, explain: "FREE 意為「免費」。" },
+            { id: 25, q: "小林買東西結帳時，店員問他要不要「BAG」。請問 BAG 是什麼？", options: ["發票", "錢包", "塑膠袋/袋子", "零錢"], ans: 2, explain: "BAG 意為「袋子」。" },
+            { id: 26, q: "在藥局看到藥品說明有「WATER」。這是指要配什麼服用？", options: ["果汁", "咖啡", "牛奶", "水"], ans: 3, explain: "WATER 意為「水」。" },
+            { id: 27, q: "在菜單上看到「RICE」。請問這是指什麼食物？", options: ["麵包", "麵條", "米飯", "肉類"], ans: 2, explain: "RICE 意為「米飯」。" },
+            { id: 28, q: "在機場或捷運站找洗手間，應該找「RESTROOM」或「TOILET」。請問這是指？", options: ["餐廳", "休息室", "洗手間", "售票處"], ans: 2, explain: "RESTROOM/TOILET 均指「洗手間」。" },
+            { id: 29, q: "結帳時，如果看到價錢牌寫著「SALE」，通常是指？", options: ["漲價", "打折/特價", "剛賣完", "請勿購買"], ans: 1, explain: "SALE 意為「特價/拍賣」。" },
+            { id: 30, q: "在旅館的緊急電話上看到「POLICE」。請問這是指要打給誰？", options: ["醫生", "警察", "消防員", "計程車"], ans: 1, explain: "POLICE 意為「警察」。" },
+            { id: 31, q: "買飲料時，如果要求「COLD」的，這是指要？", options: ["熱的", "常溫的", "冰的/冷的", "甜的"], ans: 2, explain: "COLD 意為「冰的/冷的」。" },
+            { id: 32, q: "餐廳提供的「SODA」通常是指？", options: ["果汁", "牛奶", "白開水", "汽水/蘇打水"], ans: 3, explain: "SODA 意為「汽水/蘇打水」。" },
+            { id: 33, q: "菜單上的「MEAT」是指什麼？", options: ["蔬菜", "水果", "肉類", "甜點"], ans: 2, explain: "MEAT 意為「肉類」。" },
+            { id: 34, q: "喝咖啡時想要加「SUGAR」。請問這是指要加什麼？", options: ["水", "牛奶", "糖", "鹽"], ans: 2, explain: "SUGAR 意為「糖」。" },
+            { id: 35, q: "煮飯時需要「SALT」。請問這是什麼調味料？", options: ["糖", "鹽", "醋", "油"], ans: 1, explain: "SALT 意為「鹽」。" },
+            { id: 36, q: "在玩具店裡，主要販售的商品是「TOY」。請問這是？", options: ["衣服", "玩具", "食物", "鞋子"], ans: 1, explain: "TOY 意為「玩具」。" },
+            { id: 37, q: "買東西時，我們想知道「PRICE」。這是指什麼？", options: ["數量", "重量", "價格", "尺寸"], ans: 2, explain: "PRICE 意為「價格」。" },
+            { id: 38, q: "看到一個商品標示「NEW」。這是說這個商品是？", options: ["舊的", "新的", "特價的", "壞掉的"], ans: 1, explain: "NEW 意為「新的」。" },
+            { id: 39, q: "看到一個商品標示「OLD」。這是說這個商品是？", options: ["舊的", "新的", "特價的", "剛生產的"], ans: 0, explain: "OLD 意為「舊的」。" },
+            { id: 40, q: "在餐廳裡，點餐時需要看「MENU」。請問這是什麼？", options: ["帳單", "菜單", "地圖", "報紙"], ans: 1, explain: "MENU 意為「菜單」。" },
+
+            // 第三部分：基礎電子與數位應用 (41-60)
+            { id: 41, q: "電視遙控器上的「POWER」鈕通常是做什麼的？", options: ["換頻道", "調整音量", "電源開關", "設定時間"], ans: 2, explain: "POWER 代表「電源」。" },
+            { id: 42, q: "在電器上看到「ON」這個字，通常是表示電器處於什麼狀態？", options: ["已開啟/啟動", "已關閉", "已暫停", "沒電了"], ans: 0, explain: "ON 代表「開啟」。" },
+            { id: 43, q: "在手機App裡，點擊「OK」鈕通常是表示什麼？", options: ["返回", "取消", "確認/完成", "開始"], ans: 2, explain: "OK 代表「確認」。" },
+            { id: 44, q: "使用手機App時，想要回到上一個畫面，可以找哪個英文單字？", options: ["Start", "Back", "Exit", "Play"], ans: 1, explain: "BACK 代表「返回/後退」。" },
+            { id: 45, q: "在電腦或平板上看到「SAVE」的按鈕。這是要你做什麼？", options: ["刪除", "儲存", "開啟", "列印"], ans: 1, explain: "SAVE 代表「儲存」。" },
+            { id: 46, q: "玩遊戲時，要開始遊戲通常會點擊哪個按鈕？", options: ["Cancel", "End", "Start", "Stop"], ans: 2, explain: "START 代表「開始」。" },
+            { id: 47, q: "在電子產品上看到「OFF」這個字，通常是表示電器處於什麼狀態？", options: ["已開啟", "已關閉/停止", "已連線", "已充電"], ans: 1, explain: "OFF 代表「關閉」。" },
+            { id: 48, q: "在網頁或App上看到「LOG IN」。這是指要進行什麼操作？", options: ["登出", "註冊", "登入", "取消"], ans: 2, explain: "LOG IN 代表「登入」。" },
+            { id: 49, q: "在自動販賣機上，點擊「CANCEL」鈕通常是表示？", options: ["開始投幣", "購買商品", "退出或取消交易", "拿取商品"], ans: 2, explain: "CANCEL 代表「取消」。" },
+            { id: 50, q: "在相機或手機裡，想要看以前拍的照片，要點選哪個單字？", options: ["Record", "Album/相簿", "Delete", "Zoom"], ans: 1, explain: "ALBUM 代表「相簿」。" },
+            { id: 51, q: "調整電視聲音大小時，會使用到「VOLUME」按鈕。這是指？", options: ["調整頻道", "調整音量", "調整亮度", "調整顏色"], ans: 1, explain: "VOLUME 代表「音量」。" },
+            { id: 52, q: "手機沒電時需要「CHARGE」。請問這是什麼意思？", options: ["關機", "充電", "換電池", "格式化"], ans: 1, explain: "CHARGE 代表「充電」。" },
+            { id: 53, q: "小明想把剛拍好的「PHOTO」傳給朋友。請問 PHOTO 是什麼？", options: ["音樂", "文字", "照片", "影片"], ans: 2, explain: "PHOTO 代表「照片」。" },
+            { id: 54, q: "想要打電話給朋友，應該點選「CALL」這個按鈕。這是什麼意思？", options: ["簡訊", "打電話", "拍照", "看影片"], ans: 1, explain: "CALL 代表「撥打電話」。" },
+            { id: 55, q: "收到朋友傳來的「MESSAGE」。請問這是什麼？", options: ["簡訊/訊息", "禮物", "食物", "地址"], ans: 0, explain: "MESSAGE 代表「訊息/簡訊」。" },
+            { id: 56, q: "不喜歡某張照片想將它「DELETE」。請問 DELETE 是什麼？", options: ["儲存", "分享", "刪除", "放大"], ans: 2, explain: "DELETE 代表「刪除」。" },
+            { id: 57, q: "在網站上看到檔案要「DOWNLOAD」。這是什麼意思？", options: ["上傳", "下載", "購買", "分享"], ans: 1, explain: "DOWNLOAD 代表「下載」。" },
+            { id: 58, q: "提款機上要求輸入「CODE」。這是指什麼？", options: ["地址", "密碼/代碼", "電話", "商品名稱"], ans: 1, explain: "CODE 代表「代碼/密碼」。" },
+            { id: 59, q: "想在網路上找資料時，需要點選「SEARCH」。這是什麼意思？", options: ["登入", "列印", "搜尋", "關閉"], ans: 2, explain: "SEARCH 代表「搜尋」。" },
+            { id: 60, q: "在視訊或通話中，點擊「MUTE」按鈕的功能是？", options: ["開始說話", "將麥克風靜音", "開啟鏡頭", "調整亮度"], ans: 1, explain: "MUTE 代表「靜音」。" },
+
+            // 第四部分：情境對話與基本禮儀 (61-80)
+            { id: 61, q: "早上遇到老師，A: Good morning! 請問 B 應該如何回應最恰當？", options: ["Thank you.", "Good morning!", "I'm sorry.", "Bye bye."], ans: 1, explain: "早安的回應同樣是早安。" },
+            { id: 62, q: "服務員給你餐點時說：「Thank you!」請問你應該怎麼回答？", options: ["Please.", "Hello.", "You’re welcome.", "Stop!"], ans: 2, explain: "面對謝謝，回應「不客氣」(You’re welcome)。" },
+            { id: 63, q: "朋友離開時，對你說「See you!」你應該回應：", options: ["Yes.", "No.", "See you.", "Hot."], ans: 2, explain: "「再見」的回應同樣是「再見」。" },
+            { id: 64, q: "老師問你：「Are you ready?」（你準備好了嗎？）如果你準備好了，應該回答：", options: ["NO.", "YES.", "MAYBE.", "THANK YOU."], ans: 1, explain: "肯定回答使用 YES。" },
+            { id: 65, q: "老師說「Stand up!」時，你應該怎麼做？", options: ["坐下來", "站起來", "走出去", "跑回家"], ans: 1, explain: "STAND UP 是「站起來」。" },
+            { id: 66, q: "老師說「Sit down!」時，你應該怎麼做？", options: ["坐下來", "站起來", "走出去", "跑回家"], ans: 0, explain: "SIT DOWN 是「坐下來」。" },
+            { id: 67, q: "當別人向你說「I am sorry.」（我很抱歉。）你應該回答？", options: ["I am fine.", "Thank you.", "That’s okay.", "You are welcome."], ans: 2, explain: "面對道歉，回應「沒關係」(That’s okay)。" },
+            { id: 68, q: "你想要禮貌地請求別人給你某樣東西，應該說：", options: ["Give me!", "Please, give me.", "Thank you.", "Hello."], ans: 1, explain: "加入 PLEASE 更有禮貌。" },
+            { id: 69, q: "有人問你「What is your name?」他想知道什麼？", options: ["你的年齡", "你的名字", "你的職業", "你住在哪裡"], ans: 1, explain: "NAME 代表「名字」。" },
+            { id: 70, q: "陌生人想要進入教室，你應該禮貌地說：「Come in!」意思是？", options: ["請離開", "請進來", "請安靜", "請等待"], ans: 1, explain: "COME IN 是「請進」。" },
+            { id: 71, q: "晚上睡覺前對家人說「Good night!」。這是什麼意思？", options: ["早安", "午安", "晚安", "再見"], ans: 2, explain: "GOOD NIGHT 是「晚安」。" },
+            { id: 72, q: "遇到朋友時，可以說「Hello!」這是什麼意思？", options: ["再見", "對不起", "嗨/你好", "謝謝"], ans: 2, explain: "HELLO 是招呼語「你好」。" },
+            { id: 73, q: "離開學校時，可以對老師說「Goodbye.」這是什麼意思？", options: ["你好", "再見", "對不起", "請進"], ans: 1, explain: "GOODBYE 是「再見」。" },
+            { id: 74, q: "老師問你「How are you?」（你好嗎？）如果你很好，應該回答？", options: ["I am sorry.", "I'm fine.", "Thank you.", "Sit down."], ans: 1, explain: "問候的回應通常是 I'M FINE。" },
+            { id: 75, q: "老師說「Close the door.」你應該怎麼做？", options: ["開門", "關門", "開窗", "關窗"], ans: 1, explain: "CLOSE 代表關閉，DOOR 是門。" },
+            { id: 76, q: "老師說「Open the window.」你應該怎麼做？", options: ["開門", "關門", "開窗", "關窗"], ans: 2, explain: "OPEN 代表開啟，WINDOW 是窗戶。" },
+            { id: 77, q: "當你把東西交給別人時，可以說「Here you are.」意思是？", options: ["在這裡等你", "給你", "請坐下", "謝謝你"], ans: 1, explain: "HERE YOU ARE 是交給對方東西時的慣用語，意為「給你」。" },
+            { id: 78, q: "聽到廣播說「It's time for lunch.」這是提醒大家？", options: ["上課了", "午餐時間到了", "下課了", "回家了"], ans: 1, explain: "LUNCH 代表「午餐」。" },
+            { id: 79, q: "老師問「What color?」（什麼顏色？）你看到藍色，應該回答：", options: ["It's an apple.", "Blue.", "Big.", "Fast."], ans: 1, explain: "BLUE 代表「藍色」。" },
+            { id: 80, q: "老師說「Listen!」時，你應該怎麼做？", options: ["大聲說話", "仔細聽", "跳舞", "看書"], ans: 1, explain: "LISTEN 是「聽」。" },
+
+            // 第五部分：基礎字母認知 (81-100)
+            { id: 81, q: "請問下列哪一個是「大寫」字母？", options: ["p", "z", "T", "k"], ans: 2, explain: "T 是大寫。" },
+            { id: 82, q: "請問下列哪一個是「小寫」字母？", options: ["D", "Y", "j", "P"], ans: 2, explain: "j 是小寫。" },
+            { id: 83, q: "請問下列哪一組英文字母是按照正確順序排列的？", options: ["C, B, A", "B, A, C", "A, B, C", "D, C, B"], ans: 2, explain: "字母順序為 ABC。" },
+            { id: 84, q: "想要在字典裡查「Dog」（狗）這個字，應該由下列哪一個字母查起才正確？", options: ["O", "G", "D", "E"], ans: 2, explain: "單字首字母是 D。" },
+            { id: 85, q: "請問下列哪一個字母排在字母「J」的後面？", options: ["H", "I", "K", "L"], ans: 2, explain: "...I, J, K..." },
+            { id: 86, q: "請問下列哪一個字母排在字母「E」的前面？", options: ["F", "D", "G", "H"], ans: 1, explain: "...D, E, F..." },
+            { id: 87, q: "請問下列哪個單字是由四個字母組成的？", options: ["Cat", "Elephant", "Lion", "Book"], ans: 3, explain: "Book (B-O-O-K) 共四個字母。" },
+            { id: 88, q: "請問下列哪個數字的英文是「FOUR」？", options: ["3", "4", "5", "6"], ans: 1, explain: "FOUR 代表數字 4。" },
+            { id: 89, q: "請問下列哪個數字的英文是「EIGHT」？", options: ["7", "8", "9", "10"], ans: 1, explain: "EIGHT 代表數字 8。" },
+            { id: 90, q: "請問下列哪個字母的唸法是「歐」？", options: ["A", "E", "I", "O"], ans: 3, explain: "O 的發音接近「歐」。" },
+            { id: 91, q: "請問下列哪一個是「大寫」字母？", options: ["b", "d", "Q", "f"], ans: 2, explain: "Q 是大寫。" },
+            { id: 92, q: "請問下列哪一個是「小寫」字母？", options: ["K", "M", "h", "N"], ans: 2, explain: "h 是小寫。" },
+            { id: 93, q: "請問下列哪一組英文字母是按照正確順序排列的？", options: ["X, Y, Z", "Y, X, Z", "Z, Y, X", "X, Z, Y"], ans: 0, explain: "字母順序為 XYZ。" },
+            { id: 94, q: "想要查「Sun」（太陽）這個字，應該由下列哪一個字母查起才正確？", options: ["U", "N", "S", "M"], ans: 2, explain: "單字首字母是 S。" },
+            { id: 95, q: "請問下列哪一個字母排在字母「R」的後面？", options: ["P", "Q", "S", "T"], ans: 2, explain: "...Q, R, S..." },
+            { id: 96, q: "請問下列哪一個字母排在字母「V」的前面？", options: ["X", "W", "U", "T"], ans: 2, explain: "...U, V, W..." },
+            { id: 97, q: "請問下列哪個單字是由三個字母組成的？", options: ["Door", "Window", "Pen", "Pencil"], ans: 2, explain: "Pen (P-E-N) 共三個字母。" },
+            { id: 98, q: "請問下列哪個數字的英文是「TWO」？", options: ["1", "2", "3", "4"], ans: 1, explain: "TWO 代表數字 2。" },
+            { id: 99, q: "請問下列哪個數字的英文是「NINE」？", options: ["8", "9", "10", "11"], ans: 1, explain: "NINE 代表數字 9。" },
+            { id: 100, q: "請問下列哪個字母的唸法是「艾」？", options: ["A", "B", "C", "I"], ans: 3, explain: "I 的發音接近「艾」。" }
+        ];
+
+        let currentPage = 1;
+        const perPage = 10;
+        let answers = {};
+        let submitted = false;
+
+        function setup() {
+            createNav();
+            render(1);
+            generateQR();
+        }
+
+        function createNav() {
+            const container = document.getElementById('nav-container');
+            container.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const start = (i - 1) * 10 + 1;
+                const end = i * 10;
+                const btn = document.createElement('button');
+                btn.className = `nav-btn px-5 py-2.5 rounded-xl text-sm font-medium`;
+                btn.id = `nav-${i}`;
+                btn.innerText = `${start}-${end}`;
+                btn.onclick = () => render(i);
+                container.appendChild(btn);
+            }
+        }
+
+        function render(page) {
+            currentPage = page;
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.getElementById(`nav-${page}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const wrapper = document.getElementById('quiz-wrapper');
+            wrapper.innerHTML = '';
+
+            const start = (page - 1) * perPage;
+            const currentItems = questionBank.slice(start, start + perPage);
+
+            currentItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `question-card p-10 rounded-3xl border ${submitted ? 'submitted' : ''}`;
+                
+                let opts = '';
+                const labels = ["A", "B", "C", "D"];
+                item.options.forEach((text, idx) => {
+                    const isPicked = answers[item.id] === idx;
+                    let style = "border-stone-50";
+                    let textStyle = "text-stone-600";
+                    let iconStyle = "text-stone-300";
+                    
+                    if (submitted) {
+                        if (idx === item.ans) {
+                            style = "bg-emerald-50 border-emerald-500 text-emerald-900 font-bold submitted-ui";
+                            textStyle = "text-emerald-900";
+                            iconStyle = "text-emerald-500";
+                        } else if (isPicked) {
+                            style = "bg-rose-50 border-rose-400 text-rose-900 submitted-ui";
+                            textStyle = "text-rose-900";
+                            iconStyle = "text-rose-400";
+                        } else {
+                            style = "opacity-40 grayscale border-transparent submitted-ui";
+                        }
+                    }
+
+                    opts += `
+                        <label class="option-label block mb-3 cursor-pointer ${submitted ? 'disabled' : ''}">
+                            <input type="radio" name="q${item.id}" value="${idx}" 
+                                ${isPicked ? 'checked' : ''} 
+                                ${submitted ? 'disabled' : ''}
+                                onchange="record(${item.id}, ${idx})"
+                                class="option-input hidden">
+                            <div class="option-ui flex items-center p-4 border rounded-2xl transition-all ${style}">
+                                <span class="text-xs font-black w-8 ${iconStyle} uppercase">${labels[idx]}</span>
+                                <span class="option-text text-[15px] flex-1 ${textStyle}">${text}</span>
+                            </div>
+                        </label>
+                    `;
+                });
+
+                // 強制控制詳解區塊的顯示 (不依賴 CSS 選擇器)
+                const explanationDisplay = submitted ? 'block' : 'none';
+
+                card.innerHTML = `
+                    <h3 class="text-xl font-medium text-stone-800 mb-10 leading-relaxed">${item.id}. ${item.q}</h3>
+                    <div class="space-y-1">${opts}</div>
+                    <div class="explanation-box mt-10 p-8 bg-stone-50 rounded-2xl text-sm" style="display: ${explanationDisplay}">
+                        <p class="text-stone-400 font-black mb-3 tracking-widest uppercase text-[10px]">Feedback & Analysis</p>
+                        <p class="text-stone-600 leading-loose">${item.explain}</p>
+                    </div>
+                `;
+                wrapper.appendChild(card);
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function record(id, val) {
+            answers[id] = val;
+        }
+
+        function handlePreSubmit() {
+            const count = Object.keys(answers).length;
+            if (count < 100) {
+                if (!confirm(`尚有 ${100 - count} 題未作答，確定要送出評估嗎？`)) return;
+            }
+            process();
+        }
+
+        function process() {
+            submitted = true;
+            let score = 0;
+            questionBank.forEach(q => {
+                if (answers[q.id] === q.ans) score++;
+            });
+
+            document.getElementById('btn-submit').classList.add('hidden');
+            document.getElementById('result-display').classList.remove('hidden');
+            document.getElementById('score-text').innerText = `${score} / 100`;
+
+            let msg = "已完成評測。建議查閱每一頁的正確答案與詳細解析。";
+            if (score >= 90) msg = "卓越！您的基礎生活英文掌握得非常出色。" + msg;
+            else if (score >= 70) msg = "表現良好。請查閱錯題解析，持續精進。" + msg;
+            else if (score >= 60) msg = "恭喜及格！建議多練習生活中常見的英文標示。" + msg;
+            else msg = "還有進步空間。請仔細閱讀解析並反覆挑戰。" + msg;
+            
+            document.getElementById('comment-text').innerText = msg;
+
+            render(1);
+            document.getElementById('result-display').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateQR() {
+            const url = window.location.href;
+            document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}&color=434a54`;
+        }
+
+        document.addEventListener('DOMContentLoaded', setup);
+    </script>
+</body>
+</html>
