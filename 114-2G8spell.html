@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>七下 英文科講義 單字拼寫卷 (A4 完美對照版)</title>
-  <!-- Tailwind CSS CDN -->
+  <title>八下 英文科講義 單字拼寫卷 (A4 完美對照版)</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -16,7 +14,7 @@
     .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
     .font-english { font-family: 'Lexend', sans-serif; }
     
-    /* 嚴格 A4 滿版尺寸 (與聽力測驗完全相同) */
+    /* 嚴格 A4 滿版尺寸 */
     .page-a4 {
       width: 210mm;
       height: 297mm;
@@ -43,7 +41,6 @@
       background-color: #fef2f2;
     }
 
-    /* 網頁上呈現極淡底線，列印時會被深色格線取代 */
     .row-border-style {
       border-bottom: 1px solid #e2e8f0;
     }
@@ -72,16 +69,15 @@
       }
       .print-page:last-child { page-break-after: avoid; }
 
-      /* 列印時強制啟動穩定的深色 Slate-700 下書寫格線 */
+      /* 列印時強制啟動深色格線 */
       .row-border-style {
-        border-bottom: 2px solid #334155 !important;
+        border-bottom: 1px solid #334155 !important;
       }
     }
   </style>
 </head>
 <body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
 
-  <!-- 上方功能控制列 -->
   <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
     <div class="flex flex-wrap gap-2 items-center justify-between">
       <div class="flex items-center gap-2">
@@ -95,18 +91,14 @@
         <button onclick="printAllLessons()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印 (6頁)</button>
       </div>
     </div>
-    <!-- 課次切換橫列 -->
     <div class="grid grid-cols-6 gap-1.5" id="lesson-selectors"></div>
   </div>
 
-  <!-- A4 紙本主體容器 -->
   <div class="page-a4">
-    <!-- 標頭與自訂考卷進度區 (與聽力測驗完全相同) -->
     <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
       <div class="flex justify-between items-end">
-        <h1 class="title-large text-slate-800 tracking-wider font-chinese" id="main-title">七下 L1 英文科講義 單字拼寫卷</h1>
+        <h1 class="title-large text-slate-800 tracking-wider font-chinese" id="main-title">八下 L1 英文科講義 單字拼寫卷</h1>
         
-        <!-- 固寬不偏移姓名欄 (對照聽力測驗精準空格與字體) -->
         <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
           <div class="flex items-end">
             <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
@@ -118,7 +110,6 @@
           </div>
         </div>
       </div>
-      <!-- 頂部自訂教學欄位規範 -->
       <div class="mt-2 flex flex-col gap-1 bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0 text-[14px] font-bold text-slate-700 font-chinese">
         <div class="flex items-center flex-wrap gap-x-6">
           <span>◎ 生字 (每個字 2 分，每次考 <span class="border-b-2 border-slate-700 w-16 inline-block text-center h-5"></span> 個單字)</span>
@@ -127,167 +118,170 @@
       </div>
     </div>
 
-    <!-- 2 欄 x 2 列 = 4大組網格 (與聽力卷版面 gap-y-4 完全相同) -->
     <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups-container"></div>
     <div class="h-1 shrink-0"></div>
   </div>
 
-  <!-- 全部列印專用隱藏容器 -->
   <div id="print-all-container"></div>
 
   <script>
     const database = {
       "L1": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "sport", ch: "運動" }, { eng: "team", ch: "隊；組" }, { eng: "practice", ch: "練習" },
-          { eng: "swim", ch: "游泳" }, { eng: "player", ch: "選手；球員" }, { eng: "join", ch: "參加" },
-          { eng: "put one’s all", ch: "進全力" }, { eng: "into", ch: "到…裡面" }
+          { eng: "dress", ch: "洋裝" }, { eng: "on sale", ch: "特價" }, { eng: "shirt", ch: "襯衫" },
+          { eng: "shorts", ch: "短褲" }, { eng: "jeans", ch: "牛仔褲" }, { eng: "sweater", ch: "毛衣" },
+          { eng: "jacket", ch: "夾克" }, { eng: "skirt", ch: "裙子" }, { eng: "ring", ch: "戒指" },
+          { eng: "sock", ch: "襪子" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "eye", ch: "眼睛" }, { eng: "hair", ch: "頭髮" }, { eng: "nose", ch: "鼻子" },
-          { eng: "leg", ch: "腿" }, { eng: "ear", ch: "耳朵" }, { eng: "mouth", ch: "嘴巴" },
-          { eng: "lip", ch: "嘴唇" }, { eng: "arm", ch: "手臂" }, { eng: "body", ch: "身體" },
-          { eng: "height", ch: "身高；高度" }, { eng: "centimeter", ch: "公分" }
+          { eng: "cap", ch: "（有帽舌的）帽子" }, { eng: "tie", ch: "領帶" }, { eng: "belt", ch: "腰帶" },
+          { eng: "pants", ch: "長褲" }, { eng: "wallet", ch: "錢包" }, { eng: "a pair of", ch: "一件（褲子）；一雙（鞋）" },
+          { eng: "glove", ch: "手套" }, { eng: "try on", ch: "試穿" }, { eng: "take / took off", ch: "脫下" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "guitar", ch: "吉他" }, { eng: "piano", ch: "鋼琴" }, { eng: "fly a kite", ch: "放風箏" },
-          { eng: "paint", ch: "畫圖；油漆" }, { eng: "make a cake", ch: "做蛋糕" }, { eng: "large", ch: "大的" },
-          { eng: "thick", ch: "厚的" }, { eng: "strong", ch: "強壯的" }
+          { eng: "be full of", ch: "充滿" }, { eng: "fashionable", ch: "流行的；時尚的" }, { eng: "as… as…", ch: "如同……一樣地……" },
+          { eng: "than", ch: "比；比較" }, { eng: "already", ch: "已經" }, { eng: "fashion", ch: "流行；時尚" },
+          { eng: "medium", ch: "中等尺寸；中等的" }, { eng: "fitting room", ch: "試衣間" }, { eng: "agree", ch: "同意" },
+          { eng: "comfortable", ch: "舒服的" }, { eng: "light", ch: "輕薄的" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "like", ch: "喜歡；像" }, { eng: "much", ch: "多（的）" }, { eng: "every", ch: "每一" },
-          { eng: "then", ch: "那麼" }, { eng: "know", ch: "知道；認識" }, { eng: "hundred", ch: "百" },
-          { eng: "the USA", ch: "美國" }, { eng: "a lot of", ch: "很多的" }, { eng: "stand out", ch: "突出" },
-          { eng: "different", ch: "不同的" }, { eng: "top", ch: "頂尖的" }, { eng: "on the other hand", ch: "另一方面" },
-          { eng: "make up for…", ch: "彌補…" }, { eng: "You can say that again!", ch: "一點也沒錯！" }
+          { eng: "recycle", ch: "回收" }, { eng: "planet", ch: "星球" }, { eng: "business", ch: "公司；生意" },
+          { eng: "customer", ch: "顧客" }, { eng: "actually", ch: "實際上" }, { eng: "owner", ch: "所有人" },
+          { eng: "item", ch: "項目" }, { eng: "fresh", ch: "新鮮的" }, { eng: "mean / meant", ch: "意指" },
+          { eng: "Earth", ch: "地球" }, { eng: "turn… into…", ch: "（使）成為……" }
         ]}
       ],
       "L2": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "early", ch: "早的" }, { eng: "get up", ch: "起床" }, { eng: "brush one’s teeth", ch: "刷牙" },
-          { eng: "face", ch: "臉" }, { eng: "shower", ch: "淋浴" }, { eng: "breakfast", ch: "早餐" },
-          { eng: "lunch", ch: "午餐" }, { eng: "do one’s homework", ch: "做功課" }, { eng: "late", ch: "晚的" }
+          { eng: "sofa", ch: "沙發" }, { eng: "lamp", ch: "燈" }, { eng: "piano", ch: "鋼琴" },
+          { eng: "radio", ch: "收音機" }, { eng: "washing machine", ch: "洗衣機" }, { eng: "refrigerator (fridge)", ch: "冰箱" },
+          { eng: "violin", ch: "小提琴" }, { eng: "bow", ch: "（弦樂器的）琴弓" }, { eng: "tape", ch: "膠帶" },
+          { eng: "concert", ch: "演唱會；音樂會" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "always", ch: "總是" }, { eng: "usually", ch: "通常" }, { eng: "often", ch: "經常" },
-          { eng: "sometimes", ch: "有時候" }, { eng: "seldom", ch: "很少" }, { eng: "never", ch: "從未" },
-          { eng: "How often…?", ch: "多常…？" }, { eng: "once", ch: "一次" }, { eng: "twice", ch: "兩次" },
-          { eng: "hour", ch: "小時" }, { eng: "minute", ch: "分鐘" }, { eng: "about", ch: "大約" }
+          { eng: "turn on", ch: "打開（電器）" }, { eng: "turn off", ch: "關上（電器）" }, { eng: "screen", ch: "螢幕" },
+          { eng: "power bank", ch: "行動電源" }, { eng: "out of order", ch: "故障的" }, { eng: "sweet", ch: "甜的；甜蜜的" },
+          { eng: "most", ch: "最；最多的" }, { eng: "envelope", ch: "信封" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "work", ch: "工作" }, { eng: "exercise", ch: "運動" }, { eng: "computer", ch: "電腦" },
-          { eng: "library", ch: "圖書館" }, { eng: "check out", ch: "借（書）" }, { eng: "walk", ch: "溜（寵物）" },
-          { eng: "tired", ch: "疲累的" }, { eng: "even", ch: "甚至" }
+          { eng: "used to", ch: "過去經常" }, { eng: "useful", ch: "有用的" }, { eng: "fake", ch: "假的" },
+          { eng: "deal", ch: "交易" }, { eng: "scam", ch: "詐騙" }, { eng: "strange", ch: "奇怪的；陌生的" },
+          { eng: "joke", ch: "玩笑；笑話" }, { eng: "seller", ch: "賣家" }, { eng: "anymore", ch: "再也（不……）" },
+          { eng: "stop by", ch: "順道拜訪" }, { eng: "pick up", ch: "取（某物）" }, { eng: "trick", ch: "欺騙；騙局" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "answer", ch: "回答；答案" }, { eng: "question", ch: "問題" }, { eng: "trouble", ch: "困難；麻煩" },
-          { eng: "life", ch: "生命；生活" }, { eng: "love", ch: "愛" }, { eng: "real", ch: "真實的" },
-          { eng: "then", ch: "然後" }, { eng: "too", ch: "太…" }, { eng: "by the way", ch: "順帶一提" },
-          { eng: "I can’t help it.", ch: "我沒辦法。" }
+          { eng: "billion", ch: "十億" }, { eng: "part", ch: "部分" }, { eng: "tip", ch: "提示；指導" },
+          { eng: "secret", ch: "祕密（的）" }, { eng: "word", ch: "字" }, { eng: "sentence", ch: "句子" },
+          { eng: "information", ch: "資料；消息" }, { eng: "stranger", ch: "陌生人" }, { eng: "tell / told... from...", ch: "區分 ⋯⋯ 與 ⋯⋯" },
+          { eng: "stay", ch: "保持" }
         ]}
       ],
       "L3": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "juice", ch: "果汁" }, { eng: "coffee", ch: "咖啡" }, { eng: "milk", ch: "牛奶" },
-          { eng: "tea", ch: "茶" }, { eng: "chocolate", ch: "巧克力" }, { eng: "hamburger", ch: "漢堡" },
-          { eng: "sandwich", ch: "三明治" }, { eng: "chicken rice", ch: "雞肉飯" }, { eng: "ice cream", ch: "冰淇淋" },
-          { eng: "soup", ch: "湯" }
+          { eng: "salad", ch: "沙拉" }, { eng: "hamburger (burger)", ch: "漢堡" }, { eng: "coffee", ch: "咖啡" },
+          { eng: "steak", ch: "牛排" }, { eng: "French fries", ch: "薯條" }, { eng: "fried chicken", ch: "炸雞" },
+          { eng: "ham", ch: "火腿" }, { eng: "cheese", ch: "起司；乳酪" }, { eng: "pork", ch: "豬肉" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "shop", ch: "商店" }, { eng: "clerk", ch: "店員" }, { eng: "thirsty", ch: "口渴的" },
-          { eng: "want", ch: "想要" }, { eng: "may", ch: "可以；可能" }, { eng: "anything", ch: "任何事物" },
-          { eng: "else", ch: "其他" }, { eng: "treat", ch: "請客；款待" }, { eng: "sweet", ch: "甜美的；甜的" },
-          { eng: "hot", ch: "熱的" }
+          { eng: "bean soup", ch: "豆子湯" }, { eng: "vegetable", ch: "蔬菜" }, { eng: "pizza", ch: "披薩" },
+          { eng: "bun", ch: "小圓麵包" }, { eng: "toast", ch: "烤麵包片" }, { eng: "meat", ch: "肉" },
+          { eng: "bread", ch: "麵包" }, { eng: "wall", ch: "牆壁" }, { eng: "meal", ch: "一餐" },
+          { eng: "oil", ch: "油；石油" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "for here", ch: "內用" }, { eng: "to go", ch: "外帶" }, { eng: "dollar", ch: "元" },
-          { eng: "which", ch: "哪一個" }, { eng: "later", ch: "稍後；晚點" }, { eng: "Of course.", ch: "當然。" },
-          { eng: "Here you are.", ch: "給你。" }
+          { eng: "sound", ch: "聽起來；聲音" }, { eng: "weight", ch: "體重；重量" }, { eng: "smell", ch: "聞起來；氣味" },
+          { eng: "taste", ch: "嘗起來；味道" }, { eng: "dig / dug in", ch: "開始吃" }, { eng: "soon", ch: "很快地" },
+          { eng: "order", ch: "點餐；訂購" }, { eng: "put / put on", ch: "增加（體重）" }, { eng: "get / got", ch: "變得" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "art", ch: "美術；藝術" }, { eng: "painting", ch: "畫作" }, { eng: "work", ch: "作品" },
-          { eng: "flower", ch: "花" }, { eng: "show", ch: "表現；秀出" }, { eng: "part", ch: "部分" },
-          { eng: "sky", ch: "天空" }, { eng: "street", ch: "街道" }, { eng: "by", ch: "被；由" },
-          { eng: "bright", ch: "鮮豔的；明亮的" }, { eng: "dark", ch: "黑的；暗的" }
+          { eng: "notice", ch: "注意；看到" }, { eng: "invite", ch: "邀請" }, { eng: "besides", ch: "此外；而且" },
+          { eng: "probably", ch: "也許" }, { eng: "bite", ch: "一口的量；咬" }, { eng: "stand / stood for", ch: "代表" },
+          { eng: "matter", ch: "有關係" }, { eng: "sign", ch: "招牌；標誌" }, { eng: "friendly", ch: "（某處）令人愉快的" }
         ]}
       ],
       "L4": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "flour", ch: "麵粉" }, { eng: "sugar", ch: "糖" }, { eng: "salt", ch: "鹽" },
-          { eng: "water", ch: "水" }, { eng: "cheese", ch: "起司" }, { eng: "pie", ch: "派" },
-          { eng: "pizza", ch: "披薩" }, { eng: "bread", ch: "麵包" }, { eng: "toast", ch: "烤土司；烘烤" },
-          { eng: "need", ch: "需要；需求" }
+          { eng: "set / set up", ch: "搭（帳篷）；建立" }, { eng: "make / made a fire", ch: "生火" }, { eng: "boil", ch: "煮沸" },
+          { eng: "bug", ch: "蟲" }, { eng: "picnic", ch: "野餐" }, { eng: "hang / hung out", ch: "晾（掛）" },
+          { eng: "towel", ch: "毛巾" }, { eng: "lie / lay", ch: "躺下" }, { eng: "grass", ch: "草地；草" },
+          { eng: "string lights", ch: "繩燈" }, { eng: "moon", ch: "月亮" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "meal", ch: "餐" }, { eng: "snack", ch: "點心" }, { eng: "candy", ch: "糖果" },
-          { eng: "popcorn", ch: "爆米花" }, { eng: "milk shake", ch: "奶昔" }, { eng: "fruit salad", ch: "水果沙拉" },
-          { eng: "glass", ch: "玻璃杯；玻璃" }, { eng: "bottle", ch: "瓶子" }, { eng: "cup", ch: "杯" },
-          { eng: "bowl", ch: "碗" }, { eng: "plate", ch: "盤子" }, { eng: "can", ch: "罐子" }
+          { eng: "count", ch: "數數；計算" }, { eng: "pack", ch: "打包" }, { eng: "perfect", ch: "完美的" },
+          { eng: "be able to", ch: "能夠" }, { eng: "well", ch: "很好地" }, { eng: "loudly", ch: "大聲地" },
+          { eng: "slowly", ch: "緩慢地" }, { eng: "gently", ch: "輕柔地" }, { eng: "smile", ch: "微笑" },
+          { eng: "hop", ch: "單腳跳躍" }, { eng: "hard", ch: "努力地" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "wear", ch: "戴；穿" }, { eng: "mask", ch: "口罩；面具" }, { eng: "sick", ch: "生病的" },
-          { eng: "get", ch: "取得" }, { eng: "enjoy", ch: "享受；喜愛" }, { eng: "turn into", ch: "(使) 變成" },
-          { eng: "back off", ch: "退後；走開" }, { eng: "all right", ch: "好吧；好的" }
+          { eng: "trip", ch: "絆倒" }, { eng: "experience", ch: "經歷" }, { eng: "diary", ch: "日記" },
+          { eng: "arrive", ch: "抵達" }, { eng: "area", ch: "區域；地區" }, { eng: "successfully", ch: "成功地" },
+          { eng: "pot", ch: "鍋子；壺" }, { eng: "burn", ch: "燒焦；燃燒" }, { eng: "unhappy", ch: "不開心的" },
+          { eng: "hold / held", ch: "舉辦；握住" }, { eng: "circle", ch: "圓圈" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "why", ch: "為什麼" }, { eng: "because", ch: "因為" }, { eng: "so", ch: "所以" },
-          { eng: "still", ch: "仍然" }, { eng: "thing", ch: "東西；事情" }, { eng: "something", ch: "某物；某事" },
-          { eng: "a little", ch: "一點點" }, { eng: "each", ch: "每一個 (的)" }, { eng: "yummy", ch: "好吃的" },
-          { eng: "easy", ch: "容易的" }, { eng: "kid", ch: "小孩" }, { eng: "last", ch: "最後（的）" }
+          { eng: "shy", ch: "害羞的" }, { eng: "line", ch: "列；線條" }, { eng: "laugh", ch: "笑" },
+          { eng: "anyone (anybody)", ch: "任何人" }, { eng: "else", ch: "其他" }, { eng: "clap", ch: "拍手；鼓掌" },
+          { eng: "cheer", ch: "歡呼；鼓舞" }, { eng: "festival", ch: "節慶；節日" }, { eng: "heart", ch: "愛心；內心" },
+          { eng: "shape", ch: "形狀" }, { eng: "lucky", ch: "幸運的" }
         ]}
       ],
       "L5": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "sea", ch: "海" }, { eng: "beach", ch: "海灘" }, { eng: "island", ch: "島嶼" },
-          { eng: "river", ch: "河流" }, { eng: "lake", ch: "湖泊" }, { eng: "hill", ch: "山丘" },
-          { eng: "mountain", ch: "山" }, { eng: "rainforest", ch: "雨林" }, { eng: "land", ch: "陸地；降落" }
+          { eng: "earthquake", ch: "地震" }, { eng: "cover", ch: "遮蓋；遮蔽" }, { eng: "typhoon", ch: "颱風" },
+          { eng: "candle", ch: "蠟燭" }, { eng: "smoke alarm", ch: "煙霧警報器" }, { eng: "elevator", ch: "電梯" },
+          { eng: "raise", ch: "舉起；增加" }, { eng: "pull", ch: "拉；抽出" }, { eng: "push", ch: "推；按" },
+          { eng: "rich", ch: "富有的；豐富的" }, { eng: "deep", ch: "深的" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "visit", ch: "拜訪" }, { eng: "camp", ch: "露營；紮營" }, { eng: "climb", ch: "爬（山）" },
-          { eng: "row a boat", ch: "划船" }, { eng: "plant", ch: "種植；植物" }, { eng: "hike", ch: "健行" },
-          { eng: "picnic", ch: "野餐" }, { eng: "playground", ch: "遊樂場；操場" }
+          { eng: "hold / held on", ch: "緊緊抓牢；堅持下去" }, { eng: "abroad", ch: "在國外" }, { eng: "dangerous", ch: "危險的" },
+          { eng: "moment", ch: "時刻" }, { eng: "hear / heard", ch: "聽到" }, { eng: "someone (somebody)", ch: "某人" },
+          { eng: "scary", ch: "嚇人的" }, { eng: "fall / fell off", ch: "（從 ⋯⋯ ）掉下" }, { eng: "cut / cut", ch: "割傷；切" },
+          { eng: "nothing", ch: "沒有事情；沒有東西" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "trash", ch: "垃圾" }, { eng: "dead", ch: "死亡的" }, { eng: "die", ch: "死亡" },
-          { eng: "burn", ch: "燃燒" }, { eng: "oil", ch: "油" }, { eng: "change", ch: "改變" },
-          { eng: "sell", ch: "賣" }, { eng: "make money", ch: "賺錢" }
+          { eng: "scene", ch: "場景" }, { eng: "leading", ch: "主要的" }, { eng: "real-life", ch: "真實生活中的" },
+          { eng: "ever", ch: "在任何時候" }, { eng: "go / went out", ch: "（燈、火）熄滅" }, { eng: "lesson", ch: "教訓；（一節）課" },
+          { eng: "land", ch: "陸地；降落" }, { eng: "several", ch: "數個的" }, { eng: "grow / grew", ch: "成長；增加" },
+          { eng: "gray", ch: "灰色的；灰色" }, { eng: "dozen", ch: "一打" }, { eng: "scared", ch: "感到害怕的" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "yesterday", ch: "昨天" }, { eng: "ago", ch: "前；以前" }, { eng: "last", ch: "上一個的" },
-          { eng: "then", ch: "那時候" }, { eng: "stop", ch: "停止" }, { eng: "happen", ch: "發生" },
-          { eng: "busy", ch: "忙碌的" }, { eng: "warm", ch: "溫慢的" }, { eng: "everything", ch: "每樣事物" },
-          { eng: "miss", ch: "想念" }, { eng: "live", ch: "居住" }, { eng: "a few", ch: "幾個；一些" },
-          { eng: "little by little", ch: "一點一點地；逐漸地" }, { eng: "How come?", ch: "怎麼會? / 為什麼?" }
+          { eng: "window", ch: "窗戶" }, { eng: "sight", ch: "景象" }, { eng: "surprise", ch: "驚訝；使……驚訝" },
+          { eng: "flood", ch: "淹沒；洪水" }, { eng: "apartment", ch: "公寓" }, { eng: "except", ch: "除了……之外" },
+          { eng: "cookie", ch: "餅乾" }, { eng: "drawer", ch: "抽屜" }, { eng: "quite", ch: "相當地" },
+          { eng: "angry", ch: "生氣的" }, { eng: "fool", ch: "傻瓜；愚弄" }
         ]}
       ],
       "L6": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "airport", ch: "機場" }, { eng: "travel", ch: "旅行；行進" }, { eng: "plane", ch: "飛機" },
-          { eng: "train", ch: "火車" }, { eng: "station", ch: "車站；局" }, { eng: "hotel", ch: "飯店" },
-          { eng: "trip", ch: "旅行；行程" }, { eng: "the sights", ch: "風景；名勝" }, { eng: "rest", ch: "休息" }
+          { eng: "straw", ch: "吸管；稻草" }, { eng: "carry", ch: "攜帶" }, { eng: "metal", ch: "金屬" },
+          { eng: "spoon", ch: "湯匙" }, { eng: "chopsticks", ch: "筷子" }, { eng: "paper", ch: "紙" },
+          { eng: "stair", ch: "樓梯" }, { eng: "instead", ch: "作為……替代" }, { eng: "jog", ch: "慢跑" },
+          { eng: "newspaper", ch: "報紙" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "bookstore", ch: "書店" }, { eng: "theater", ch: "電影院" }, { eng: "market", ch: "市場" },
-          { eng: "temple", ch: "寺廟" }, { eng: "department store", ch: "百貨公司" }, { eng: "restaurant", ch: "餐廳" },
-          { eng: "stair", ch: "樓梯" }, { eng: "build", ch: "建造" }
+          { eng: "postcard", ch: "明信片" }, { eng: "businessman", ch: "商人" }, { eng: "workbook", ch: "習作" },
+          { eng: "bother", ch: "費心" }, { eng: "end up", ch: "最後成為" }, { eng: "ocean", ch: "海洋" },
+          { eng: "turtle", ch: "海龜；龜" }, { eng: "perhaps", ch: "也許" }, { eng: "if", ch: "如果" },
+          { eng: "take / took action", ch: "採取行動" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "buy", ch: "購買" }, { eng: "learn", ch: "學習" }, { eng: "story", ch: "故事" },
-          { eng: "try", ch: "嘗試" }, { eng: "take", ch: "帶；拿；取" }, { eng: "cry", ch: "哭泣" },
-          { eng: "hide", ch: "躲藏" }, { eng: "lose", ch: "失去" }, { eng: "fall in love", ch: "墜入情網" }
+          { eng: "though / although", ch: "雖然" }, { eng: "break / broke down", ch: "分解" }, { eng: "correct", ch: "正確的；更正" },
+          { eng: "feed / fed", ch: "餵" }, { eng: "baby", ch: "幼鳥；嬰兒" }, { eng: "jellyfish", ch: "水母" },
+          { eng: "die", ch: "死亡" }, { eng: "crazy about", ch: "非常喜歡……" }, { eng: "service", ch: "服務" },
+          { eng: "excellent", ch: "優秀的" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "just", ch: "就；只" }, { eng: "cool", ch: "酷的" }, { eng: "cold", ch: "冷的" },
-          { eng: "famous", ch: "有名的" }, { eng: "sadly", ch: "令人傷心地" }, { eng: "during", ch: "在…期間" },
-          { eng: "besides", ch: "除…之外" }, { eng: "age", ch: "年紀" }, { eng: "last", ch: "持續" },
-          { eng: "way", ch: "距離；路線" }, { eng: "the other day", ch: "前幾天" }
+          { eng: "wish", ch: "願望；希望" }, { eng: "garbage", ch: "垃圾" }, { eng: "somewhere", ch: "在某處" },
+          { eng: "enter", ch: "進入；輸入" }, { eng: "knife", ch: "刀子" }, { eng: "fork", ch: "叉子" },
+          { eng: "choice", ch: "選擇" }, { eng: "possible", ch: "可能的" }, { eng: "no longer", ch: "不再" },
+          { eng: "gladly", ch: "樂意地" }
         ]}
       ]
     };
 
     let currentLesson = "L1";
     let showAnswersState = false;
-    let流水題號計數器 = 1;
+    let serialNumberCounter = 1;
 
     function speakWord(word) {
       if ('speechSynthesis' in window) {
@@ -315,7 +309,6 @@
       return rawEng.trim();
     }
 
-    // 完美對照聽力卷骨架：高度鎖定在 h-5，縮小中文、擴大英文、絕不超頁[cite: 1]
     function buildGroupHtml(groupData, groupIndex, isPrintMode = false) {
       let rowsHtml = '';
       
@@ -326,22 +319,20 @@
           
           rowsHtml += `
             <div class="flex items-center px-1 py-1.5 row-border-style transition hover:bg-slate-50/50 cursor-pointer" onclick="speakWord('${wordItem.eng.replace(/'/g, "\\'")}')">
-              <!-- 中文向左看齊：固定寬度 105px，字太長會貼心自動折行，完全不影響右邊書寫區 -->
-              <div class="text-slate-800 font-chinese font-medium tracking-wide text-[14px] shrink-0 flex items-start leading-tight pr-1" style="width: 105px;">
-                <span class="font-bold text-slate-400 mr-1.5 font-english text-[13px]">${流水題號計數器}.</span>
-                <span class="break-all">${wordItem.ch}</span>
+              <div class="text-slate-800 font-chinese font-medium tracking-wide text-[14px] shrink-0 flex items-center pr-1 truncate word-ch-container" style="width: 105px;">
+                <span class="font-bold text-slate-400 mr-1.5 font-english text-[13px]">${serialNumberCounter}.</span>
+                <span class="truncate word-ch-span">${wordItem.ch}</span>
               </div>
               
-              <!-- 右側英文空間：完全釋放寬度，採用固定 h-5 水平置中，徹底防止超格 -->
               <div class="flex-grow relative font-english pl-2 h-5 flex items-center">
                 <input type="text" data-ans="${cleanedEnglish}" class="spelling-input no-print w-full bg-transparent focus:outline-none text-[15px] font-bold text-slate-800 tracking-wide">
-                <span class="ans-text-span hidden text-red-600 font-extrabold text-[15px] tracking-wide absolute left-2 leading-none">${cleanedEnglish}</span>
+                <span class="ans-text-span hidden text-red-600 font-extrabold text-[15px] tracking-wide absolute left-2 leading-none word-eng-span">${cleanedEnglish}</span>
               </div>
             </div>
           `;
-          流水題號計數器++;
+          serialNumberCounter++;
         } else {
-          // 均分留白預留格：維持高度物理結構，固定版面
+          // 均分留白預留格：維持高度與物理結構，確保四個區塊水平對齊、固定不浮動
           rowsHtml += `
             <div class="flex items-center px-1 py-1.5 row-border-style opacity-0 pointer-events-none select-none">
               <div style="width: 105px;"><span class="text-[14px]">Empty</span></div>
@@ -357,7 +348,6 @@
         </div>
       `;
 
-      // 複製聽力測驗的無大框排版：利用灰色控制橫列（bg-slate-100）進行小組微分類
       return `
         <div class="bg-white flex flex-col justify-start flex-grow">
           <div class="flex justify-between items-center bg-slate-100 border border-slate-300 rounded-lg px-3 py-1.5 mb-2 shrink-0">
@@ -390,6 +380,35 @@
       }
     }
 
+    // 智慧型字體自動縮小機制：判斷字數長度，超出即降字型，捍衛行高固定單行不爆格
+    function applyMicroScaling() {
+      // 縮小太長的中文
+      document.querySelectorAll('.word-ch-span').forEach(span => {
+        const textLength = span.innerText.length;
+        if (textLength > 9) {
+          span.style.fontSize = "10.5px";
+          span.style.letterSpacing = "-0.5px";
+        } else if (textLength > 6) {
+          span.style.fontSize = "12px";
+        } else {
+          span.style.fontSize = "14px";
+        }
+      });
+
+      // 縮小太長的答案英文
+      document.querySelectorAll('.word-eng-span').forEach(span => {
+        const textLength = span.innerText.length;
+        if (textLength > 22) {
+          span.style.fontSize = "11px";
+          span.style.letterSpacing = "-0.5px";
+        } else if (textLength > 15) {
+          span.style.fontSize = "13px";
+        } else {
+          span.style.fontSize = "15px";
+        }
+      });
+    }
+
     function loadLesson(lessonKey) {
       currentLesson = lessonKey;
       showAnswersState = false;
@@ -401,18 +420,20 @@
           "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
       });
 
-      document.getElementById('main-title').innerText = `七下 ${lessonKey} 英文科講義 單字拼寫卷`;
+      document.getElementById('main-title').innerText = `八下 ${lessonKey} 英文科講義 單字拼寫卷`;
       
       const container = document.getElementById('groups-container');
       container.innerHTML = '';
 
-      流水題號計數器 = 1; 
+      // 四個大組直接灌入 grid-cols-2 網格，靠內置 12 留白格維持完美對稱
+      serialNumberCounter = 1; 
       const groups = database[lessonKey];
       groups.forEach((groupData, idx) => {
         container.innerHTML += buildGroupHtml(groupData, idx, false);
       });
 
       bindInputLogic();
+      applyMicroScaling();
     }
 
     function initApp() {
@@ -420,7 +441,7 @@
       selectorContainer.innerHTML = '';
       Object.keys(database).forEach(key => {
         const btn = document.createElement('button');
-        btn.innerText = `七下 ${key}`;
+        btn.innerText = `八下 ${key}`;
         btn.setAttribute('data-lesson', key);
         btn.className = "lesson-btn py-1.5 rounded-md text-xs font-semibold border transition font-chinese";
         btn.onclick = () => loadLesson(key);
@@ -480,23 +501,20 @@
         const savedLesson = currentLesson;
         currentLesson = lessonKey;
         
-        let leftColumnHtml = '';
-        let rightColumnHtml = '';
+        let allGroupsHtml = '';
         const groups = database[lessonKey];
         
-        流水題號計數器 = 1;
-        leftColumnHtml += buildGroupHtml(groups[0], 0, true);
-        leftColumnHtml += buildGroupHtml(groups[1], 1, true);
-
-        rightColumnHtml += buildGroupHtml(groups[2], 2, true);
-        rightColumnHtml += buildGroupHtml(groups[3], 3, true);
+        serialNumberCounter = 1;
+        groups.forEach((groupData, idx) => {
+          allGroupsHtml += buildGroupHtml(groupData, idx, true);
+        });
 
         currentLesson = savedLesson; 
 
         page.innerHTML = `
           <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
             <div class="flex justify-between items-end">
-              <h1 class="title-large text-slate-800 tracking-wider font-chinese">七下 ${lessonKey} 英文科講義 單字拼寫卷</h1>
+              <h1 class="title-large text-slate-800 tracking-wider font-chinese">八下 ${lessonKey} 英文科講義 單字拼寫卷</h1>
               <div class="flex gap-4 info-text text-slate-700 font-chinese mb-1">
                 <div class="flex items-end">
                   <span class="border-b-2 border-slate-400 w-20 text-center h-7 inline-block"></span>
@@ -516,8 +534,7 @@
             </div>
           </div>
           <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden">
-            <div class="flex flex-col flex-grow justify-start">${leftColumnHtml}</div>
-            <div class="flex flex-col flex-grow justify-start">${rightColumnHtml}</div>
+            ${allGroupsHtml}
           </div>
           <div class="h-1 shrink-0"></div>
         `;
@@ -525,6 +542,7 @@
       });
 
       setTimeout(() => {
+        applyMicroScaling();
         document.body.classList.add('printing-all');
         window.print();
         setTimeout(() => { document.body.classList.remove('printing-all'); }, 600);
