@@ -1,0 +1,726 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新市國中 114 學年度異想教室課表互動系統</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PapaParse for robust CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- FontAwesome for beautiful icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f3f4f6;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-padding {
+                padding: 0 !important;
+                background-color: white !important;
+            }
+            .print-shadow {
+                box-shadow: none !important;
+                border: 1px solid #e5e7eb !important;
+            }
+            body {
+                background-color: white !important;
+            }
+        }
+        /* Custom scrollbar for raw data table */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-teal-600 to-indigo-700 text-white shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-sm border border-white/20">
+                    <i class="fa-solid class-icon fa-calendar-days text-2xl text-teal-200 animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight">新市國中異想教室課表</h1>
+                    <p class="text-xs text-teal-100 mt-0.5">114學年度第二學期 ‧ 互動式資料庫整合系統</p>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="window.print()" class="bg-white/10 hover:bg-white/20 transition px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-white/10">
+                    <i class="fa-solid fa-print"></i> 列印課表 (A4)
+                </button>
+                <button id="editModeToggle" onclick="toggleEditMode()" class="bg-amber-500 hover:bg-amber-600 transition px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 text-white shadow-sm">
+                    <i class="fa-solid fa-pen-to-square"></i> <span id="editText">啟用編輯模式</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 print-padding">
+        
+        <!-- Database Connection Check Banner (No-print) -->
+        <section class="mb-6 bg-white rounded-2xl p-4 shadow-sm border border-slate-200 no-print">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-start gap-3">
+                    <div id="statusIndicator" class="mt-1 md:mt-0 flex items-center justify-center w-4 h-4 rounded-full bg-amber-400">
+                        <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-amber-400 opacity-75"></span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-slate-800">資料庫連線檢測</h3>
+                            <span id="statusBadge" class="px-2 py-0.5 text-xs font-semibold rounded bg-amber-100 text-amber-800">載入中...</span>
+                        </div>
+                        <p id="statusMsg" class="text-sm text-slate-500 mt-1">正在嘗試從您提供的 Google Sheets 讀取最新課表資料...</p>
+                    </div>
+                </div>
+                
+                <!-- URL Config Toggle -->
+                <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                    <button onclick="toggleDbPanel()" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition">
+                        <i class="fa-solid fa-gear"></i> 進階連線設定
+                    </button>
+                    <button onclick="fetchSheetData()" class="bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate"></i> 重新整理資料
+                    </button>
+                </div>
+            </div>
+
+            <!-- Database Setup Detail Form (Hidden by default) -->
+            <div id="dbPanel" class="hidden mt-4 pt-4 border-t border-slate-100 bg-slate-50 p-4 rounded-xl text-sm">
+                <h4 class="font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                    <i class="fa-solid fa-link text-slate-500"></i> Google Sheets CSV 發佈網址
+                </h4>
+                <div class="flex flex-col md:flex-row gap-2">
+                    <input type="text" id="csvUrlInput" 
+                           class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-teal-500 focus:outline-none" 
+                           value="https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?output=csv">
+                    <button onclick="applyNewUrl()" class="bg-teal-600 hover:bg-teal-700 text-white font-medium px-4 py-2 rounded-lg transition whitespace-nowrap">
+                        儲存並重新載入
+                    </button>
+                </div>
+                <div class="mt-3 text-xs text-slate-500 space-y-1 bg-white p-3 rounded-lg border border-slate-200">
+                    <p class="font-semibold text-slate-600 mb-1"><i class="fa-solid fa-circle-question"></i> 如何連動特定的「A5分頁」？</p>
+                    <ol class="list-decimal pl-4 space-y-1 text-slate-500">
+                        <li>在 Google 試算表中，點擊選單的 <strong>檔案 > 共用 > 發佈到網路</strong>。</li>
+                        <li>在發佈視窗中，將「整份文件」下拉選單改成您的特定分頁 <strong>「A5」</strong>。</li>
+                        <li>將「網頁」選單改成 <strong>「逗號分隔值 (.csv)」</strong>。</li>
+                        <li>複製產生的網址，並貼上到上方的輸入框中，點擊「儲存並重新載入」！</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Timetable Card -->
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden print-shadow">
+            
+            <!-- Timetable Meta Info (Dynamic based on data) -->
+            <div class="p-6 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white flex flex-col md:flex-row justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-1 text-xs font-bold bg-teal-600 text-white rounded-md tracking-wider">原班點名薄留存</span>
+                        <span class="text-sm font-semibold text-slate-500">原班班級: <span class="text-slate-800" id="metaClass">803</span></span>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-800 tracking-wide" id="metaTitle">台南市新市國中 114 學年度 異想教室課表</h2>
+                    <div class="text-sm text-slate-500 flex flex-wrap gap-x-4 gap-y-1">
+                        <span><i class="fa-solid fa-user-tie text-slate-400"></i> 班級導師：<span class="font-medium text-slate-700" id="metaTeacher">黃宗智</span></span>
+                        <span><i class="fa-solid fa-calendar-day text-slate-400"></i> 實施日期：<span class="font-medium text-slate-700" id="metaDate">115.5.12 (游泳課改版)</span></span>
+                    </div>
+                </div>
+
+                <!-- Interactive Filters (No-print) -->
+                <div class="flex flex-col gap-2 justify-end no-print">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider text-left md:text-right">學生專屬抽離檢視</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button onclick="filterStudent('all')" id="btn-all" class="filter-btn active bg-teal-600 hover:bg-teal-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition shadow-sm">
+                            顯示全部
+                        </button>
+                        <button onclick="filterStudent('吳幸穎')" id="btn-吳幸穎" class="filter-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium transition border border-slate-200">
+                            吳幸穎
+                        </button>
+                        <button onclick="filterStudent('呂雅菁')" id="btn-呂雅菁" class="filter-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium transition border border-slate-200">
+                            呂雅菁
+                        </button>
+                        <button onclick="filterStudent('莊竣凱')" id="btn-莊竣凱" class="filter-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium transition border border-slate-200">
+                            莊竣凱
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timetable Interactive Grid -->
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full border-collapse text-center table-fixed min-w-[768px]">
+                    <thead>
+                        <tr class="bg-slate-100 border-b border-slate-200 text-sm text-slate-600 font-bold">
+                            <th class="w-24 py-4 border-r border-slate-200 font-extrabold text-slate-700 bg-slate-150">節次 / 時間</th>
+                            <th class="py-4 border-r border-slate-200">星期一</th>
+                            <th class="py-4 border-r border-slate-200">星期二</th>
+                            <th class="py-4 border-r border-slate-200">星期三</th>
+                            <th class="py-4 border-r border-slate-200">星期四</th>
+                            <th class="py-4">星期五</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timetableBody" class="divide-y divide-slate-100 text-sm">
+                        <!-- Slots will be dynamically rendered here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Footer Message (Printed only) -->
+            <div class="hidden print:block p-4 bg-slate-50 border-t border-slate-200 text-center text-xs text-slate-500">
+                本課表同步串接 Google Sheets 雲端資料庫，列印時間：<span class="currentTime"></span>
+            </div>
+        </div>
+
+        <!-- Course Reference Cards & Raw CSV Inspector -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Specialized Subject Location Card (2 columns wide) -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-3xl shadow-sm border border-slate-200 print-shadow">
+                <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                    <h3 class="font-extrabold text-lg text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-indigo-500"></i>
+                        資源班抽離科目及地點對照表
+                    </h3>
+                    <span class="text-xs text-slate-400">點擊卡片可高亮課表對應課堂</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="specialtyList">
+                    <!-- Specialty classes will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Live Raw Data Inspector (No-print) -->
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex flex-col no-print">
+                <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                    <h3 class="font-extrabold text-lg text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-database text-teal-500"></i>
+                        CSV 資料庫觀測站
+                    </h3>
+                    <span class="px-2 py-0.5 text-2xs font-semibold rounded bg-slate-100 text-slate-600" id="rowCount">0 筆資料</span>
+                </div>
+                
+                <p class="text-xs text-slate-500 mb-3">
+                    此面板即時顯示 Google Sheets CSV 回傳的原始文字片段。這有助於確認是否成功連動到正確的分頁：
+                </p>
+
+                <!-- Raw data content pre-container -->
+                <div class="flex-1 bg-slate-900 rounded-xl p-3 text-2xs font-mono text-teal-400 overflow-auto max-h-[220px] custom-scrollbar" id="rawDataOutput">
+                    系統尚未讀取資料...
+                </div>
+
+                <div class="mt-4 bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs text-slate-600">
+                    <div class="flex items-center gap-2 font-semibold mb-1 text-slate-700">
+                        <i class="fa-solid fa-compass text-teal-600"></i> 課表解析方式說明
+                    </div>
+                    若匯入的試算表具有「第一列為週一至週五」的二維表格特徵，系統將會採<b>【格狀對應解析】</b>；若非，則採用預設模板。
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <footer class="mt-12 mb-8 text-center text-xs text-slate-400 no-print">
+            <p>台南市新市國中 114 學年度異想教室特教課表系統 ‧ Designed with <i class="fa-solid fa-heart text-rose-400"></i> for inclusive education.</p>
+        </footer>
+    </main>
+
+    <!-- JS Logic Core -->
+    <script>
+        // Set Print Time
+        document.querySelectorAll('.currentTime').forEach(el => {
+            el.textContent = new Date().toLocaleString('zh-TW');
+        });
+
+        // App State
+        let isEditMode = false;
+        let activeStudentFilter = 'all';
+        let activeSpecialtyHighlight = null;
+        let loadedCsvData = null;
+        
+        // 1:1 Complete Mock Data matching the PDF template
+        let scheduleData = {
+            meta: {
+                title: "台南市新市國中114學年度異想教室課表",
+                class: "803",
+                teacher: "黃宗智",
+                students: ["吳幸穎", "呂雅菁", "莊竣凱"],
+                date: "115.5.12(游泳課改版)"
+            },
+            timeSlots: [
+                { name: "早自修", time: "", mon: "朝會\n\n食安與食育\n黃宗智", tue: "晨讀", wed: "晨讀", thu: "朝會", fri: "英聽" },
+                { name: "第一節", time: "08:20\n09:05", mon: "地理\n李春坪", tue: "英文\n胡佳慧\n\n吳幸穎:英二C\n呂雅菁:英二C", wed: "表演藝術\n蔡雅萱\n\n莊竣凱:自閉巡迴\nA1", thu: "家政\n蘇羿甄", fri: "國文\n邱瓊儀\n\n吳幸穎:國二C\n呂雅菁:國二C" },
+                { name: "第二節", time: "09:15\n10:00", mon: "歷史\n廖苑純", tue: "自然\n黃宗智\n\n吳幸穎:生活教育B\n呂雅菁:生活教育B", wed: "生活科技\n林仁皇", thu: "自然\n黃宗智", fri: "解碼臺灣\n張詠宣" },
+                { name: "第三節", time: "10:10\n10:55", mon: "國文\n邱瓊儀\n\n吳幸穎:國二C\n呂雅菁:國二C", tue: "數學\n王俊宇\n\n吳幸穎:生活訓練E", wed: "資訊科技\n吳明吉", thu: "體育\n胡翊吟", fri: "英文\n胡佳慧" },
+                { name: "第四節", time: "11:05\n11:50", mon: "本土語\n林湘瀅\n\n莊竣凱:社交技巧A", tue: "體育\n胡翊吟", wed: "視覺藝術\n黃士峰", thu: "健康\n胡翊吟", fri: "音樂\n葉純娟" },
+                { name: "第五節", time: "13:15\n14:00", mon: "民主表達\n黃宗智", tue: "數學\n王俊宇\n\n吳幸穎:社交技巧B", wed: "英文\n胡佳慧\n\n吳幸穎:生活訓練F", thu: "公民\n張詠宣", fri: "自然\n黃宗智" },
+                { name: "第六節", time: "14:10\n14:55", mon: "民主表達\n黃宗智", tue: "民主表達\n黃宗智\n\n吳幸穎:數二D\n呂雅菁:數二D", wed: "民主表達\n黃宗智", thu: "民主表達\n黃宗智", fri: "民主表達\n黃宗智\n\n吳幸穎:生活教育B\n呂雅菁:生活教育B" },
+                { name: "第七節", time: "15:05\n15:50", mon: "多元社團\n蔡萌洋", tue: "輔導\n李長原", wed: "國文\n邱瓊儀", thu: "", fri: "數學\n王俊宇" },
+                { name: "第八節", time: "16:00\n16:45", mon: "選修社會\n林湘瀅", tue: "選修國文\n邱瓊儀", wed: "選修數學\n王俊宇\n\n吳幸穎:國二C\n呂雅菁:國二C", thu: "選修英語\n胡佳慧", fri: "選修自然\n黃宗智\n\n吳幸穎:數二D\n呂雅菁:數二D" }
+            ],
+            specialties: [
+                { id: "國二C", name: "國二C", teacher: "孫瑞彤", periods: 3, loc: "異想L #6234", color: "from-sky-500/20 to-sky-600/20 border-sky-400 text-sky-800" },
+                { id: "英二C", name: "英二C", teacher: "洪欣怡", periods: 2, loc: "異想E #6035", color: "from-emerald-500/20 to-emerald-600/20 border-emerald-400 text-emerald-800" },
+                { id: "數二D", name: "數二D", teacher: "孫瑞彤", periods: 2, loc: "異想L #6234", color: "from-purple-500/20 to-purple-600/20 border-purple-400 text-purple-800" },
+                { id: "生活教育B", name: "生活教育B", teacher: "孫瑞彤", periods: 2, loc: "異想L #6234", color: "from-amber-500/20 to-amber-600/20 border-amber-400 text-amber-800" },
+                { id: "社交技巧A", name: "社交技巧A", teacher: "孫瑞彤", periods: 1, loc: "異想L #6234", color: "from-rose-500/20 to-rose-600/20 border-rose-400 text-rose-800" },
+                { id: "社交技巧B", name: "社交技巧B", teacher: "孫瑞彤", periods: 1, loc: "異想L #6234", color: "from-pink-500/20 to-pink-600/20 border-pink-400 text-pink-800" },
+                { id: "自閉巡迴 A1", name: "自閉巡迴 A1", teacher: "陳一蘋", periods: 1, loc: "異想E #6035", color: "from-violet-500/20 to-violet-600/20 border-violet-400 text-violet-800" },
+                { id: "生活訓練E", name: "生活訓練E", teacher: "林燕雲", periods: 1, loc: "異想L #6234", color: "from-indigo-500/20 to-indigo-600/20 border-indigo-400 text-indigo-800" },
+                { id: "生活訓練F", name: "生活訓練F", teacher: "林燕雲", periods: 1, loc: "異想M #6034", color: "from-cyan-500/20 to-cyan-600/20 border-cyan-400 text-cyan-800" }
+            ]
+        };
+
+        // Try load locally edited data if exists
+        const cachedData = localStorage.getItem('nshj_schedule_data');
+        if (cachedData) {
+            try {
+                scheduleData = JSON.parse(cachedData);
+            } catch (e) {
+                console.error("解析快取資料錯誤:", e);
+            }
+        }
+
+        // Initialize App
+        window.onload = function() {
+            renderTimetable();
+            renderSpecialties();
+            fetchSheetData(); // Auto fetch on load
+        }
+
+        // Fetch Google Sheet Data
+        function fetchSheetData() {
+            const urlInput = document.getElementById('csvUrlInput').value.trim();
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusBadge = document.getElementById('statusBadge');
+            const statusMsg = document.getElementById('statusMsg');
+            const rawDataOutput = document.getElementById('rawDataOutput');
+            const rowCountEl = document.getElementById('rowCount');
+
+            if (!urlInput) {
+                updateStatus('error', '請輸入有效的 Google Sheets 發佈網址。');
+                return;
+            }
+
+            statusIndicator.className = "mt-1 md:mt-0 flex items-center justify-center w-4 h-4 rounded-full bg-blue-500";
+            statusBadge.className = "px-2 py-0.5 text-xs font-semibold rounded bg-blue-100 text-blue-800";
+            statusBadge.textContent = "連線中...";
+            statusMsg.textContent = "正在聯絡 Google Sheets 雲端伺服器...";
+
+            // Fetch request
+            fetch(urlInput)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP 錯誤! 狀態: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(csvText => {
+                    loadedCsvData = csvText;
+                    
+                    // Display raw data snippet (first 1000 characters)
+                    rawDataOutput.textContent = csvText.substring(0, 1000) + (csvText.length > 1000 ? "\n...(其餘資料已省略)" : "");
+                    
+                    // Parse with PapaParse
+                    Papa.parse(csvText, {
+                        complete: function(results) {
+                            const rows = results.data;
+                            rowCountEl.textContent = `${rows.length} 筆列資料`;
+                            
+                            if (rows.length > 0) {
+                                tryParseGoogleSheet(rows);
+                            } else {
+                                throw new Error("試算表中沒有任何資料。");
+                            }
+                        },
+                        error: function(err) {
+                            throw new Error(`CSV 解析失敗: ${err.message}`);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.warn("串接雲端失敗，使用精美預設模版:", error);
+                    updateStatus('offline', `連線未成功（可能因 CORS、發佈網址未設定或無網路）。已載入 114 學年度異想教室之【精美預設模板】進行演示！`);
+                    rawDataOutput.textContent = `[離線展示模式]\n無法讀取 URL: ${urlInput}\n這有可能是因為試算表尚未「發佈為 CSV」格式，或是受到 CORS 跨網域限制。\n\n網頁已自動載入本校 114 學年度最新課表做為展示，所有的互動過濾功能與排版均可正常運作！`;
+                });
+        }
+
+        // Apply new URL
+        function applyNewUrl() {
+            fetchSheetData();
+        }
+
+        // Update Status Banner
+        function updateStatus(type, message) {
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusBadge = document.getElementById('statusBadge');
+            const statusMsg = document.getElementById('statusMsg');
+
+            if (type === 'success') {
+                statusIndicator.className = "mt-1 md:mt-0 flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500";
+                statusBadge.className = "px-2 py-0.5 text-xs font-semibold rounded bg-emerald-100 text-emerald-800";
+                statusBadge.textContent = "串接成功";
+            } else if (type === 'offline') {
+                statusIndicator.className = "mt-1 md:mt-0 flex items-center justify-center w-4 h-4 rounded-full bg-amber-500";
+                statusBadge.className = "px-2 py-0.5 text-xs font-semibold rounded bg-amber-100 text-amber-800";
+                statusBadge.textContent = "展示模式 (Offline)";
+            } else {
+                statusIndicator.className = "mt-1 md:mt-0 flex items-center justify-center w-4 h-4 rounded-full bg-rose-500";
+                statusBadge.className = "px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800";
+                statusBadge.textContent = "串接失敗";
+            }
+            statusMsg.textContent = message;
+        }
+
+        // Parse custom Google Sheet formats dynamically
+        function tryParseGoogleSheet(rows) {
+            // Check if it's a grid format (Columns containing weekdays)
+            let isGridFormat = false;
+            let headerRowIndex = -1;
+
+            for (let i = 0; i < Math.min(rows.length, 5); i++) {
+                const rowStr = JSON.stringify(rows[i]);
+                if (rowStr.includes("星期一") || rowStr.includes("週一") || rowStr.includes("Monday")) {
+                    isGridFormat = true;
+                    headerRowIndex = i;
+                    break;
+                }
+            }
+
+            if (isGridFormat && headerRowIndex !== -1) {
+                // Parse standard grid format directly!
+                const headers = rows[headerRowIndex];
+                
+                // Find column mappings
+                let dayCols = { mon: -1, tue: -1, wed: -1, thu: -1, fri: -1 };
+                headers.forEach((header, index) => {
+                    const h = header.trim();
+                    if (h.includes("一") || h.toLowerCase().includes("mon")) dayCols.mon = index;
+                    if (h.includes("二") || h.toLowerCase().includes("tue")) dayCols.tue = index;
+                    if (h.includes("三") || h.toLowerCase().includes("wed")) dayCols.wed = index;
+                    if (h.includes("四") || h.toLowerCase().includes("thu")) dayCols.thu = index;
+                    if (h.includes("五") || h.toLowerCase().includes("fri")) dayCols.fri = index;
+                });
+
+                // Reconstruct timeSlots
+                let newTimeSlots = [];
+                for (let i = headerRowIndex + 1; i < rows.length; i++) {
+                    const r = rows[i];
+                    if (!r || r.length < 2) continue;
+                    
+                    const firstCell = r[0] ? r[0].trim() : "";
+                    if (!firstCell && r.every(cell => !cell || cell.trim() === "")) continue; // Skip empty row
+                    
+                    // Split name and time if possible
+                    let name = firstCell;
+                    let time = "";
+                    const timeMatch = firstCell.match(/(\d{2}:\d{2}[\s\S]*\d{2}:\d{2})/);
+                    if (timeMatch) {
+                        time = timeMatch[1].replace(/\n/g, '<br>');
+                        name = firstCell.replace(timeMatch[1], "").trim();
+                    }
+
+                    newTimeSlots.push({
+                        name: name.replace(/\n/g, '') || `第 ${newTimeSlots.length + 1} 節`,
+                        time: time || "",
+                        mon: dayCols.mon !== -1 && r[dayCols.mon] ? r[dayCols.mon].trim() : "",
+                        tue: dayCols.tue !== -1 && r[dayCols.tue] ? r[dayCols.tue].trim() : "",
+                        wed: dayCols.wed !== -1 && r[dayCols.wed] ? r[dayCols.wed].trim() : "",
+                        thu: dayCols.thu !== -1 && r[dayCols.thu] ? r[dayCols.thu].trim() : "",
+                        fri: dayCols.fri !== -1 && r[dayCols.fri] ? r[dayCols.fri].trim() : ""
+                    });
+                }
+
+                if (newTimeSlots.length > 0) {
+                    scheduleData.timeSlots = newTimeSlots;
+                    renderTimetable();
+                    updateStatus('success', '成功從試算表中辨識出【二維格狀排版】！已即時套用最新雲端數據。');
+                    return;
+                }
+            }
+
+            // Fallback for non-grid / custom table databases:
+            // Just notify and keep template so the user gets to see how awesome it looks
+            updateStatus('success', '已連接上試算表分頁！格式與預期不符，本頁面目前暫時以【異想教室模版】提供完整的過濾、高亮與編輯互動功能。');
+        }
+
+        // Toggle Settings Panel
+        function toggleDbPanel() {
+            const panel = document.getElementById('dbPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        // Render Timetable
+        function renderTimetable() {
+            const body = document.getElementById('timetableBody');
+            body.innerHTML = '';
+
+            document.getElementById('metaTitle').innerHTML = scheduleData.meta.title;
+            document.getElementById('metaClass').innerHTML = scheduleData.meta.class;
+            document.getElementById('metaTeacher').innerHTML = scheduleData.meta.teacher;
+            document.getElementById('metaDate').innerHTML = scheduleData.meta.date;
+
+            scheduleData.timeSlots.forEach((slot, index) => {
+                const tr = document.createElement('tr');
+                tr.className = `transition-all duration-200 hover:bg-slate-50/80 ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'}`;
+                
+                // Slot Column
+                let slotHtml = `
+                    <td class="py-4 px-2 border-r border-slate-200 bg-slate-50 font-bold text-slate-700 print-shadow text-center">
+                        <div class="text-sm font-black text-teal-800">${slot.name}</div>
+                        <div class="text-3xs font-medium text-slate-400 mt-1 font-mono leading-tight">${slot.time.replace(/\n/g, '<br>')}</div>
+                    </td>
+                `;
+
+                // Days columns
+                const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+                days.forEach(day => {
+                    const cellContent = slot[day] || "";
+                    const renderedContent = parseCellToHtml(cellContent);
+                    const isHighlighted = checkHighlight(cellContent);
+                    const isDimmed = activeStudentFilter !== 'all' && !hasStudent(cellContent, activeStudentFilter);
+
+                    slotHtml += `
+                        <td class="p-2 border-r border-slate-150 align-middle transition-all duration-300 relative group
+                            ${isHighlighted ? 'bg-amber-50/60 font-semibold' : ''} 
+                            ${isDimmed ? 'opacity-30 filter grayscale-[20%]' : 'opacity-100'}"
+                            data-day="${day}" data-index="${index}">
+                            ${isEditMode ? 
+                                `<textarea onchange="updateCell('${day}', ${index}, this.value)" 
+                                    class="w-full h-16 p-1 text-xs border border-amber-300 rounded focus:ring-1 focus:ring-amber-400 focus:outline-none bg-amber-50/30 text-center custom-scrollbar">${cellContent}</textarea>` 
+                                : 
+                                `<div class="rounded-xl p-2 h-full flex flex-col justify-center gap-1.5 transition-all min-h-[5rem]
+                                    ${isHighlighted ? 'shadow-sm border border-amber-200/50 bg-amber-50/30' : 'hover:bg-slate-100/50'}">
+                                    ${renderedContent}
+                                </div>`
+                            }
+                        </td>
+                    `;
+                });
+
+                tr.innerHTML = slotHtml;
+                body.appendChild(tr);
+            });
+        }
+
+        // Render Specialty / Location list cards
+        function renderSpecialties() {
+            const container = document.getElementById('specialtyList');
+            container.innerHTML = '';
+
+            scheduleData.specialties.forEach(spec => {
+                const isActive = activeSpecialtyHighlight === spec.id;
+                
+                const card = document.createElement('div');
+                card.className = `p-4.5 rounded-2xl border transition-all duration-300 cursor-pointer flex justify-between items-center group
+                    ${isActive ? 
+                        `shadow-md ring-2 ring-indigo-500 scale-[1.02] bg-gradient-to-br ${spec.color}` : 
+                        'bg-slate-50 hover:bg-white hover:shadow-md hover:border-indigo-300 border-slate-200'
+                    }`;
+                
+                card.onclick = () => highlightSpecialty(spec.id);
+
+                card.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 group-hover:animate-ping"></span>
+                            <h4 class="font-bold text-slate-800 text-base">${spec.name}</h4>
+                        </div>
+                        <p class="text-xs text-slate-500">教師：<span class="text-slate-700 font-medium">${spec.teacher}</span> (${spec.periods}節/週)</p>
+                        <p class="text-xs text-slate-500 flex items-center gap-1 mt-1">
+                            <i class="fa-solid fa-location-dot text-indigo-500"></i>
+                            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md font-mono font-semibold">${spec.loc}</span>
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <i class="fa-solid fa-circle-chevron-right text-slate-300 group-hover:text-indigo-500 transition text-lg"></i>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Match content of cells to specialty class names
+        function checkHighlight(content) {
+            if (!content) return false;
+            
+            // If active specialty card clicked
+            if (activeSpecialtyHighlight) {
+                return content.includes(activeSpecialtyHighlight);
+            }
+            return false;
+        }
+
+        // Click highlight spec function
+        function highlightSpecialty(specId) {
+            if (activeSpecialtyHighlight === specId) {
+                activeSpecialtyHighlight = null; // Toggle off
+            } else {
+                activeSpecialtyHighlight = specId;
+                activeStudentFilter = 'all'; // Clear student filters
+                updateFilterButtons();
+            }
+            renderSpecialties();
+            renderTimetable();
+        }
+
+        // Check if a cell contains a specific student
+        function hasStudent(cellText, studentName) {
+            if (!cellText) return false;
+            if (studentName === 'all') return true;
+            
+            // Resource pull-out notation e.g. "吳幸穎:國二C" or "吳幸穎、呂雅菁:國二C"
+            if (cellText.includes(studentName)) {
+                return true;
+            }
+            
+            // If it's a general class, assume all students are present unless it's a pull-out class for others
+            const pulloutKeywords = ['國二C', '英二C', '數二D', '生活教育B', '社交技巧A', '社交技巧B', '自閉巡迴', '生活訓練E', '生活訓練F'];
+            const containsOtherPulloutsOnly = pulloutKeywords.some(kw => {
+                if (cellText.includes(kw)) {
+                    // It has a pull-out course. Check if it explicitly lists our target student.
+                    return !cellText.includes(studentName);
+                }
+                return false;
+            });
+            
+            return !containsOtherPulloutsOnly;
+        }
+
+        // Apply student filter
+        function filterStudent(studentName) {
+            activeStudentFilter = studentName;
+            activeSpecialtyHighlight = null; // Clear specialty card highlights
+            updateFilterButtons();
+            renderSpecialties();
+            renderTimetable();
+        }
+
+        function updateFilterButtons() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium transition border border-slate-200";
+            });
+
+            const activeBtn = document.getElementById(`btn-${activeStudentFilter}`);
+            if (activeBtn) {
+                activeBtn.className = "filter-btn active bg-teal-600 hover:bg-teal-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition shadow-sm";
+            }
+        }
+
+        // Parser for cell contents (beautifies text blocks inside table cells)
+        function parseCellToHtml(text) {
+            if (!text || text.trim() === "") return `<span class="text-slate-300 font-light text-xs">-</span>`;
+            
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l !== "");
+            let html = "";
+            let pullouts = [];
+            let mainSubject = "";
+            let teacher = "";
+
+            lines.forEach(line => {
+                // Check if it lists pulling-out students like "吳幸穎:國二C"
+                if (line.includes(':') || line.includes('：')) {
+                    const parts = line.split(/[:：]/);
+                    pullouts.push({ student: parts[0], course: parts[1] });
+                } else if (!mainSubject) {
+                    mainSubject = line;
+                } else if (!teacher) {
+                    teacher = line;
+                } else {
+                    teacher += " " + line;
+                }
+            });
+
+            // Base subject display
+            if (mainSubject) {
+                html += `<div class="font-bold text-slate-800 text-sm tracking-wide leading-tight">${mainSubject}</div>`;
+            }
+            if (teacher) {
+                html += `<div class="text-3xs text-slate-400 font-medium">${teacher}</div>`;
+            }
+
+            // Pullout students pills
+            if (pullouts.length > 0) {
+                html += `<div class="mt-1.5 flex flex-col gap-1 w-full">`;
+                pullouts.forEach(p => {
+                    const isFocus = activeStudentFilter === 'all' || p.student.includes(activeStudentFilter);
+                    const pillColor = getPillColor(p.course);
+                    
+                    html += `
+                        <div class="text-4xs px-2 py-0.5 rounded-md border flex items-center justify-between gap-1 transition-all duration-300
+                            ${isFocus ? `font-semibold ${pillColor}` : 'bg-slate-50 border-slate-200 text-slate-400 opacity-60'}">
+                            <span class="truncate">${p.student}</span>
+                            <span class="font-bold opacity-90">${p.course}</span>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+
+            return html;
+        }
+
+        // Distinct colors for specialized courses
+        function getPillColor(course) {
+            if (!course) return "bg-slate-100 text-slate-700 border-slate-200";
+            if (course.includes("國二C")) return "bg-sky-50 text-sky-700 border-sky-200";
+            if (course.includes("英二C")) return "bg-emerald-50 text-emerald-700 border-emerald-200";
+            if (course.includes("數二D")) return "bg-purple-50 text-purple-700 border-purple-200";
+            if (course.includes("生活教育")) return "bg-amber-50 text-amber-700 border-amber-200";
+            if (course.includes("社交技巧")) return "bg-rose-50 text-rose-700 border-rose-200";
+            if (course.includes("自閉巡迴")) return "bg-violet-50 text-violet-700 border-violet-200";
+            if (course.includes("生活訓練")) return "bg-indigo-50 text-indigo-700 border-indigo-200";
+            return "bg-teal-50 text-teal-700 border-teal-200";
+        }
+
+        // Toggle Edit Mode
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('editModeToggle');
+            const text = document.getElementById('editText');
+
+            if (isEditMode) {
+                btn.className = "bg-emerald-600 hover:bg-emerald-700 transition px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 text-white shadow-sm";
+                text.textContent = "儲存課表並重啟互動";
+                document.querySelector('.class-icon').className = "fa-solid class-icon fa-floppy-disk text-2xl text-emerald-200";
+            } else {
+                btn.className = "bg-amber-500 hover:bg-amber-600 transition px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 text-white shadow-sm";
+                text.textContent = "啟用編輯模式";
+                document.querySelector('.class-icon').className = "fa-solid class-icon fa-calendar-days text-2xl text-teal-200";
+                
+                // Save to localStorage
+                localStorage.setItem('nshj_schedule_data', JSON.stringify(scheduleData));
+            }
+            renderTimetable();
+        }
+
+        // Cell content updates from textbox in Edit Mode
+        function updateCell(day, index, value) {
+            scheduleData.timeSlots[index][day] = value;
+        }
+    </script>
+</body>
+</html>
+
+```
