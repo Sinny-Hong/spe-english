@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>七下 英文科講義 中英文配對卷 (看英文選中文版)</title>
+  <title>七下 英文科講義 中英文配對卷 (大電視點擊智慧填入版)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -44,6 +44,11 @@
       height: 34px; /* 嚴格限制行高，與原聽力卷等高 */
     }
 
+    /* 大電視選取中題目的特效底色 */
+    .active-row {
+      background-color: #fef08a !important; /* 明亮的黃色底，提示學生目前正在作答哪一題 */
+    }
+
     #print-all-container { display: none; }
     
     @media print {
@@ -76,8 +81,8 @@
   <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
     <div class="flex flex-wrap gap-2 items-center justify-between">
       <div class="flex items-center gap-2">
-        <span class="inline-block w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-        <span class="text-slate-700 font-medium text-sm font-chinese">🔍 提示：已改為看英文選中文。右側中文已整合為 Part A / B 兩個整合大藍框。</span>
+        <span class="inline-block w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+        <span class="text-slate-700 font-medium text-sm font-chinese">📺 大電視功能已啟動：點擊左側任一題（變黃底），再點右側藍框中文，即可自動填入答案！</span>
       </div>
       <div class="flex gap-2">
         <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
@@ -106,7 +111,6 @@
           </div>
         </div>
       </div>
-      <!-- 重新排序後的指導文字[cite: 1, 2] -->
       <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
         <span class="text-[14px] font-bold text-slate-700 font-chinese">◎ 請將正確英文單字的代號填入括號中。錯字用紅筆訂正，中文、英文各 1 次。</span>
       </div>
@@ -206,7 +210,7 @@
           { eng: "meal", ch: "餐" }, { eng: "snack", ch: "點心" }, { eng: "candy", ch: "糖果" },
           { eng: "popcorn", ch: "爆米花" }, { eng: "milk shake", ch: "奶昔" }, { eng: "fruit salad", ch: "水果沙拉" },
           { eng: "glass", ch: "玻璃杯；玻璃" }, { eng: "bottle", ch: "瓶子" }, { eng: "cup", ch: "杯" },
-          { eng: "bowl", wch: "碗" }, { eng: "plate", ch: "盤子" }, { eng: "can", ch: "罐子" }
+          { eng: "bowl", ch: "碗" }, { eng: "plate", ch: "盤子" }, { eng: "can", ch: "罐子" }
         ]},
         { gTitle: "◎ 第三組", words: [
           { eng: "wear", ch: "戴；穿" }, { eng: "mask", ch: "口罩；面具" }, { eng: "sick", ch: "生病的" },
@@ -271,7 +275,8 @@
 
     let currentLesson = "L1";
     let showAnswersState = false;
-    const optLetters = ["A", "B", "C", "D", "E", "F", "G", "H"]; // 中文代號
+    let activeInput = null; // 全域變數：追蹤大電視目前被點選的英文題目輸入框
+    const optLetters = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
     function speakWord(word) {
       if ('speechSynthesis' in window) {
@@ -283,7 +288,6 @@
       }
     }
 
-    // 穩定的偽隨機種子打亂
     function seededShuffle(array, seedStr) {
       let hash = 0;
       for (let i = 0; i < seedStr.length; i++) {
@@ -297,7 +301,7 @@
       return shuffled;
     }
 
-    // 核心結構：看英文、選中文。中文 4-6 個完美整合成一個藍色大外框
+    // 核心排版：移除了 1~12 題之間的一般格線，僅保留 Part A/B 中央的大虛線
     function buildFixedGroupHtml(groupData, groupIdx) {
       const totalWords = groupData.words;
       const half = Math.ceil(totalWords.length / 2);
@@ -305,13 +309,11 @@
       const partA_Words = totalWords.slice(0, half);
       const partB_Words = totalWords.slice(half);
 
-      // 中文選項進行隨機打亂
       const shuffledA = seededShuffle(partA_Words, `${currentLesson}-${groupIdx}-A`);
       const shuffledB = seededShuffle(partB_Words, `${currentLesson}-${groupIdx}-B`);
 
       let rowsHtml = '';
 
-      // 固定產生 12 行
       for (let i = 0; i < 12; i++) {
         let isPartB = i >= 6;
         let localIdx = isPartB ? i - 6 : i;
@@ -319,24 +321,24 @@
         let currentLeftList = isPartB ? partB_Words : partA_Words;
         let currentRightList = isPartB ? shuffledB : shuffledA;
 
-        let leftItem = currentLeftList[localIdx];  // 英文單字（出題）
-        let rightItem = currentRightList[localIdx]; // 中文意思（選項）
+        let leftItem = currentLeftList[localIdx];  
+        let rightItem = currentRightList[localIdx]; 
 
-        let rowClass = "flex items-center justify-between row-item border-b border-slate-100 px-1";
+        // 去除一般 border-b 橫線，僅在第 6 題完結處加上強烈的分隔線
+        let rowClass = "flex items-center justify-between row-item px-1 quiz-row";
         if (i === 6) {
           rowClass += " border-t-2 border-dashed border-slate-300 pt-0.5";
         }
 
-        // 左側出題欄：括號 + 英文單字 (擴大可用寬度，極致壓縮右邊)
+        // 左側出題：點擊整列會觸發語音讀音，同時將此題鎖定為大電視作答目標
         let leftColHtml = '';
         if (leftItem) {
-          // 尋找對應打亂後的正確中文代號字母 (A, B, C...)
           const correctAnsLetter = optLetters[currentRightList.findIndex(x => x.ch === leftItem.ch)];
 
           leftColHtml = `
-            <div class="flex items-center flex-grow truncate h-[28px] pr-2 hover:bg-slate-50 rounded cursor-pointer transition select-none" onclick="speakWord('${leftItem.eng.replace(/'/g, "\\'")}')">
+            <div class="flex items-center flex-grow truncate h-[28px] pr-2 rounded cursor-pointer transition select-none" onclick="setActiveRow(this, '${leftItem.eng.replace(/'/g, "\\'")}')">
               <span class="text-[14px] font-bold text-slate-700 shrink-0">(</span>
-              <input type="text" maxlength="1" data-ans="${correctAnsLetter}" class="match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0">
+              <input type="text" maxlength="1" data-ans="${correctAnsLetter}" readonly class="match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none">
               <span class="text-[14px] font-bold text-slate-700 shrink-0 mr-2">)</span>
               <span class="font-bold text-slate-400 text-[12px] font-english mr-1.5 shrink-0">${localIdx + 1}.</span>
               <span class="font-english font-medium text-slate-800 text-[15.5px] tracking-tight truncate word-span leading-none">${leftItem.eng}</span>
@@ -346,18 +348,17 @@
           leftColHtml = `<div class="flex-grow h-[28px] opacity-0 pointer-events-none"></div>`;
         }
 
-        // 右側答案選項欄：縮小至 115px，整個 Part 內的選項會自然對齊並融合成連續的藍色大外框
+        // 右側中文答案：融合為一個整合大框，並添加大電視點擊一鍵填入功能
         let rightColHtml = '';
         if (rightItem) {
           const letterLabel = optLetters[localIdx];
           
-          // 巧妙控制圓角：Part 內的第一個和最後一個加上圓角，使其完美融合為「一整個藍框」
           let radiusClass = "rounded-none";
           if (localIdx === 0) radiusClass = "rounded-t";
           if (localIdx === currentRightList.length - 1 || localIdx === 5) radiusClass = "rounded-b";
 
           rightColHtml = `
-            <div class="flex items-center bg-sky-100 border-x border-sky-300 ${radiusClass} ${localIdx === 0 ? 'border-t' : ''} ${localIdx === currentRightList.length - 1 || localIdx === 5 ? 'border-b' : ''} px-2 w-[115px] h-[30px] shrink-0 shadow-sm">
+            <div onclick="selectChineseAnswer('${letterLabel}')" class="flex items-center bg-sky-100 border-x border-sky-300 ${radiusClass} ${localIdx === 0 ? 'border-t' : ''} ${localIdx === currentRightList.length - 1 || localIdx === 5 ? 'border-b' : ''} px-2 w-[115px] h-[30px] shrink-0 shadow-sm cursor-pointer hover:bg-sky-200 transition">
               <span class="font-bold text-red-600 text-[13px] font-english mr-1 shrink-0">${letterLabel}.</span>
               <span class="font-chinese text-slate-800 text-[13px] font-medium truncate flex-grow leading-none">${rightItem.ch}</span>
             </div>
@@ -386,9 +387,57 @@
       `;
     }
 
+    // 大電視專用：點擊左側英文列，高亮亮起黃底，並進入準備填入狀態
+    function setActiveRow(element, engWord) {
+      // 先清除全網頁所有其他橫列的黃色亮底
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      
+      // 找到目前點擊的這一行整列變黃色
+      const parentRow = element.closest('.quiz-row');
+      parentRow.classList.add('active-row');
+      
+      // 鎖定裡面的 input 框作為稍後的填字目標
+      activeInput = parentRow.querySelector('.match-input');
+      
+      // 同步發出慢速英語發音
+      speakWord(engWord);
+    }
+
+    // 大電視專用：點擊右側中文大藍框的任一選項，自動把代號抓去黃色格子裡
+    function selectChineseAnswer(letter) {
+      if (activeInput) {
+        // 填入大寫字母代號
+        activeInput.value = letter;
+        activeInput.classList.add('bg-red-50', 'text-red-600');
+        
+        // 自動尋找下一題（下一個 input），幫老師或學生自動啟動下一題的黃底，免去重複點選的麻煩
+        const allInputs = Array.from(document.querySelectorAll('.match-input'));
+        const currentIndex = allInputs.indexOf(activeInput);
+        
+        // 清除當前黃底
+        activeInput.closest('.quiz-row').classList.remove('active-row');
+        
+        if (currentIndex !== -1 && currentIndex < allInputs.length - 1) {
+          const nextInput = allInputs[currentIndex + 1];
+          const nextRow = nextInput.closest('.quiz-row');
+          
+          // 如果下一題是有題目的（非空白格），就自動幫他亮起下一題
+          if (nextRow && !nextRow.classList.contains('opacity-0')) {
+            nextRow.classList.add('active-row');
+            activeInput = nextInput;
+          } else {
+            activeInput = null;
+          }
+        } else {
+          activeInput = null;
+        }
+      }
+    }
+
     function loadLesson(lessonKey) {
       currentLesson = lessonKey;
       showAnswersState = false;
+      activeInput = null;
 
       document.querySelectorAll('.lesson-btn').forEach(btn => {
         const k = btn.getAttribute('data-lesson');
@@ -406,11 +455,9 @@
         container.innerHTML += buildFixedGroupHtml(groupData, idx);
       });
 
-      bindInputLogic();
       applyMicroScaling();
     }
 
-    // 當英文單字或片語太長時，強制啟動微縮機制防止破格折行
     function applyMicroScaling() {
       document.querySelectorAll('.word-span').forEach(span => {
         const textLength = span.innerText.length;
@@ -439,27 +486,6 @@
       loadLesson("L1");
     }
 
-    function bindInputLogic() {
-      const inputsArray = Array.from(document.querySelectorAll('.match-input'));
-      inputsArray.forEach((input, index) => {
-        input.addEventListener('input', function() {
-          this.value = this.value.toUpperCase().replace(/[^A-H]/g, ''); // 只能輸入 A 到 H 的大寫代號
-          if (this.value !== '' && index < inputsArray.length - 1) {
-            inputsArray[index + 1].focus();
-          }
-        });
-
-        input.addEventListener('keydown', function(e) {
-          if (e.key === 'Backspace' && this.value === '' && index > 0) {
-            inputsArray[index - 1].focus();
-          }
-          if (e.key === 'Enter' && index < inputsArray.length - 1) {
-            inputsArray[index + 1].focus();
-          }
-        });
-      });
-    }
-
     function toggleAnswers() {
       showAnswersState = !showAnswersState;
       document.querySelectorAll('.match-input').forEach(input => {
@@ -479,7 +505,9 @@
         input.value = '';
         input.classList.remove('bg-red-50', 'text-red-600');
       });
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
       showAnswersState = false;
+      activeInput = null;
     }
 
     function printAllLessons() {

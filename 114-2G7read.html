@@ -5,17 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>七下 課文翻譯理解講義看板</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   
   <style>
     body {
-      font-family: 'Noto Sans TC', sans-serif;
+      font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
       background-color: #f1f5f9;
     }
-    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
-    .font-english { font-family: 'Lexend', sans-serif; }
+    .font-chinese { font-family: 'Noto Sans TC', system-ui, sans-serif; }
+    .font-english { font-family: 'Lexend', 'Segoe UI', sans-serif; }
     
-    /* 嚴格 A4 尺寸邊界（極致微調間距，徹底杜絕第十題被切到） */
+    /* 嚴格 A4 尺寸邊界 */
     .page-a4 {
       width: 210mm;
       height: 297mm;
@@ -96,20 +95,20 @@
   <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-4 border border-slate-200">
     <div class="flex flex-wrap gap-2 items-center justify-between">
       <div class="flex items-center gap-2">
-        <span class="inline-block w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" id="status-dot"></span>
-        <span class="text-slate-700 font-medium text-[13px] font-chinese" id="status-text">⏳ 正在連線讀取 Google 試算表資料庫...</span>
+        <span class="inline-block w-2.5 h-2.5 bg-emerald-500 rounded-full" id="status-dot"></span>
+        <span class="text-slate-700 font-medium text-[13px] font-chinese" id="status-text">✅ 本地離線講義庫載入成功！無網路狀態下亦可穩定運作。</span>
       </div>
       <div class="flex gap-2">
         <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
         <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
         <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
-        <button onclick="printAllLessons()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印 (12頁)</button>
+        <button onclick="printAllLessons()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印 (4頁)</button>
       </div>
     </div>
     
     <div class="flex flex-col gap-2">
-      <div class="grid grid-cols-6 gap-1.5" id="selector-dialogue"></div>
-      <div class="grid grid-cols-6 gap-1.5" id="selector-reading"></div>
+      <div class="grid grid-cols-2 gap-1.5" id="selector-dialogue"></div>
+      <div class="grid grid-cols-2 gap-1.5" id="selector-reading"></div>
     </div>
   </div>
 
@@ -131,101 +130,56 @@
   <div id="print-all-container"></div>
 
   <script>
-    let database = {};
-    const row1Keys = ["L1對話", "L2對話", "L3對話", "L4對話", "L5對話", "L6對話"];
-    const row2Keys = ["L1閱讀", "L2閱讀", "L3閱讀", "L4閱讀", "L5閱讀", "L6閱讀"];
-    const allLessonKeys = [...row1Keys, ...row2Keys];
+    // 移除所有網路雲端連動機制，直接精準內嵌最新提供之題庫資料
+    const database = {
+      "L1對話": [
+        { no: 1, q: "Do you like sports, Zac?", a: "運動", b1: "遊戲", b2: "畫圖" },
+        { no: 2, q: "I'm on the school team.", a: "隊伍", b1: "時間", b2: "課堂" },
+        { no: 3, q: "I practice basketball after school every day.", a: "練習", b1: "游泳", b2: "看書" },
+        { no: 4, q: "Do you also play basketball on weekends?", a: "你也在週末打籃球嗎？", b1: "你放學後每天練習籃球嗎？", b2: "下次我可以加入你們嗎？" },
+        { no: 5, q: "On Saturdays, I read at home.", a: "在星期六，我在家看書。", b1: "在星期日，我和朋友游泳。", b2: "我在空閒時間打籃球。" },
+        { no: 6, q: "On Sundays, I swim with my friends.", a: "在星期日，我和我的朋友們游泳。", b1: "在星期六，我在家看書。", b2: "你在空閒時間做什麼？" },
+        { no: 7, q: "Can I join you guys next time?", a: "下次我可以加入你們嗎？", b1: "你也喜歡運動嗎？", b2: "你週末都做些什麼？" },
+        { no: 8, q: "He has brown eyes and nice hair.", a: "他有咖啡色的眼睛和好看的頭髮。", b1: "他是學校籃球隊的隊員。", b2: "他是 Yuki 的表哥。" },
+        { no: 9, q: "他很可愛。", a: "He's cute.", b1: "That's Shin.", b2: "Do you know him?" },
+        { no: 10, q: "他是 Yuki 的表哥。", a: "He's Yuki's cousin.", b1: "I'm on the school team.", b2: "I also swim on weekends." }
+      ],
+      "L1閱讀": [
+        { no: 1, q: "Lorna is from the USA.", a: "美國", b1: "英國", b2: "日本" },
+        { no: 2, q: "She's new to Bird's Creek.", a: "新來的", b1: "離開的", b2: "喜歡的" },
+        { no: 3, q: "He is strong and tall.", a: "強壯的", b1: "傷心的", b2: "遲到的" },
+        { no: 4, q: "Friends are important to her.", a: "朋友對她來說很重要。", b1: "朋友對他來說很重要。", b2: "朋友對我們來說很重要。" },
+        { no: 5, q: "She's always there for them.", a: "她總是在那裡支持他們。", b1: "她從不留在那裡陪他們。", b2: "她只有星期日會去那裡。" },
+        { no: 6, q: "He is a player in the NBA.", a: "他是一位 NBA 的球員。", b1: "他是一位學校籃球隊的隊員。", b2: "他是一位吉他老師。" },
+        { no: 7, q: "He's also good at music.", a: "他也很擅長音樂。", b1: "他也很喜歡看書。", b2: "他也經常練習游泳。" },
+        { no: 8, q: "Cassandra knows everyone in Bird's Creek.", a: "Cassandra 認識 Bird's Creek 的每個人。", b1: "Cassandra 認識 Gavin 的同班同學。", b2: "Cassandra 認識 Yuki 的表哥。" },
+        { no: 9, q: "Gavin 和 Paul 對此感到非常傷心。", a: "Gavin and Paul are very sad about it.", b1: "Gavin doesn't really like her.", b2: "Friends are important to her." },
+        { no: 10, q: "但她總是遲到。", a: "But she is always late for it.", b1: "He can play the guitar and the piano.", b2: "She's new to Bird's Creek." }
+      ],
+      "L2對話": [
+        { no: 1, q: "Good morning, Yuki. You're an early bird.", a: "早起的人", b1: "晚睡的人", b2: "忙碌的人" },
+        { no: 2, q: "My parents go to work at six.", a: "工作", b1: "上學", b2: "運動" },
+        { no: 3, q: "They often wake me up before six.", a: "叫醒我", b1: "陪伴我", b2: "帶領我" },
+        { no: 4, q: "Are you a morning person?", a: "你是個早起的人嗎？", b1: "你通常幾點去睡覺？", b2: "你週末都在做什麼？" },
+        { no: 5, q: "What time do you usually go to bed?", a: "你通常幾點去睡覺？", b1: "你每天幾點起床？", b2: "你也在週末游泳嗎？" },
+        { no: 6, q: "I seldom go to sleep before eleven.", a: "我很少在十一點前入睡。", b1: "我每天五點鐘起床。", b2: "我在補習班待到九點。" },
+        { no: 7, q: "Sometimes, I even go to bed after twelve.", a: "有時候，我甚至在十二點後才上床睡覺。", b1: "我在星期六都在家看書。", b2: "下次我可以加入你們嗎？" },
+        { no: 8, q: "I'm at cram school from six to nine.", a: "我從六點到九點在補習班。", b1: "我放學後每天練習籃球。", b2: "我和我的朋友們去游泳。" },
+        { no: 9, q: "我每天五點起床。", a: "I get up at five every day.", b1: "That's late! It's not good for you.", b2: "Then I do my homework at home." },
+        { no: 10, q: "我知道，但我沒辦法。", a: "I know, but I can't help it.", b1: "That's early.", b2: "That's too bad." }
+      ]
+    };
+
+    const row1Keys = ["L1對話", "L2對話"];
+    const row2Keys = ["L1閱讀"];
+    const allLessonKeys = ["L1對話", "L1閱讀", "L2對話"];
     
     let currentLesson = "L1對話";
     let showAnswersState = false;
 
-    // 方案一的核心技術：利用 Google Visualization API 配合動態 Script 標籤，完美跨越 file:/// 的 CORS 封鎖
     function initDatabase() {
-      // 從您提供的個人帳號網址中精準提取出來的試算表 ID
-      const spreadsheetId = "1vRYM2hgQlJqSutxkxqF7FMvmmJaUys5z8j95ez8acWXpwcjpgI4RU54SnoHkFIS-859DzOPCaKxUUVq";
-      const jsonpUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=responseHandler:handleGoogleData`;
-
-      const script = document.createElement('script');
-      script.src = jsonpUrl;
-      
-      // 連線極端失敗防呆保護
-      script.onerror = function() {
-        console.error("腳本載入嚴重失敗，啟用安全離線題庫。");
-        activateFallback();
-      };
-      document.body.appendChild(script);
-    }
-
-    // 接收並精密解析 Google 回傳 JSON 結構的專用回呼函式
-    window.handleGoogleData = function(response) {
-      try {
-        allLessonKeys.forEach(k => database[k] = []);
-        
-        if (!response || !response.table || !response.table.rows) {
-          throw new Error("Google 回傳的資料結構不符合預期");
-        }
-        
-        const rows = response.table.rows;
-        
-        rows.forEach(row => {
-          // 安全讀取儲存格文字與去空白機制
-          const getVal = (cellIdx) => {
-            const cell = row.c[cellIdx];
-            return (cell && cell.v !== null && cell.v !== undefined) ? String(cell.v).trim() : "";
-          };
-          
-          const lesson = getVal(0);
-          const no = parseInt(getVal(1)) || 0;
-          const q = getVal(2);
-          const a = getVal(3);
-          const b1 = getVal(4);
-          const b2 = getVal(5);
-
-          // 唯有欄位名稱完全對應的資料才允許塞入對應的課程陣列
-          if (lesson && database[lesson]) {
-            database[lesson].push({ no, q, a, b1, b2 });
-          }
-        });
-
-        // 檢查雲端是否真的有讀到實體題目，若為空則報錯走向備用
-        let totalItems = 0;
-        allLessonKeys.forEach(k => totalItems += database[k].length);
-        if (totalItems === 0) throw new Error("讀取成功但雲端資料庫內沒有任何有效題目。");
-
-        // 點亮綠燈：成功連線
-        document.getElementById('status-dot').className = "inline-block w-2.5 h-2.5 bg-emerald-500 rounded-full";
-        document.getElementById('status-text').innerText = "✅ 雲端試算表連線成功！資料已即時同步更新。";
-        generateSelectorButtons();
-        loadLesson(currentLesson);
-      } catch (err) {
-        console.error("解析雲端資料庫時遭遇錯誤:", err);
-        activateFallback();
-      }
-    };
-
-    function activateFallback() {
-      document.getElementById('status-dot').className = "inline-block w-2.5 h-2.5 bg-amber-500 rounded-full animate-pulse";
-      document.getElementById('status-text').innerText = "⚠️ 試算表連線忙碌中，已自動啟用本地離線備用講義。";
-      buildFallbackDatabase();
       generateSelectorButtons();
       loadLesson(currentLesson);
-    }
-
-    function buildFallbackDatabase() {
-      allLessonKeys.forEach(key => {
-        database[key] = [
-          { no: 1, q: "Do you like sports, Zac?", a: "運動", b1: "遊戲", b2: "畫圖" },
-          { no: 2, q: "I'm on the school team.", a: "隊伍", b1: "時間", b2: "課堂" },
-          { no: 3, q: "I practice basketball after school every day.", a: "練習", b1: "游泳", b2: "看書" },
-          { no: 4, q: "Do you also play basketball on weekends?", a: "你也在週末打籃球嗎？", b1: "你放學後每天練習籃球嗎？", b2: "下次我可以加入你們嗎？" },
-          { no: 5, q: "On Saturdays, I read at home.", a: "在星期六，我在家看書。", b1: "在星期日，我和朋友游泳。", b2: "我在空閒時間打籃球。" },
-          { no: 6, q: "On Sundays, I swim with my friends.", a: "在星期日，我和我的朋友們游泳。", b1: "在星期六，我在家看書。", b2: "你在空閒時間做什麼？" },
-          { no: 7, q: "Can I join you guys next time?", a: "下次我可以加入你們嗎？", b1: "你也喜歡運動嗎？", b2: "你週末都做些什麼？" },
-          { no: 8, q: "He has brown eyes and nice hair.", a: "他有咖啡色的眼睛和好看的頭髮。", b1: "他是學校籃球隊的隊員。", b2: "他是 Yuki 的表哥。" },
-          { no: 9, q: "他很可愛。", a: "He's cute.", b1: "That's Shin.", b2: "Do you know him?" },
-          { no: 10, q: "他是 Yuki 的表哥。", a: "He's Yuki's cousin.", b1: "I'm on the school team.", b2: "I also swim on weekends." }
-        ];
-      });
     }
 
     function generateSelectorButtons() {
@@ -261,7 +215,7 @@
       });
 
       const hasChinese = /[\u4e00-\u9fa5]/.test(item.q);
-      const ttsAction = hasChinese ? '' : `onclick="speakDualTrack(this.innerText)"`;
+      const ttsAction = hasChinese ? '' : `onclick="fallbackToSystemTTS(this.innerText)"`;
       const cursorClass = hasChinese ? '' : 'cursor-pointer hover:text-blue-600 transition decoration-dotted underline-offset-4 hover:underline';
 
       let optionsHtml = '';
@@ -297,15 +251,7 @@
     }
 
     function getLessonQuestions(lessonKey) {
-      let data = database[lessonKey];
-      if (!data || data.length === 0) {
-        data = Array.from({length: 10}, (_, i) => ({
-          no: i + 1,
-          q: `試算表 [${lessonKey}] 尚未寫入內容，請於雲端填寫。`,
-          a: "模擬答案", b1: "誘答選項一", b2: "誘答選項二"
-        }));
-      }
-      return data;
+      return database[lessonKey] || [];
     }
 
     function loadLesson(lessonKey) {
@@ -378,36 +324,20 @@
 
         if (qText.clientHeight > 40) {
           qText.style.fontSize = "12.5px";
-          inputs.forEach(el => el.style.fontSize = "12.5px");
+          inputs.forEach(el => { el.style.fontSize = "12.5px"; });
           brackets.forEach(el => el.style.fontSize = "12.5px");
           opts.forEach(el => el.style.fontSize = "11.5px");
         }
       });
     }
 
-    // 語音雙軌防錯核心機制
-    function speakDualTrack(word) {
-      const cleanWord = word.replace(/<[^>]*>/g, '').replace(/\.\.\./g, '').trim();
-      if (!cleanWord) return;
-
-      // 第一軌：高音質線上播音
-      const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(cleanWord)}`;
-      const audio = new Audio(audioUrl);
-      
-      audio.play().catch(err => {
-        fallbackToSystemTTS(cleanWord);
-      });
-
-      audio.onerror = function() {
-        fallbackToSystemTTS(cleanWord);
-      };
-    }
-
-    // 第二軌：本地系統語音降備（慢速 0.85 適合教學）
+    // 完全不靠網路、直接呼叫本機系統內建語音朗讀（速度調慢 0.85 適合學生）
     function fallbackToSystemTTS(text) {
+      const cleanText = text.replace(/<[^>]*>/g, '').replace(/\.\.\./g, '').trim();
+      if (!cleanText) return;
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
+        const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = 'en-US';
         utterance.rate = 0.85;
         window.speechSynthesis.speak(utterance);
