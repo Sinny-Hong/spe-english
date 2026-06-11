@@ -254,7 +254,7 @@
                 <span class="text-2xl">📋</span>
                 <div>
                     <h1 class="text-lg font-bold tracking-wide">新市國中異想教室</h1>
-                    <p class="text-xs text-slate-400">個別化課表智慧列印系統 v3.8</p>
+                    <p class="text-xs text-slate-400">個別化課表智慧列印系統 v3.9</p>
                 </div>
             </div>
             
@@ -420,7 +420,7 @@
                 "原一1": "國文\n郭芸彤", "特一1": "國文一A", "原一2": "數學\n張幼庭", "原一3": "生物\n黃蕙蘭", "原一4": "體育\n甘綉絹", "原一5": "歷史\n劉尚青", "原一6": "綜合\n蔡雅萱", "原一7": "音樂\n蔡芝蕎", "原一8": "",
                 "原二1": "英語\n徐子皓", "原二2": "輔導\n蕭翔文", "原二3": "生活科技\n吳明吉", "原二4": "國文\n郭芸彤", "原二5": "數學\n張幼庭", "特二5": "數學一A", "原二6": "地理\n王壬廷", "原二7": "班會\n郭芸彤", "原二8": "",
                 "原三1": "數學\n張幼庭", "原三2": "地理\n王壬廷", "原三3": "國文\n郭芸彤", "原三4": "家政\n黃俊祥", "原三5": "體育\n甘綉絹", "原三6": "社團\n蔡雅萱", "原三7": "生物\n黃蕙蘭", "原三8": "",
-                "原四1": "國文\n郭芸彤", "原四2": "資訊\n吳明吉", "原四3": "理化\n黃蕙蘭", "原four4": "英語\n徐子皓", "原四5": "英文閱讀\n徐子皓", "原四6": "健體\n廖文彬", "原四7": "數學\n張幼庭", "原四8": "",
+                "原四1": "國文\n郭芸彤", "原four2": "資訊\n吳明吉", "原四3": "理化\n黃蕙蘭", "原四4": "英語\n徐子皓", "原四5": "英文閱讀\n徐子皓", "原四6": "健體\n廖文彬", "原四7": "數學\n張幼庭", "原四8": "",
                 "原五1": "體育\n甘綉絹", "原五2": "國文\n郭芸彤", "原五3": "英語\n徐子皓", "原五4": "數學\n張幼庭", "原五5": "生物\n黃蕙蘭", "原五6": "視覺藝術\n蔡雅萱", "原五7": "班會\n郭芸彤", "原五8": ""
             }
         ];
@@ -459,8 +459,44 @@
                 });
         }
 
-        // 強固型 CSV 解析器 (支持雙引號及換行保護)
+        // -------------------------------------------------------------
+        // 智慧型多欄位安全提取器 (支援精準匹配與雙向模糊比對，完美對抗空格、BOM、表頭更名)
+        // -------------------------------------------------------------
+        function getStudentField(student, possibleKeys, fallback = "未填寫") {
+            if (!student) return fallback;
+            
+            // 1. 先進標準精準匹配
+            for (let key of possibleKeys) {
+                if (student[key] && student[key].trim()) {
+                    return student[key].trim();
+                }
+            }
+            
+            // 2. 移除前後空白、引號、連接號、BOM等特殊字元的標準化比對
+            const normalizedKeys = Object.keys(student).map(k => ({
+                original: k,
+                clean: k.trim().replace(/[\ufeff"'\s\-\·]/g, '')
+            }));
+            
+            for (let target of possibleKeys) {
+                let cleanTarget = target.trim().replace(/[\ufeff"'\s\-\·]/g, '');
+                for (let item of normalizedKeys) {
+                    // 只要表頭包含目標字詞，或者目標字詞包含表頭（如：「輔導」包含於「輔導教師」中）
+                    if (item.clean.includes(cleanTarget) || cleanTarget.includes(item.clean)) {
+                        if (student[item.original] && student[item.original].trim()) {
+                            return student[item.original].trim();
+                        }
+                    }
+                }
+            }
+            return fallback;
+        }
+
+        // 強固型 CSV 解析器 (支持雙引號及換行保護，自動移除開頭的 UTF-8 BOM 避免首欄卡住)
         function robustCSVParser(text) {
+            // 移除 UTF-8 BOM
+            text = text.replace(/^\uFEFF/, '');
+            
             let lines = [];
             let row = [""];
             let inQuotes = false;
@@ -492,7 +528,7 @@
             if (lines.length < 2) return null;
 
             const rawHeaders = lines[0];
-            const cleanHeaders = rawHeaders.map(h => h ? h.trim().replace(/["'\s\-\·]/g, '') : '');
+            const cleanHeaders = rawHeaders.map(h => h ? h.trim().replace(/[\ufeff"'\s\-\·]/g, '') : '');
             
             const results = [];
             for (let r = 1; r < lines.length; r++) {
@@ -506,7 +542,20 @@
                     }
                 });
 
-                if (studentObj["姓名"]) {
+                // 模糊搜尋姓名欄位
+                let hasName = false;
+                for (let key of Object.keys(studentObj)) {
+                    let cleanKey = key.trim().replace(/[\ufeff"'\s\-\·]/g, '');
+                    if (cleanKey.includes("姓名") || cleanKey === "學生" || cleanKey === "Name") {
+                        if (studentObj[key] && studentObj[key].trim()) {
+                            hasName = true;
+                            studentObj["姓名"] = studentObj[key].trim();
+                            break;
+                        }
+                    }
+                }
+
+                if (hasName) {
                     results.push(studentObj);
                 }
             }
@@ -523,7 +572,11 @@
             studentsData.forEach((student, index) => {
                 const opt = document.createElement('option');
                 opt.value = index;
-                opt.innerText = `${student['班級'] || ''} ${student['姓名'] || ''}`;
+                
+                const studentName = getStudentField(student, ["姓名", "學生姓名", "學生"], "未知學生");
+                const className = getStudentField(student, ["班級", "原班"], "未知班級");
+                
+                opt.innerText = `${className} ${studentName}`;
                 selectEl.appendChild(opt);
             });
 
@@ -547,7 +600,7 @@
         }
 
         // -------------------------------------------------------------
-        // 六、 智慧解析與功能對應
+        // 六; 智慧解析與功能對應
         // -------------------------------------------------------------
         
         // 1. 強固的原班課程解析器 (強制定點拆分「科目名稱」與「任課教師」，絕不產生地址地點)
@@ -633,10 +686,11 @@
         // 七、 核心 A4 HTML 結構渲染 (物理網格、三行對齊、字體放大且拉高格子)
         // -------------------------------------------------------------
         function generateStudentPageHTML(student) {
-            const className = student["班級"] || "未指定班級";
-            const studentName = student["姓名"] || "未知學生";
-            const tutorTeacher = student["導師"] || "未填寫";
-            const caseTeacher = student["輔導"] || student["個管"] || "未填寫";
+            // 透過智慧提取器抓取基本個資（強大容錯）
+            const className = getStudentField(student, ["班級", "原班", "班級導師"], "未指定班級");
+            const studentName = getStudentField(student, ["姓名", "學生姓名", "學生"], "未知學生");
+            const tutorTeacher = getStudentField(student, ["導師", "班級導師", "班導", "原班導師"], "未填寫");
+            const caseTeacher = getStudentField(student, ["輔導", "個管", "輔導教師", "個管教師", "輔導老師", "個管老師"], "未填寫");
 
             let tableRowsHtml = "";
             const daysChinese = ["一", "二", "三", "四", "五"];
@@ -899,3 +953,4 @@
 </html>
 
 ```
+
