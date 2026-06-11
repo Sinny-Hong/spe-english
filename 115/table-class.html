@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新市國中異想教室 - 個別學生課表系統</title>
-    <!-- 引入 Tailwind CSS 用於外圍控制面板 -->
+    <title>新市國中異想教室 - 全景班級課表系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -85,7 +84,7 @@
             font-weight: bold;
         }
 
-        /* 節次與時間字體放大 (至少與教師姓名一樣大) */
+        /* 節次與時間字體放大 */
         .time-period-cell {
             padding: 6px 0;
             line-height: 1.25;
@@ -94,33 +93,32 @@
         }
 
         .period-title {
-            font-size: 17.5px; /* 節次字體加大 */
+            font-size: 17.5px;
             font-weight: bold;
             margin-bottom: 3px;
         }
 
         .time-digit {
-            font-size: 14px; /* 時間字體加大，至少與教師名字 (13.5px) 一樣大 */
+            font-size: 14px;
             font-weight: normal;
             color: #111;
         }
 
         .morning-title {
-            font-size: 17.5px; /* 早自習標題同步加大 */
-            font-weight: bold;
+            font-size: 17.5px;
             padding: 4px 0;
+            font-weight: bold;
         }
 
-        /* 課表格子高度固定為 84px，運用三軌 CSS Grid 實作物理性絕對定位，防制任何文字與教師名字飄移 */
+        /* 班級課表動態 Grid 重組結構：第一、二軌絕對鎖定，第三軌改為 flex 垂直堆疊抽離學生 */
         .course-cell-wrapper {
-            height: 84px; 
+            min-height: 84px; 
             display: grid;
-            grid-template-rows: 24px 18px 32px; /* 物理軌道：24px 科目, 18px 教師, 32px 印章區/空白預留 */
+            grid-template-rows: 24px 18px auto; /* 第三軌動態向下延伸，但一二軌高度死守 */
             align-items: center;
             justify-items: center;
             padding: 5px 2px;
             box-sizing: border-box;
-            overflow: hidden;
         }
 
         .orig-subject {
@@ -130,6 +128,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 100%;
         }
         
         .orig-teacher {
@@ -140,30 +139,42 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 100%;
         }
 
-        /* 硃砂大印章：維持格子高度 84px 且在 Grid 第三軌固定，絕不動到原班教師的原本高度 */
-        .extracted-stamp {
+        /* 第三軌：特教學生抽離名單貨櫃區 */
+        .extracted-container {
+            width: 100%;
             display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 2px;
+        }
+
+        /* 替代大印章的新樣式：高擬真迷你圖釘徽章 (完美防飄移與瘦身) */
+        .mini-stamp-badge {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            border: 2px solid #dc2626; /* 印章框邊框加粗 */
-            color: #dc2626;
-            font-weight: 900; /* 加粗 */
-            padding: 0 10px; /* 寬口內襯 */
-            border-radius: 4px;
-            font-size: 14.5px; /* 加大字型 */
-            letter-spacing: 0.8px;
-            text-align: center;
-            height: 26px; /* 固定高度以貼合 grid 第三軌 */
-            max-width: 95%;
+            justify-content: flex-start;
+            border-left: 3.5px solid #dc2626; /* 左側圖釘色彩豎線 */
+            border-top: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 13.5px; /* 精緻瘦身字體 */
+            text-align: left;
+            width: 98%;
+            margin: 0 auto;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             box-sizing: border-box;
+            background-color: #fff5f5;
         }
 
-        /* 與印章等高的預留空白，保證教師與課程位置絕對不飄移 */
+        /* 透明空白墊片，保證空堂時整張課表的 A4 物理飽滿度不縮水，原班位置絕不飄移 */
         .stamp-spacer {
             height: 26px;
             width: 100%;
@@ -174,7 +185,7 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            font-size: 14.5px; /* 提升整體底部字型易讀性 */
+            font-size: 14.5px;
             border-top: 1.5px solid black;
             padding-top: 8px;
             margin-top: 10px;
@@ -189,7 +200,7 @@
             color: black;
         }
 
-        /* 完美對齊：模擬 Word 的定位鍵(Tab Stop) 兩欄排版 */
+        /* 完美對齊：模擬 Word 的定位鍵(Tab Stop) 雙欄排版 */
         .footer-tab-row {
             display: flex;
             align-items: center;
@@ -199,7 +210,7 @@
         }
 
         .footer-col-left {
-            width: 48%; /* 左半邊欄位 */
+            width: 48%;
             flex-shrink: 0;
             white-space: nowrap;
             overflow: hidden;
@@ -207,8 +218,8 @@
         }
 
         .footer-col-right {
-            width: 48%; /* 右半邊欄位 */
-            margin-left: 4%; /* Spacing 完美模擬 Word 的定位點 TAB Spacing */
+            width: 48%;
+            margin-left: 4%;
             flex-shrink: 0;
             white-space: nowrap;
             overflow: hidden;
@@ -269,14 +280,13 @@
 </head>
 <body class="bg-slate-100 min-h-screen pb-12">
 
-    <!-- 頂部管理控制列 -->
     <header class="no-print bg-slate-900 text-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">📋</span>
                 <div>
                     <h1 class="text-lg font-bold tracking-wide">新市國中異想教室</h1>
-                    <p class="text-xs text-slate-400">個別化課表智慧列印系統 v5.0 (雙欄Tab定位版)</p>
+                    <p class="text-xs text-slate-400">全景班級課表智慧列印系統 v5.0 (全班抽離同步版)</p>
                 </div>
             </div>
             
@@ -286,41 +296,36 @@
                     <span id="connection-status">正在與雲端連線...</span>
                 </div>
                 <div class="text-sm bg-slate-800 px-3 py-1 rounded-md border border-slate-700">
-                    學生總數：<span id="student-count-badge" class="font-bold text-yellow-400">0</span> 人
+                    班級總數：<span id="class-count-badge" class="font-bold text-yellow-400">0</span> 班
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- 網頁操作介面 -->
     <main class="no-print max-w-7xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
         
-        <!-- 左側控制面板 -->
         <div class="lg:col-span-1 flex flex-col gap-6">
             
-            <!-- 學生選單 -->
             <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">👤 選擇課表學生</h2>
+                <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">🏫 選擇全景班級課表</h2>
                 <div class="relative">
-                    <select id="student-select" class="w-full bg-slate-50 border-2 border-slate-200 hover:border-slate-400 focus:border-blue-500 rounded-lg px-3 py-2.5 text-slate-800 font-medium transition-colors focus:outline-none appearance-none cursor-pointer">
-                        <!-- 動態載入 -->
-                    </select>
+                    <select id="class-select" class="w-full bg-slate-50 border-2 border-slate-200 hover:border-slate-400 focus:border-blue-500 rounded-lg px-3 py-2.5 text-slate-800 font-medium transition-colors focus:outline-none appearance-none cursor-pointer">
+                        </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                     </div>
                 </div>
-                <p class="text-xs text-slate-400 mt-2">提示：切換學生後，課表將自動讀取對應的 原11~原58 與 特11~特58 資料。</p>
+                <p class="text-xs text-slate-400 mt-2">提示：系統會自動撈出該班所有特教學生，並將抽離課以「圖釘徽章」垂直整合至課表中。</p>
             </div>
 
-            <!-- 列印動作面板 -->
             <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
                 <h2 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">🖨️ 列印與檔案輸出</h2>
                 <div class="flex flex-col gap-3">
                     <button onclick="window.print()" class="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors cursor-pointer">
-                        <span>🖨️</span> 列印目前學生課表 (單頁)
+                        <span>🖨️</span> 列印目前班級課表 (單頁)
                     </button>
-                    <button id="btn-print-all" onclick="printAllStudents()" class="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors cursor-pointer">
-                        <span>📚</span> 一鍵列印所有學生 (整疊)
+                    <button id="btn-print-all" onclick="printAllClasses()" class="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors cursor-pointer">
+                        <span>📚</span> 一鍵列印全校班級 (整疊)
                     </button>
                 </div>
                 <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-3 text-xs mt-4 leading-relaxed">
@@ -328,11 +333,10 @@
                     1. 建議目標選擇<strong>「另存為 PDF」</strong>或連接學校印表機。<br>
                     2. 版面設定：<strong>直向 / A4</strong>。<br>
                     3. 邊界請設為<strong>「無」</strong>或<strong>「預設」</strong>。<br>
-                    4. 務必<strong>勾選「背景圖形」</strong>以顯示彩色印章與格子底色！
+                    4. 務必<strong>勾選「背景圖形」</strong>以顯示高質感圖釘徽章與底色！
                 </div>
             </div>
 
-            <!-- 雲端試算表設定 -->
             <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
                 <details class="group">
                     <summary class="flex justify-between items-center font-bold text-slate-700 cursor-pointer list-none">
@@ -344,7 +348,7 @@
                     <div class="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-3">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">A5彙整分頁 CSV 網址：</label>
-                            <input id="csv-url-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-xs focus:outline-none focus:border-blue-500" placeholder="請貼上以 https://docs.google.com/spreadsheets/d/... 開頭的 CSV 網址">
+                            <input id="csv-url-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded p-2 text-xs focus:outline-none focus:border-blue-500" placeholder="請貼上 CSV 網址">
                         </div>
                         <div class="flex gap-2">
                             <button onclick="saveAndReloadUrl()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2 px-3 rounded transition-colors cursor-pointer">
@@ -360,7 +364,6 @@
 
         </div>
 
-        <!-- 右側：A4 紙張即時預覽區域 -->
         <div class="lg:col-span-3 flex flex-col items-center">
             <div class="text-sm font-semibold text-slate-500 mb-2 flex items-center gap-2 no-print self-start ml-2">
                 <span>👁️</span> 視訊預覽效果 (與 A4 直式紙張 1:1 完全對等)
@@ -368,14 +371,12 @@
             
             <div class="preview-scroll-wrapper w-full flex justify-center">
                 <div id="timetable-preview-container">
-                    <!-- 由 JS 動態渲染單一學生課表 -->
-                </div>
+                    </div>
             </div>
         </div>
 
     </main>
 
-    <!-- 列印專區：用於全班一鍵列印的隱藏 HTML 容器 -->
     <div id="print-all-section"></div>
 
     <script>
@@ -383,20 +384,22 @@
         const DEFAULT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=338631519&single=true&output=csv";
 
         // 全域變數
-        let studentsData = []; 
-        let specialEdGroupsDict = {}; // 特教老師地點/分組資訊資料庫
-        let selectedStudentIndex = 0;
+        let rawStudentsData = [];        // 原始學生名冊
+        let classesList = [];           // 排序後的班級清單 (例如 ["301", "302", "303"])
+        let specialEdGroupsDict = {};   // 特教老師地點/分組資訊資料庫
+        let selectedClass = "";         // 目前選定的班級代碼
 
-        // 離線備用高擬真測試資料 (保持 原11, 特11 等規格)
+        // 離線防呆高擬真測試資料
         const fallbackMockData = [
             {
-                "班級": "901", "姓名": "程品璇", "導師": "黃子瑜", "輔導教師": "洪欣怡",
-                "原11": "國文\n李明芳", "特11": "國文二C", "原12": "歷史\n蔡絢如", "原13": "健體\n甘綉絹", "原14": "數學\n楊淑婷", "原15": "國文\n李明芳", "原16": "生物\n楊雨軒", "原17": "理化\n吳敏修", "原18": "",
-                "原21": "理化\n吳敏修", "原22": "英語\n洪瓊梅", "特22": "英語二C", "原23": "國文\n李明芳", "原24": "體育\n甘綉絹", "原25": "綜合\n蔡雅萱", "原26": "英語\n洪瓊梅", "原27": "輔導\n蕭翔文", "原28": "",
-                "原31": "體育\n甘綉絹", "原32": "國文\n李明芳", "原33": "英語\n洪瓊梅", "原34": "生物\n楊雨軒", "原35": "童軍\n黃俊祥", "原36": "生物\n楊雨軒", "原37": "班會\n洪瓊梅", "原38": "",
-                "原41": "數學\n楊淑婷", "原42": "地理\n李春坪", "原43": "綜合\n蔡雅萱", "原44": "國文\n李明芳", "原45": "家政\n黃俊祥", "原46": "音樂\n蔡芝蕎", "原47": "視覺藝術\n洪瓊梅", "原48": "",
-                "原51": "英語\n洪瓊梅", "原52": "班會\n洪瓊梅", "原53": "理化\n吳敏修", "原54": "國文\n李明芳", "原55": "體育\n甘綉絹", "原56": "社團\n甘綉絹", "原57": "數學\n楊淑婷", "原58": "",
-                "分組": "國文二C", "特教教師": "陳秋錡", "上課地點": "異想教室C", "上課電話": "#6019"
+                "班級": "303", "姓名": "程品璇", "導師": "黃宗智", "輔導教師": "洪欣怡",
+                "原11": "公民\n蔡絢如", "特11": "國文三C", "原12": "歷史\n蔡絢如", "原13": "健體\n甘綉絹",
+                "分組": "國文三C", "特教教師": "陳秋錡", "上課地點": "異想教室C", "上課電話": "#6019"
+            },
+            {
+                "班級": "303", "姓名": "吳幸穎", "導師": "黃宗智", "輔導教師": "林個管",
+                "原11": "公民\n蔡絢如", "特11": "國文三D",
+                "分組": "國文三D", "特教教師": "王老師", "上課地點": "異想教室D", "上課電話": "#6020"
             }
         ];
 
@@ -406,11 +409,8 @@
             fetchAndParseCSV(savedUrl);
         };
 
-        // 串接 Google Sheet (帶微秒防快取)
         function fetchAndParseCSV(url) {
             updateConnectionStatus('connecting', '正在同步雲端資料庫...');
-            
-            // 加上時間戳記強迫 Google 回傳最新且無暫存的資料
             const cacheBusterUrl = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
 
             fetch(cacheBusterUrl)
@@ -421,26 +421,25 @@
                 .then(csvText => {
                     const parsedData = robustCSVParser(csvText);
                     if (parsedData && parsedData.length > 0) {
-                        studentsData = parsedData;
+                        rawStudentsData = parsedData;
                         updateConnectionStatus('success', '雲端連線成功！資料已即時更新。');
                     } else {
-                        throw new Error("解析內容無學生資料");
+                        throw new Error("解析內容無有效學生資料");
                     }
-                    initApp();
+                    initClassApp();
                 })
                 .catch(error => {
                     console.warn("啟動離線防呆備用資料：", error.message);
-                    studentsData = fallbackMockData;
-                    // 本地測試資料的分組對照表模擬建立
+                    rawStudentsData = fallbackMockData;
                     specialEdGroupsDict = {
-                        "國文二C": { teacher: "陳秋錡", location: "異想教室C", phone: "#6019" }
+                        "國文三C": { teacher: "陳秋錡", location: "異想教室C", phone: "#6019" },
+                        "國文三D": { teacher: "王老師", location: "異想教室D", phone: "#6020" }
                     };
                     updateConnectionStatus('fallback', '目前處於靜態/防呆離線測試模式');
-                    initApp();
+                    initClassApp();
                 });
         }
 
-        // CSV 解析引擎與特教分組字典動態建立
         function robustCSVParser(text) {
             text = text.replace(/^\uFEFF/, ''); 
             let lines = [];
@@ -475,13 +474,12 @@
             const rawHeaders = lines[0];
             const cleanHeaders = rawHeaders.map(h => h ? h.trim().replace(/[\ufeff"'\s\-\·]/g, '') : '');
             
-            // 找出最右邊「分組 / 特教教師 / 上課地點 / 上課電話」的索引
             let groupIdx = cleanHeaders.findIndex(h => h === "分組" || h.includes("分組"));
             let teacherIdx = cleanHeaders.findIndex(h => h === "特教教師" || h === "特教老師" || h.includes("特教教師"));
             let locationIdx = cleanHeaders.findIndex(h => h === "上課地點" || h.includes("上課地點") || h.includes("地點"));
-            let phoneIdx = cleanHeaders.findIndex(h => h === "上課電話" || h.includes("上課電話") || h.includes("電話") || h.includes("分機") || h.includes("電話分機"));
+            let phoneIdx = cleanHeaders.findIndex(h => h === "上課電話" || h.includes("上課電話") || h.includes("電話") || h.includes("分機"));
 
-            specialEdGroupsDict = {}; // 清空並重新建立
+            specialEdGroupsDict = {}; 
             const results = [];
 
             for (let r = 1; r < lines.length; r++) {
@@ -495,16 +493,12 @@
                     }
                 });
 
-                // 完全對應 B, C, D, E 欄 (1-based 物理索引):
-                // 1 -> B 班級, 2 -> C 姓名, 3 -> D 導師, 4 -> E 輔導教師 (個管)
                 const className = (rowData[1] || "").trim();
                 const studentName = (rowData[2] || "").trim();
                 const tutorName = (rowData[3] || "").trim();
                 const counselorName = (rowData[4] || "").trim();
 
-                if (!studentName || studentName === "姓名" || studentName === "C") {
-                    continue; // 跳過表頭或空白行
-                }
+                if (!studentName || studentName === "姓名" || studentName === "C") continue;
 
                 studentObj["_resolved_info"] = {
                     class: className,
@@ -513,7 +507,6 @@
                     counselor: counselorName
                 };
 
-                // 自動將右側非空白的分組資訊建立為字典庫
                 if (groupIdx !== -1 && rowData[groupIdx]) {
                     const groupName = rowData[groupIdx].trim();
                     if (groupName && groupName !== "分組" && groupName !== "未填寫") {
@@ -524,46 +517,48 @@
                         };
                     }
                 }
-
                 results.push(studentObj);
             }
             return results;
         }
 
-        // 初始化
-        function initApp() {
-            document.getElementById('student-count-badge').innerText = studentsData.length;
-            const selectEl = document.getElementById('student-select');
+        // 初始化班級整合核心
+        function initClassApp() {
+            // 提取所有不重複的班級並進行排序
+            let classSet = new Set();
+            rawStudentsData.forEach(s => {
+                if(s._resolved_info.class) classSet.add(s._resolved_info.class);
+            });
+            classesList = Array.from(classSet).sort();
+            
+            document.getElementById('class-count-badge').innerText = classesList.length;
+            const selectEl = document.getElementById('class-select');
             selectEl.innerHTML = '';
             
-            studentsData.forEach((student, index) => {
+            classesList.forEach(cls => {
                 const opt = document.createElement('option');
-                opt.value = index;
-                
-                const info = student._resolved_info;
-                const className = info.class.endsWith("班") ? info.class : info.class + "班";
-                const studentName = info.name || "未知";
-                
-                opt.innerText = `${className} ${studentName}`;
+                opt.value = cls;
+                opt.innerText = cls.endsWith("班") ? cls : cls + "班";
                 selectEl.appendChild(opt);
             });
 
             selectEl.onchange = function(e) {
-                selectedStudentIndex = parseInt(e.target.value);
-                renderSelectedStudent();
+                selectedClass = e.target.value;
+                renderSelectedClass();
             };
 
-            selectedStudentIndex = 0;
-            renderSelectedStudent();
-            generatePrintAllSection();
+            if (classesList.length > 0) {
+                selectedClass = classesList[0];
+                renderSelectedClass();
+                generatePrintAllSection();
+            }
         }
 
-        function renderSelectedStudent() {
-            const student = studentsData[selectedStudentIndex];
-            document.getElementById('timetable-preview-container').innerHTML = generateStudentPageHTML(student);
+        function renderSelectedClass() {
+            document.getElementById('timetable-preview-container').innerHTML = generateClassPageHTML(selectedClass);
         }
 
-        // 拆分原班科目字串
+        // 拆分原班科目與教師字串
         function parseCourseDetail(courseStr) {
             if (!courseStr) return { subject: '', teacher: '' };
             if (courseStr.includes('\n')) {
@@ -581,31 +576,59 @@
             return { subject: courseStr.trim(), teacher: '' };
         }
 
-        // 印章飽和色彩規則
-        function getStampColorClass(subject) {
-            if (!subject) return 'border-[#dc2626] text-[#dc2626] bg-[#fff5f5]';
+        // 繼承嚴格飽和度色彩規則 (應用於迷你圖釘鋼印徽章)
+        function getStampColorStyle(subject) {
+            if (!subject) return 'border-left-color:#dc2626; text-color:#dc2626; bg-color:#fff5f5';
             if (subject.includes('國文') || subject.includes('國')) {
-                return 'border-[#dc2626] text-[#dc2626] bg-[#fff5f5]'; // 硃砂紅
+                return 'border-left-color: #dc2626; color: #dc2626; background-color: #fff5f5;'; // 硃砂紅
             }
             if (subject.includes('英語') || subject.includes('英文') || subject.includes('英')) {
-                return 'border-[#1e40af] text-[#1e40af] bg-[#eff6ff]'; // 晴空藍
+                return 'border-left-color: #1e40af; color: #1e40af; background-color: #eff6ff;'; // 晴空藍
             }
             if (subject.includes('數學') || subject.includes('數')) {
-                return 'border-[#15803d] text-[#15803d] bg-[#f0fdf4]'; // 翡翠綠
+                return 'border-left-color: #15803d; color: #15803d; background-color: #f0fdf4;'; // 翡翠綠
             }
-            if (subject.includes('生活') || subject.includes('訓練') || subject.includes('社交') || subject.includes('自閉') || subject.includes('溝通')) {
-                return 'border-[#6d28d9] text-[#6d28d9] bg-[#f5f3ff]'; // 紫羅蘭
+            if (subject.includes('生活') || subject.includes('訓練') || subject.includes('社交') || subject.includes('自閉') || subject.includes('溝通') || subject.includes('生管') || subject.includes('社巧')) {
+                return 'border-left-color: #6d28d9; color: #6d28d9; background-color: #f5f3ff;'; // 紫羅蘭
             }
-            return 'border-[#b45309] text-[#b45309] bg-[#fffbeb]'; // 琥珀色
+            return 'border-left-color: #b45309; color: #b45309; background-color: #fffbeb;'; // 琥珀色
         }
 
-        // A4 智慧 HTML 生成
-        function generateStudentPageHTML(student) {
-            const info = student._resolved_info;
-            const className = info.class.endsWith("班") ? info.class : info.class + "班";
-            const studentName = info.name || "未知姓名";
-            const tutorTeacher = info.tutor || "未填寫";
-            const caseTeacher = info.counselor || "未填寫";
+        // 班級全景課表核心 HTML 生成引擎
+        function generateClassPageHTML(classTarget) {
+            // 1. 撈出本班所有特教學生
+            const classStudents = rawStudentsData.filter(s => s._resolved_info.class === classTarget);
+            
+            // 2. 決定班級基本資訊 (以第一個學生的連動資料為預設準則)
+            let tutorTeacher = "未填寫";
+            let caseTeacherList = new Set();
+            if (classStudents.length > 0) {
+                tutorTeacher = classStudents[0]._resolved_info.tutor || "未填寫";
+                classStudents.forEach(s => {
+                    if(s._resolved_info.counselor) caseTeacherList.add(s._resolved_info.counselor);
+                });
+            }
+            const displayCaseTeachers = Array.from(caseTeacherList).join(', ') || "未填寫";
+            const displayClassName = classTarget.endsWith("班") ? classTarget : classTarget + "班";
+
+            // 3. 核心對接轉換邏輯：製作下學期課表，新原班課表未出，303班精準讀取舊 903 欄位資料
+            let mappedSearchClass = classTarget;
+            if (classTarget === "303") {
+                mappedSearchClass = "903";
+            }
+
+            // 尋找提供原班課表基底的學生物理範本
+            let baseStudentSample = classStudents.find(s => {
+                for(let d=1; d<=5; d++){
+                    for(let p=1; p<=8; p++){
+                        if(s[`原${d}${p}`]) return true;
+                    }
+                }
+                return false;
+            });
+            if (!baseStudentSample && classStudents.length > 0) {
+                baseStudentSample = classStudents[0];
+            }
 
             let tableRowsHtml = "";
             const periodsInfo = [
@@ -636,7 +659,7 @@
             `;
             tableRowsHtml += morningStudyHtml;
 
-            // 用迴圈精準讀取 1 到 8 節
+            // 1 到 8 節縱向橫向雙重掃描
             periodsInfo.forEach((period, pIdx) => {
                 const periodNum = pIdx + 1;
                 let rowHtml = `<tr>`;
@@ -650,40 +673,50 @@
                 `;
 
                 for (let day = 1; day <= 5; day++) {
-                    // 極速精準讀取對應的原 11~58 與 特 11~58 欄位 (無模糊解讀)
-                    let originalCourse = (student[`原${day}${periodNum}`] || "").trim();
-                    let extractedCourse = (student[`特${day}${periodNum}`] || "").trim();
+                    // 精準讀取映射的原班課表基底
+                    let originalCourse = baseStudentSample ? (baseStudentSample[`原${day}${periodNum}`] || "").trim() : "";
+                    
+                    // 遍歷全班特教學生，找出該節有誰被抽離
+                    let textStampsHtml = "";
+                    let hasExtracted = false;
+
+                    classStudents.forEach(student => {
+                        let extractedCourse = (student[`特${day}${periodNum}`] || "").trim();
+                        if (extractedCourse) {
+                            hasExtracted = true;
+                            // 簡化印章內容：拿掉組別字母，僅保留核心科目
+                            let cleanExtSubject = extractedCourse.split(/[\n\r(（\s]/)[0].trim();
+                            let minimalSubject = cleanExtSubject.replace(/[一二三四五六七八九]?[ABCDEFGH]粉?$/g, '');
+                            
+                            enrolledExtractedSubjects.add(cleanExtSubject);
+
+                            const styleColors = getStampColorStyle(cleanExtSubject);
+                            // 生成精緻高擬真圖釘微章
+                            textStampsHtml += `
+                                <div class="mini-stamp-badge" style="${styleColors}">
+                                    ${student._resolved_info.name}:${minimalSubject}
+                                </div>
+                            `;
+                        }
+                    });
 
                     rowHtml += `<td>`;
                     rowHtml += `<div class="course-cell-wrapper">`;
 
                     const parsedOrig = parseCourseDetail(originalCourse);
 
-                    if (extractedCourse) {
-                        let cleanExtSubject = extractedCourse.split(/[\n\r(（\s]/)[0].trim();
-                        enrolledExtractedSubjects.add(cleanExtSubject);
-
-                        // 1. 原班科目 (鎖定第一軌，永遠不會被印章頂開)
-                        const origSubjectFontSize = parsedOrig.subject.length > 4 ? 'font-size: 12px; tracking-tighter' : 'font-size: 15.5px;';
-                        rowHtml += `<div class="orig-subject text-slate-800" style="${origSubjectFontSize}">${parsedOrig.subject || '&nbsp;'}</div>`;
-                        
-                        // 2. 原班教師 (鎖定第二軌，100% 固定不飄移)
-                        rowHtml += `<div class="orig-teacher">${parsedOrig.teacher || '&nbsp;'}</div>`;
-                        
-                        // 3. 特教抽離課印章 (鎖定第三軌)
-                        const stampColors = getStampColorClass(cleanExtSubject);
-                        rowHtml += `<span class="extracted-stamp ${stampColors}">${cleanExtSubject}</span>`;
-
-                    } else if (originalCourse) {
-                        // 純原班課程 (鎖定第一、二軌，第三軌帶入等高留白器，保證位置與有印章時完全一致)
-                        const origSubjectFontSize = parsedOrig.subject.length > 4 ? 'font-size: 13px; tracking-tighter' : 'font-size: 16.5px;';
-                        rowHtml += `<div class="orig-subject" style="${origSubjectFontSize}">${parsedOrig.subject}</div>`;
-                        rowHtml += `<div class="orig-teacher">${parsedOrig.teacher || '&nbsp;'}</div>`;
-                        rowHtml += `<div class="stamp-spacer">&nbsp;</div>`; 
+                    // 1. 第一軌：原班科目 (絕對死守高度)
+                    const origSubjectFontSize = parsedOrig.subject.length > 4 ? 'font-size: 12px; tracking-tighter' : 'font-size: 15.5px;';
+                    rowHtml += `<div class="orig-subject text-slate-800" style="${origSubjectFontSize}">${parsedOrig.subject || '&nbsp;'}</div>`;
+                    
+                    // 2. 第二軌：原班教師 (絕對死守高度)
+                    rowHtml += `<div class="orig-teacher">${parsedOrig.teacher || '&nbsp;'}</div>`;
+                    
+                    // 3. 第三軌：特教圖釘徽章容器區
+                    if (hasExtracted) {
+                        rowHtml += `<div class="extracted-container">${textStampsHtml}</div>`;
                     } else {
-                        // 完全空白格
-                        rowHtml += `<div class="orig-subject">&nbsp;</div>`;
-                        rowHtml += `<div class="orig-teacher">&nbsp;</div>`;
+                        // 空白墊片，保證完美防漂移
                         rowHtml += `<div class="stamp-spacer">&nbsp;</div>`;
                     }
 
@@ -695,7 +728,7 @@
                 tableRowsHtml += rowHtml;
             });
 
-            // 完美模擬兩欄串接與定位點定位(Tab stop)的資訊對照表
+            // 完美模擬兩欄串接與定位點定位(Tab stop)的資訊對照表 (班級綜合版)
             let contactListHtml = "";
             if (enrolledExtractedSubjects.size > 0) {
                 const subjectArray = Array.from(enrolledExtractedSubjects);
@@ -724,7 +757,7 @@
             } else {
                 contactListHtml = `
                     <div class="footer-tab-row">
-                        <div class="footer-col-left">※ 本學期該學生暫無參與異想教室抽離課程。</div>
+                        <div class="footer-col-left">※ 本班級學生本學期暫無參與異想教室抽離課程。</div>
                     </div>`;
             }
 
@@ -732,13 +765,12 @@
                 <div class="page-container official-doc">
                     <div>
                         <div class="doc-title">臺南市立新市國民中學</div>
-                        <div class="doc-subtitle">114學年度第二學期 異想教室個別學生課表</div>
+                        <div class="doc-subtitle">114學年度第二學期 異想教室班級全景課表</div>
                         
-                        <!-- 完全連成單行、去橫槓且動態最大化寬度間隔的基本個資列 -->
                         <div class="student-info-line">
-                            <div>班級/學生：${className} ${studentName}</div>
-                            <div>導師：${tutorTeacher}</div>
-                            <div>輔導教師：${caseTeacher}</div>
+                            <div>班級教室：${displayClassName}</div>
+                            <div>班級導師：${tutorTeacher}</div>
+                            <div>個管/特教教師：${displayCaseTeachers}</div>
                         </div>
 
                         <table class="timetable-table">
@@ -758,9 +790,8 @@
                         </table>
                     </div>
 
-                    <!-- 底部對照 Footer (兩欄內容串接並帶有 Tab 定位起點) -->
                     <div class="student-footer">
-                        <div class="footer-title">異想教室抽離課程：(115-1 更新版 2026.06.11)</div>
+                        <div class="footer-title">異想教室全班抽離課程總對照：(115-1 更新版 2026.06.11)</div>
                         <div style="width: 100%;">
                             ${contactListHtml}
                         </div>
@@ -769,58 +800,41 @@
             `;
         }
 
-        // 以「科目/分組名稱」為核心，去最右側資料庫查找對照教師、教室、分機
+        // 輔助查找特教分組字典庫
         function resolveSubjectDetailsFromDB(rawSubject) {
             if (!rawSubject) return { subject: '', teacher: '-', location: '-', phone: '-' };
             let subject = rawSubject.trim();
 
             if (specialEdGroupsDict[subject]) {
-                return {
-                    subject: subject,
-                    ...specialEdGroupsDict[subject]
-                };
+                return { subject: subject, ...specialEdGroupsDict[subject] };
             }
 
-            // 模糊搜尋 (防止尾隨字母不對等，例如 "國文二B" 匹配 "國文二")
             const keys = Object.keys(specialEdGroupsDict);
             for (let k of keys) {
                 if (subject.includes(k) || k.includes(subject)) {
-                    return {
-                        subject: subject,
-                        ...specialEdGroupsDict[k]
-                    };
+                    return { subject: subject, ...specialEdGroupsDict[k] };
                 }
             }
 
-            // 無匹配時的安全推測 (防呆與向下相容)
+            // 無匹配時的安全防呆推測
             let teacher = '特教老師';
             let location = '異想教室';
             let phone = '-';
 
             if (subject.includes('國文') || subject.includes('國')) {
-                teacher = '陳秋錡';
-                location = '異想教室C';
-                phone = '#6019';
+                teacher = '陳秋錡'; location = '異想教室C'; phone = '#6019';
             } else if (subject.includes('英語') || subject.includes('英') || subject.includes('生活') || subject.includes('社交') || subject.includes('溝通')) {
-                teacher = '洪欣怡';
-                location = '異想教室M';
-                phone = '#6034';
+                teacher = '洪欣怡'; location = '異想教室M'; phone = '#6034';
             } else if (subject.includes('數學') || subject.includes('數')) {
-                teacher = '許杏凰';
-                location = '異想教室L';
-                phone = '#6234';
+                teacher = '許杏凰'; location = '異想教室L'; phone = '#6234';
             }
 
             return { subject, teacher, location, phone };
         }
 
-        // 儲存連結並重新載入
         function saveAndReloadUrl() {
             const urlInput = document.getElementById('csv-url-input').value.trim();
-            if (!urlInput) {
-                alert("請先輸入發布的 CSV 網址");
-                return;
-            }
+            if (!urlInput) { alert("請先輸入發布的 CSV 網址"); return; }
             localStorage.setItem('sh_timetable_csv_url', urlInput);
             fetchAndParseCSV(urlInput);
         }
@@ -847,18 +861,18 @@
             }
         }
 
-        // 批量一鍵列印所有學生
+        // 批量生成全校班級課表以供一鍵列印
         function generatePrintAllSection() {
             const printSection = document.getElementById('print-all-section');
             printSection.innerHTML = '';
             let allHtml = '';
-            studentsData.forEach(student => {
-                allHtml += generateStudentPageHTML(student);
+            classesList.forEach(cls => {
+                allHtml += generateClassPageHTML(cls);
             });
             printSection.innerHTML = allHtml;
         }
 
-        function printAllStudents() {
+        function printAllClasses() {
             document.body.classList.add('print-all-active');
             window.print();
             document.body.classList.remove('print-all-active');
