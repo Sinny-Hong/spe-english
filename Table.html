@@ -2,171 +2,211 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>新市國中異想教室 - 個別學生抽離課表系統</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新市國中異想教室 - 學生個人抽離課表系統</title>
     <style>
-        /* 嚴格 A4 列印設定 */
+        /* A4 嚴格列印尺寸規範 */
         @page {
             size: A4 portrait;
             margin: 15mm 15mm 15mm 15mm;
         }
 
+        :root {
+            --primary-color: #333333;
+            --border-color: #000000;
+            --text-muted: #666666;
+            --stamp-color: #d9383a; /* 正式公文印章紅 */
+        }
+
         body {
-            font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
-            color: #000000;
-            background-color: #ffffff;
+            font-family: "Microsoft JhengHei", "Arial", sans-serif;
+            color: var(--primary-color);
             margin: 0;
             padding: 0;
+            background-color: #f5f5f5;
         }
 
-        /* 介面操作區（列印時自動隱藏） */
+        /* 介面控制列 (列印時自動隱藏) */
         #control-panel {
-            background-color: #f4f6f9;
-            padding: 15px;
-            border-bottom: 2px solid #ccd1d9;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-        .btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            border: 1px solid #a0a0a0;
             background-color: #ffffff;
-            border-radius: 4px;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
-        .btn:hover { background-color: #f0f0f0; }
+
+        .btn {
+            background-color: #ffffff;
+            border: 1px solid #cccccc;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            background-color: #f0f0f0;
+            border-color: #999999;
+        }
+        .btn-primary {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+        .btn-primary:hover {
+            background-color: #357abd;
+        }
+
         select {
-            padding: 8px 15px;
-            font-size: 16px;
+            padding: 8px 12px;
+            font-size: 14px;
             border-radius: 4px;
-            border: 1px solid #a0a0a0;
+            border: 1px solid #cccccc;
+            min-width: 180px;
         }
 
-        /* 課表主容器 */
+        #status-indicator {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-success { background-color: #2ecc71; }
+        .dot-loading { background-color: #f1c40f; }
+        .dot-error { background-color: #e74c3c; }
+
+        /* A4 畫布容器 */
         .page-container {
-            width: 180mm; /* A4寬度扣除邊距 */
-            margin: 0 auto;
-            page-break-after: always;
+            width: 210mm;
+            background-color: #ffffff;
+            margin: 20px auto;
+            box-sizing: border-box;
+            padding: 5mm;
             position: relative;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
         }
 
-        /* 標題與正式公文質感基本資料 */
-        h1.timetable-title {
+        /* 正式公文排版外觀 */
+        .document-title {
             text-align: center;
-            font-size: 26px;
+            font-size: 22px;
             font-weight: bold;
-            margin: 0 0 10px 0;
             letter-spacing: 2px;
+            margin-top: 5px;
+            margin-bottom: 15px;
         }
 
-        /* 學生基本資料行：完全去框、連成一行、外觀如Word打字 */
-        .student-info-line {
-            width: 100%;
-            font-size: 16px;
-            line-height: 1.6;
+        /* 學生基本資料：去除大框線，純文字靠左對齊一行文 */
+        .meta-info-line {
+            display: flex;
+            justify-content: flex-start;
+            gap: 40px;
+            font-size: 15px;
             margin-bottom: 12px;
             padding-bottom: 5px;
-            text-align: left;
-            font-weight: normal;
-        }
-        .info-item {
-            display: inline-block;
-            margin-right: 25px;
+            border-bottom: 1px solid #333333;
         }
 
-        /* 課表主表格 */
-        .timetable-table {
+        /* 主功課表表格 */
+        .timetable {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed; /* 固定欄寬 */
+            table-layout: fixed; /* 嚴格固定欄寬 */
+            margin-bottom: 15px;
         }
-        .timetable-table th, .timetable-table td {
-            border: 1px solid #000000; /* 正式公文黑框線 */
+
+        .timetable th, .timetable td {
+            border: 1px solid var(--border-color);
             text-align: center;
             vertical-align: middle;
-            padding: 4px 2px;
-        }
-        
-        /* 標頭與節次欄 */
-        .timetable-table th {
-            background-color: #ffffff;
-            font-size: 16px;
-            font-weight: bold;
-            height: 35px;
-        }
-        .time-col {
-            width: 15%;
-            font-size: 13px;
-            font-weight: bold;
-            line-height: 1.3;
-        }
-
-        /* 課表格子空間與字體極大化 */
-        .course-cell {
-            height: 72px; /* 固定的格子高度，確保A4不跑版 */
             box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
         }
 
-        /* 原班課程字體加大 */
-        .regular-course {
-            font-size: 18px; /* 儘量加大字體 */
+        .timetable th {
+            background-color: #f9f9f9;
+            font-size: 14px;
             font-weight: bold;
-            line-height: 1.2;
-            width: 100%;
+            padding: 6px 0;
+        }
+
+        .time-col {
+            width: 14%;
+            font-size: 11px;
+            line-height: 1.4;
+            padding: 5px 2px;
+            font-weight: bold;
+        }
+
+        /* 課表內容格子：加大字體，支援自動分行 */
+        .course-cell {
+            height: 68px;
+            font-size: 13px;
+            padding: 4px;
+            position: relative;
+            line-height: 1.4;
             word-break: break-all;
+            white-space: pre-line; /* 支援 Google 試算表內的 \n 換行 */
         }
 
-        /* 抽離課程：紅色細實線印章框，只留課程名稱，字體加大 */
-        .extracted-course {
-            border: 1.5px solid #ff0000; /* 紅色細實線印章框 */
-            color: #ff0000;
-            font-size: 18px; /* 儘量加大字體 */
-            font-weight: bold;
-            padding: 3px 6px;
-            margin-top: 4px;
-            border-radius: 2px;
+        /* 原班課程樣式 */
+        .regular-course {
+            color: #111111;
+            margin-bottom: 3px;
+        }
+
+        /* 抽離課程樣式：紅色印章細框線 */
+        .pullout-course {
+            color: var(--stamp-color);
+            border: 1.5px solid var(--stamp-color);
+            border-radius: 3px;
+            padding: 2px 4px;
             display: inline-block;
+            font-weight: bold;
+            font-size: 12px;
+            margin-top: 2px;
+            background-color: rgba(217, 56, 58, 0.03);
             max-width: 90%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            letter-spacing: 1px;
         }
 
-        /* 最底下對照表：完全移除框線、整體靠左集中 */
-        .footer-section {
-            margin-top: 20px;
+        /* 底部對照表：無外框，整體內容靠左集中 */
+        .footer-summary {
             width: 100%;
+            margin-top: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .footer-summary table {
+            width: auto; /* 靠左集中，不撐滿 */
+            border-collapse: collapse;
+        }
+        .footer-summary td {
+            border: none; /* 去除框線 */
+            padding: 3px 25px 3px 0px; /* 右側留白拉開間距 */
             text-align: left;
         }
         .footer-title {
-            font-size: 15px;
             font-weight: bold;
-            margin-bottom: 8px;
-            text-decoration: underline;
-        }
-        .footer-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px; /* 項目之間的間距 */
-        }
-        .footer-list li {
-            font-size: 15px;
-            line-height: 1.5;
+            margin-bottom: 5px;
+            font-size: 14px;
         }
 
-        /* 列印時隱藏控制面板 */
+        /* 全檔列印模式的換頁規範 */
+        .page-break {
+            page-break-after: always;
+        }
+
+        /* 列印時的 CSS 控制 */
         @media print {
             #control-panel {
                 display: none !important;
@@ -176,7 +216,12 @@
             }
             .page-container {
                 margin: 0;
+                box-shadow: none;
                 padding: 0;
+                width: 200mm; /* 適應列印邊界 */
+            }
+            .no-print-break {
+                page-break-inside: avoid;
             }
         }
     </style>
@@ -184,23 +229,36 @@
 <body>
 
     <div id="control-panel">
-        <label for="student-select" style="font-weight: bold; font-size: 16px;">選擇學生：</label>
-        <select id="student-select" onchange="switchStudent(this.value)">
-            <option value="">載入資料中...</option>
-        </select>
-        <button class="btn" onclick="window.print()">🖨️ 單頁列印 / 另存PDF</button>
-        <button class="btn" onclick="printAll()">📚 全檔一鍵列印 (全班)</button>
-        <span id="loading-status" style="color: blue; font-weight: bold;"></span>
+        <div style="font-weight: bold; font-size: 16px;">📅 學生課表後台系統</div>
+        
+        <div>
+            <label for="student-select">選擇學生：</label>
+            <select id="student-select" disabled>
+                <option>資料載入中...</option>
+            </select>
+        </div>
+
+        <button class="btn" onclick="window.print()">🖨️ 列印目前單頁</button>
+        <button class="btn btn-primary" onclick="switchPrintMode()">🔄 切換為「全檔列印模式」</button>
+        <button class="btn" onclick="fetchData()">🔄 手動刷新資料</button>
+
+        <div id="status-indicator">
+            <span id="status-dot" class="dot dot-loading"></span>
+            <span id="status-text">正在讀取 Google 試算表...</span>
+        </div>
     </div>
 
-    <div id="timetable-output"></div>
+    <div id="print-area"></div>
 
     <script>
-        // 請在此處替換為您的 Google 試算表 A5彙整 發布的 CSV 網址
-        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR3l9LaUkxNMk32ndPvRfTx2wYRLipbIqC8o6M18mysH2dgrT6kE1Bu5EqrKNDesnsL9uVy0wGXgro8/pub?gid=338631519&single=true&output=csv';
+        // 您提供的 Google 試算表 A5彙整 CSV 網路發布網址
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=338631519&single=true&output=csv";
 
-        // 預設作息時間配置
-        const timeSlots = [
+        let allStudentsData = [];
+        let isAllPrintMode = false;
+
+        // 作息時間表定義
+        const periodTimes = [
             { name: "第一節", time: "08:20<br>|<br>09:05" },
             { name: "第二節", time: "09:15<br>|<br>10:00" },
             { name: "第三節", time: "10:10<br>|<br>10:55" },
@@ -211,279 +269,311 @@
             { name: "第八節", time: "16:00<br>|<br>16:45" }
         ];
 
-        const days = ["一", "二", "三", "四", "五"];
-        let allStudentsData = [];
+        const weekdays = ["一", "二", "三", "四", "五"];
 
-        // 初始化載入資料
-        async function init() {
-            const statusText = document.getElementById('loading-status');
-            statusText.innerText = "正在連線後台資料庫...";
-            try {
-                const response = await fetch(csvUrl);
-                const csvText = await response.text();
-                allStudentsData = parseCSV(csvText);
-                
-                if(allStudentsData.length === 0) throw new Error("無有效學生資料");
+        // 初始化載入
+        window.onload = function() {
+            fetchData();
+        };
 
-                statusText.innerText = "資料連線成功！";
-                populateSelect();
-                // 預設渲染第一位學生
-                renderTimetable(allStudentsData[0].name);
-            } catch (error) {
-                console.error(error);
-                statusText.innerText = "連線失敗，請檢查CSV發布網址或網路連線。";
-            }
-        }
-
-        // 簡易 CSV 解析器
-        function parseCSV(text) {
-            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-            if(lines.length < 1) return [];
+        // 從 Google CSV 抓取資料
+        function fetchData() {
+            updateStatus("loading", "正在讀取最新資料庫內容...");
             
-            // 讀取表頭
-            const headers = lines[0].split(',').map(h => h.trim());
-            const dataRows = [];
+            // 加上時間戳記防止瀏覽器快取舊資料
+            const finalUrl = csvUrl + "&timestamp=" + new Date().getTime();
 
-            for(let i = 1; i < lines.length; i++) {
-                const currentLine = lines[i].split(',').map(v => v.trim());
-                if(currentLine.length < headers.length) continue;
-                
-                let rowObject = {};
-                headers.forEach((header, index) => {
-                    rowObject[header] = currentLine[index] || "";
+            fetch(finalUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error("網路連線異常");
+                    return response.text();
+                })
+                .then(text => {
+                    parseCSV(text);
+                })
+                .catch(error => {
+                    console.error(error);
+                    updateStatus("error", "連線失敗，請檢查發布設定或網址是否正確。");
                 });
-                dataRows.push(rowObject);
+        }
+
+        // 解析 CSV 資料
+        function parseCSV(text) {
+            // 精準拆分行，處理包在雙引號中的換行符
+            const rows = [];
+            let currentRow = [];
+            let currentCell = "";
+            let insideQuotes = false;
+
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+                let nextChar = text[i+1];
+
+                if (char === '"') {
+                    insideQuotes = !insideQuotes;
+                } else if (char === ',' && !insideQuotes) {
+                    currentRow.push(currentCell.trim());
+                    currentCell = "";
+                } else if ((char === '\r' || char === '\n') && !insideQuotes) {
+                    if (char === '\r' && nextChar === '\n') i++;
+                    currentRow.push(currentCell.trim());
+                    if (currentRow.length > 0 && currentRow.some(c => c !== "")) {
+                        rows.push(currentRow);
+                    }
+                    currentRow = [];
+                    currentCell = "";
+                } else {
+                    currentCell += char;
+                }
             }
-            return dataRows;
-        }
+            if (currentCell !== "" || currentRow.length > 0) {
+                currentRow.push(currentCell.trim());
+                rows.push(currentRow);
+            }
 
-        // 填入下拉選單
-        function populateSelect() {
-            const select = document.getElementById('student-select');
-            select.innerHTML = "";
-            allStudentsData.forEach(student => {
-                const opt = document.createElement('option');
-                opt.value = student["姓名"];
-                // 選單顯示 班級+姓名 方便點選
-                opt.innerText = `${student["班級"] || ""} ${student["姓名"]}`;
-                select.appendChild(opt);
-            });
-        }
+            if (rows.length < 2) {
+                updateStatus("error", "讀取成功但內容為空，請確認發布的是 A5彙整 分頁。");
+                return;
+            }
 
-        // 切換學生
-        function switchStudent(name) {
-            if(!name) return;
-            renderTimetable(name);
-        }
+            // 讀取表頭
+            const headers = rows[0];
+            
+            // 找出關鍵欄位索引
+            const classIndex = headers.indexOf("班級"); // 通常在 A 欄或 E 欄，indexOf 會抓第一個
+            const nameIndex = headers.indexOf("姓名");
+            const tutorIndex = headers.indexOf("班級導師");
+            const spEdTeacherIndex = headers.indexOf("輔導教師");
 
-        // 渲染單張課表
-        function renderTimetable(targetName) {
-            const container = document.getElementById('timetable-output');
-            const student = allStudentsData.find(s => s["姓名"] === targetName);
-            if(!student) return;
+            if (nameIndex === -1) {
+                updateStatus("error", "欄位比對失敗：找不到「姓名」欄位，請檢查試算表第一列。");
+                return;
+            }
 
-            // 蒐集本頁需要呈現的特教老師清單（用於最下方對照表）
-            let specialTeachers = new Set();
+            allStudentsData = [];
+            
+            // 從第二列開始解析學生資料
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                if (!row[nameIndex]) continue; // 跳過姓名為空的列
 
-            let html = `
-                <div class="page-container">
-                    <h1 class="timetable-title">臺南市立新市國民中學 個別學生課表</h1>
+                let student = {
+                    className: row[classIndex] || "未指定",
+                    name: row[nameIndex],
+                    tutor: row[tutorIndex] || "未指定",
+                    spEdTeacher: row[spEdTeacherIndex] || "未指定",
+                    schedule: {} // 存放一1 到 五8 的課程
+                };
+
+                // 動態遍歷該行所有欄位，抽取「原一1」與「特一1」這類格式的課程
+                headers.forEach((header, colIdx) => {
+                    if (!header) return;
                     
-                    <div class="student-info-line">
-                        <span class="info-item"><b>學生：</b>${student["班級"] || ""}${student["姓名"] || ""}</span>
-                        <span class="info-item"><b>班級導師：</b>${student["班級導師"] || "無"}</span>
-                        <span class="info-item"><b>個管教師：</b>${student["輔導教師"] || "無"}</span>
-                    </div>
+                    // 去除字串中可能存在的所有空格
+                    const cleanHeader = header.replace(/\s+/g, '');
+                    
+                    // 比對「原一1」或「特一1」格式 (三個字)
+                    if (cleanHeader.length === 3 && (cleanHeader.startsWith("原") || cleanHeader.startsWith("特"))) {
+                        const type = cleanHeader.charAt(0); // "原" 或 "特"
+                        const day = cleanHeader.charAt(1);  // "一" ~ "五"
+                        const period = cleanHeader.charAt(2); // "1" ~ "8"
+                        
+                        const key = `${day}_${period}`;
+                        if (!student.schedule[key]) {
+                            student.schedule[key] = { regular: "", pullout: "" };
+                        }
+                        
+                        if (type === "原") {
+                            student.schedule[key].regular = row[colIdx] || "";
+                        } else if (type === "特") {
+                            student.schedule[key].pullout = row[colIdx] || "";
+                        }
+                    }
+                });
 
-                    <table class="timetable-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 15%;">節次 \\ 星期</th>
-                                <th style="width: 17%;">星期一</th>
-                                <th style="width: 17%;">星期二</th>
-                                <th style="width: 17%;">星期三</th>
-                                <th style="width: 17%;">星期四</th>
-                                <th style="width: 17%;">星期五</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                allStudentsData.push(student);
+            }
+
+            // 成功解析後，更新下拉選單
+            populateDropdown();
+            updateStatus("success", `連線成功！共讀取到 ${allStudentsData.length} 位學生資料`);
+            
+            // 預設渲染第一位學生
+            renderPage();
+        }
+
+        // 填入學生下拉選單
+        function populateDropdown() {
+            const select = document.getElementById("student-select");
+            select.innerHTML = "";
+            select.disabled = false;
+
+            allStudentsData.forEach((student, index) => {
+                const option = document.createElement("option");
+                option.value = index;
+                option.text = `${student.className} - ${student.name}`;
+                select.appendChild(option);
+            });
+
+            select.onchange = function() {
+                isAllPrintMode = false;
+                renderPage();
+            };
+        }
+
+        // 狀態列更新
+        function updateStatus(type, message) {
+            const dot = document.getElementById("status-dot");
+            const txt = document.getElementById("status-text");
+            dot.className = "dot";
+            
+            if (type === "success") {
+                dot.classList.add("dot-success");
+            } else if (type === "loading") {
+                dot.classList.add("dot-loading");
+            } else {
+                dot.classList.add("dot-error");
+            }
+            txt.innerText = message;
+        }
+
+        // 切換列印模式
+        function switchPrintMode() {
+            isAllPrintMode = !isAllPrintMode;
+            const btn = document.querySelectorAll(".btn-primary")[0];
+            if (isAllPrintMode) {
+                btn.innerText = "🔄 切換為「單頁瀏覽模式」";
+                btn.style.backgroundColor = "#e67e22";
+            } else {
+                btn.innerText = "🔄 切換為「全檔列印模式」";
+                btn.style.backgroundColor = "#4a90e2";
+            }
+            renderPage();
+        }
+
+        // 渲染畫面
+        function renderPage() {
+            const area = document.getElementById("print-area");
+            area.innerHTML = "";
+
+            if (allStudentsData.length === 0) return;
+
+            if (isAllPrintMode) {
+                // 全檔列印模式：一次渲染所有學生，中間加換頁符號
+                allStudentsData.forEach((student, idx) => {
+                    const pageHtml = generateTimetableHtml(student);
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "page-container" + (idx < allStudentsData.length - 1 ? " page-break" : "");
+                    wrapper.innerHTML = pageHtml;
+                    area.appendChild(wrapper);
+                });
+            } else {
+                // 單頁瀏覽模式
+                const selectedIndex = document.getElementById("student-select").value || 0;
+                const student = allStudentsData[selectedIndex];
+                const pageHtml = generateTimetableHtml(student);
+                const wrapper = document.createElement("div");
+                wrapper.className = "page-container";
+                wrapper.innerHTML = pageHtml;
+                area.appendChild(wrapper);
+            }
+        }
+
+        // 生成單張課表的 HTML 結構
+        function generateTimetableHtml(student) {
+            let html = `
+                <div class="document-title">臺南市立新市國民中學 114 學年度第二學期 學生個人課表</div>
+                
+                <div class="meta-info-line">
+                    <div><strong>班級：</strong>${student.className}</div>
+                    <div><strong>學生姓名：</strong>${student.name}</div>
+                    <div><strong>班級導師：</strong>${student.tutor}</div>
+                    <div><strong>個管教師：</strong>${student.spEdTeacher}</div>
+                </div>
+
+                <table class="timetable">
+                    <thead>
+                        <tr>
+                            <th style="width: 16%;">節次 \\ 星期</th>
+                            ${weekdays.map(d => `<th style="width: 16.8%;">星期${d}</th>`).join("")}
+                        </tr>
+                    </thead>
+                    <tbody>
             `;
 
-            // 建立 8 節課的列
-            timeSlots.forEach((slot, slotIdx) => {
-                const slotNum = slotIdx + 1;
+            // 用來統計底部對照表的特教科目與老師
+            let pulloutSummaryMap = {};
+
+            // 逐節渲染
+            periodTimes.forEach((pTime, pIdx) => {
+                const periodNum = pIdx + 1;
                 html += `<tr>`;
-                // 最左側作息時間欄
-                html += `<td class="time-col"><b>${slot.name}</b><br><span style="font-size:11px; font-weight:normal;">${slot.time}</span></td>`;
-                
-                // 填入週一到週五的課程
-                days.forEach(day => {
-                    const originalKey = `原${day}${slotNum}`;
-                    const specialKey = `特${day}${slotNum}`;
+                // 左側時間欄
+                html += `<td class="time-col"><strong>${pTime.name}</strong><br>${pTime.time}</td>`;
 
-                    let originalContent = student[originalKey] || "";
-                    let specialRaw = student[specialKey] || ""; // 格式通常為 "科目\n老師"
+                // 渲染週一至週五
+                weekdays.forEach(dayStr => {
+                    const key = `${dayStr}_${periodNum}`;
+                    const cellData = student.schedule[key] || { regular: "", pullout: "" };
 
-                    let specialCourse = "";
-                    let specialTeacher = "";
+                    html += `<td class="course-cell">`;
+                    
+                    // 1. 如果有特教抽離課
+                    if (cellData.pullout) {
+                        // 處理包含任課老師名稱的切割（例如 國文二B\n陳秋錡）
+                        const parts = cellData.pullout.split('\n');
+                        const subjectName = parts[0];
+                        const teacherName = parts[1] || student.spEdTeacher; // 若沒寫老師，預設帶個管
 
-                    if(specialRaw) {
-                        // 處理可能包含換行或空格的特教欄位資料
-                        let parts = specialRaw.split(/[\n\s]+/).filter(p => p.trim().length > 0);
-                        specialCourse = parts[0] || "";
-                        specialTeacher = parts[1] || "";
-                        if(specialTeacher) {
-                            specialTeachers.add(specialTeacher);
+                        // 收集至底部統計
+                        if (subjectName && !pulloutSummaryMap[subjectName]) {
+                            pulloutSummaryMap[subjectName] = teacherName;
                         }
-                    }
 
-                    html += `<td><div class="course-cell">`;
-
-                    if(specialCourse) {
-                        // 有抽離課程：上方顯示原班課程，下方並列紅色印章框（只留課程名稱，不寫老師名字）
-                        if(originalContent) {
-                            html += `<div class="regular-course">${originalContent}</div>`;
+                        // 如果有原班課，並列在上方並自動分行
+                        if (cellData.regular) {
+                            html += `<div class="regular-course" style="text-decoration: line-through; opacity: 0.4;">${cellData.regular.replace(/\n/g, '<br>')}</div>`;
                         }
-                        html += `<div class="extracted-course">${specialCourse}</div>`;
-                    } else {
-                        // 無抽離課程：單純呈現原班課程
-                        html += `<div class="regular-course">${originalContent || ""}</div>`;
+                        html += `<div class="pullout-course">${subjectName}</div>`;
+                    } 
+                    // 2. 如果沒有抽離課，顯示原班課程
+                    else if (cellData.regular) {
+                        html += `<div class="regular-course">${cellData.regular.replace(/\n/g, '<br>')}</div>`;
                     }
-
-                    html += `</div></td>`;
+                    
+                    html += `</td>`;
                 });
+
                 html += `</tr>`;
             });
 
             html += `
-                        </tbody>
-                    </table>
+                    </tbody>
+                </table>
 
-                    <div class="footer-section">
-                        <div class="footer-title">◎ 特教任課教師對照資訊：</div>
-                        <ul class="footer-list">
+                <div class="footer-summary no-print-break">
+                    <div class="footer-title">◎ 抽離科目及任課教師對照：</div>
+                    <table>
             `;
 
-            if(specialTeachers.size > 0) {
-                // (未來若串接第二個地點分頁，此處可改為自動比對撈出地點與分機)
-                specialTeachers.forEach(teacher => {
-                    html += `<li><b>${teacher} 老師</b> (地點：異想教室 / 分機：#6019)</li>`;
+            const summarySubjects = Object.keys(pulloutSummaryMap);
+            if (summarySubjects.length > 0) {
+                html += `<tr>`;
+                summarySubjects.forEach(sub => {
+                    html += `<td><strong>${sub}</strong>：${pulloutSummaryMap[sub]} 老師</td>`;
                 });
+                html += `</tr>`;
             } else {
-                html += `<li style="color:#666;">本週無抽離特教課程。</li>`;
+                html += `<tr><td style="color:#666666; font-style: italic;">本學期該學生無抽離課程，均在原班上課。</td></tr>`;
             }
 
             html += `
-                        </ul>
-                    </div>
+                    </table>
                 </div>
             `;
 
-            container.innerHTML = html;
+            return html;
         }
-
-        // 全檔一鍵列印 (全班循環渲染)
-        function printAll() {
-            const container = document.getElementById('timetable-output');
-            container.innerHTML = ""; // 清空
-
-            // 將所有學生的課表全部接在一起渲染
-            allStudentsData.forEach(student => {
-                let specialTeachers = new Set();
-                let html = `
-                    <div class="page-container">
-                        <h1 class="timetable-title">臺南市立新市國民中學 個別學生課表</h1>
-                        
-                        <div class="student-info-line">
-                            <span class="info-item"><b>學生：</b>${student["班級"] || ""}${student["姓名"] || ""}</span>
-                            <span class="info-item"><b>班級導師：</b>${student["班級導師"] || "無"}</span>
-                            <span class="info-item"><b>個管教師：</b>${student["輔導教師"] || "無"}</span>
-                        </div>
-
-                        <table class="timetable-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 15%;">節次 \\ 星期</th>
-                                    <th style="width: 17%;">星期一</th>
-                                    <th style="width: 17%;">星期二</th>
-                                    <th style="width: 17%;">星期三</th>
-                                    <th style="width: 17%;">星期四</th>
-                                    <th style="width: 17%;">星期五</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                `;
-
-                timeSlots.forEach((slot, slotIdx) => {
-                    const slotNum = slotIdx + 1;
-                    html += `<tr>`;
-                    html += `<td class="time-col"><b>${slot.name}</b><br><span style="font-size:11px; font-weight:normal;">${slot.time}</span></td>`;
-                    
-                    days.forEach(day => {
-                        const originalKey = `原${day}${slotNum}`;
-                        const specialKey = `特${day}${slotNum}`;
-
-                        let originalContent = student[originalKey] || "";
-                        let specialRaw = student[specialKey] || "";
-
-                        let specialCourse = "";
-                        let specialTeacher = "";
-
-                        if(specialRaw) {
-                            let parts = specialRaw.split(/[\n\s]+/).filter(p => p.trim().length > 0);
-                            specialCourse = parts[0] || "";
-                            specialTeacher = parts[1] || "";
-                            if(specialTeacher) specialTeachers.add(specialTeacher);
-                        }
-
-                        html += `<td><div class="course-cell">`;
-                        if(specialCourse) {
-                            if(originalContent) html += `<div class="regular-course">${originalContent}</div>`;
-                            html += `<div class="extracted-course">${specialCourse}</div>`;
-                        } else {
-                            html += `<div class="regular-course">${originalContent || ""}</div>`;
-                        }
-                        html += `</div></td>`;
-                    });
-                    html += `</tr>`;
-                });
-
-                html += `
-                            </tbody>
-                        </table>
-
-                        <div class="footer-section">
-                            <div class="footer-title">◎ 特教任課教師對照資訊：</div>
-                            <ul class="footer-list">
-                `;
-
-                if(specialTeachers.size > 0) {
-                    specialTeachers.forEach(teacher => {
-                        html += `<li><b>${teacher} 老師</b> (地點：異想教室 / 分機：#6019)</li>`;
-                    });
-                } else {
-                    html += `<li style="color:#666;">本週無抽離特教課程。</li>`;
-                }
-
-                html += `
-                            </ul>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += html;
-            });
-
-            // 觸發系統列印
-            setTimeout(() => {
-                window.print();
-                // 列印完後自動恢復只顯示選單上指定的那位學生
-                const currentSelected = document.getElementById('student-select').value;
-                renderTimetable(currentSelected);
-            }, 500);
-        }
-
-        // 網頁開啟後自動執行初始化
-        window.onload = init;
     </script>
 </body>
 </html>
