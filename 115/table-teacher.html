@@ -90,11 +90,6 @@
             border-bottom: 2px solid black;
             background-color: #fafafa;
         }
-
-        /* 早修與午休等特殊分隔列灰色背景 */
-        .gray-row {
-            background-color: #f3f4f6;
-        }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
@@ -170,7 +165,7 @@
             </div>
 
             <!-- 主功課表 (高剛好分配於 A4，防止產生次頁) -->
-            <div class="flex-grow mt-3" style="height: 820px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="flex-grow mt-3" style="height: 850px; display: flex; flex-direction: column; justify-content: space-between;">
                 <table class="timetable-table h-full">
                     <thead>
                         <tr style="height: 40px;">
@@ -183,7 +178,7 @@
                         </tr>
                     </thead>
                     <tbody id="timetable-body">
-                        <!-- 由 JavaScript 精準渲染 10 個作息列 -->
+                        <!-- 由 JavaScript 精準渲染 8 個課堂列 -->
                     </tbody>
                 </table>
             </div>
@@ -202,18 +197,30 @@
         // Google 試算表 CSV 連線網址 (A3授課 分頁)
         const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=1823409322&single=true&output=csv";
 
-        // 作息時間表 (完全對齊新市國中異想班物理時間)
+        // 作息時間表 (已完全刪除早修、晨讀與午休)
         const periodsConfig = [
-            { id: "morning", name: "朝會/晨讀", time: "07:35-08:10", type: "break" },
-            { id: "1", name: "第一節", time: "08:20-09:05", type: "class" },
-            { id: "2", name: "第二節", time: "09:15-10:00", type: "class" },
-            { id: "3", name: "第三節", time: "10:10-10:55", type: "class" },
-            { id: "4", name: "第四節", time: "11:05-11:50", type: "class" },
-            { id: "lunch", name: "午休時間", time: "12:00-13:10", type: "break" },
-            { id: "5", name: "第五節", time: "13:15-14:00", type: "class" },
-            { id: "6", name: "第六節", time: "14:10-14:55", type: "class" },
-            { id: "7", name: "第七節", time: "15:05-15:50", type: "class" },
-            { id: "8", name: "第八節", time: "16:00-16:45", type: "class" }
+            { id: "1", name: "第一節", start: "8:20", end: "9:05" },
+            { id: "2", name: "第二節", start: "9:15", end: "10:00" },
+            { id: "3", name: "第三節", start: "10:10", end: "10:55" },
+            { id: "4", name: "第四節", start: "11:05", end: "11:50" },
+            { id: "5", name: "第五節", start: "13:15", end: "14:00" },
+            { id: "6", name: "第六節", start: "14:10", end: "14:55" },
+            { id: "7", name: "第七節", start: "15:05", end: "15:50" },
+            { id: "8", name: "第八節", start: "16:00", end: "16:45" }
+        ];
+
+        // 智慧分組配色盤 (選用深沉、高對比、正式的字體著色色碼)
+        const colorPalette = [
+            "#be123c", // 玫瑰紅 (Rose-700)
+            "#15803d", // 森林綠 (Green-700)
+            "#1d4ed8", // 寶石藍 (Blue-700)
+            "#a21caf", // 羅蘭紫 (Purple-700)
+            "#b45309", // 琥珀橙 (Amber-700)
+            "#0369a1", // 天空藍 (Sky-700)
+            "#be185d", // 櫻花粉 (Pink-700)
+            "#4d7c0f", // 萊姆綠 (Lime-700)
+            "#4338ca", // 靛青藍 (Indigo-700)
+            "#0f766e"  // 深青綠 (Teal-700)
         ];
 
         // 系統全局變數
@@ -221,6 +228,17 @@
         let teachersList = [];        // 排序後的不重複教師名單
         let versionString = "114-2 更新版"; // 動態讀取之版本字串
         let scheduleDatabase = {};    // 整理後的大腦結構：{ "陳秋錡": { "11": { subject: "國文三A", students: [...] }, ... } }
+
+        // 根據組別名稱產生穩定的專屬色碼
+        function getGroupColor(subject) {
+            if (!subject) return "#000000";
+            let hash = 0;
+            for (let i = 0; i < subject.length; i++) {
+                hash = subject.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % colorPalette.length;
+            return colorPalette[index];
+        }
 
         // DOM 載入後立即啟動資料撈取
         window.onload = function() {
@@ -419,86 +437,54 @@
             tbody.innerHTML = generateTimetableRowsHTML(teacherName);
         }
 
-        // 產生功課表主體 Rows 的共通函式
+        // 產生功課表主體 Rows 的共通函式 (單一課堂格高度調整為 98px)
         function generateTimetableRowsHTML(teacherName) {
             let html = "";
 
             periodsConfig.forEach(row => {
-                if (row.type === "break") {
-                    // 朝會、晨讀、午休等特殊跨欄排版列
-                    html += `
-                        <tr class="gray-row" style="height: ${row.id === 'morning' ? '40' : '35'}px;">
-                            <td class="text-[12px] font-bold py-1 leading-tight">
-                                ${row.name}<br>
-                                <span class="text-[10px] font-normal text-gray-600">${row.time}</span>
-                            </td>
-                    `;
-                    if (row.id === "morning") {
-                        // 晨讀與早修內容固定：週一朝會，週二~四晨讀，週五英聽
+                // 正式上課節次，每日獨立一格，高度為 98px
+                html += `
+                    <tr style="height: 98px;">
+                        <td class="text-center font-bold py-1 leading-normal text-black" style="width: 15%;">
+                            <span class="text-[15px] font-bold">${row.name}</span><br>
+                            <span class="text-[13px] font-normal text-gray-700">${row.start}</span><br>
+                            <span class="text-[13px] font-normal text-gray-700">${row.end}</span>
+                        </td>
+                `;
+
+                // 星期一 (1) 到 星期五 (5)
+                for (let day = 1; day <= 5; day++) {
+                    const code = `${day}${row.id}`; // 組合如 "11"
+                    const course = scheduleDatabase[teacherName]?.[code];
+
+                    html += `<td class="text-center p-1" style="width: 17%;">`;
+                    if (course) {
+                        const students = course.students || [];
+                        const groupColor = getGroupColor(course.subject);
+                        
+                        // 生成直排、無卡片、無框線的乾淨學生名單
+                        let studentListHTML = "";
+                        if (students.length > 0) {
+                            studentListHTML = `<div class="flex flex-col gap-y-[2px] mt-1.5 text-center font-bold text-[13px] leading-tight" style="color: ${groupColor};">`;
+                            students.forEach(st => {
+                                studentListHTML += `<div>${st}</div>`;
+                            });
+                            studentListHTML += `</div>`;
+                        }
+
                         html += `
-                            <td class="text-[12px] font-semibold text-gray-700">朝會</td>
-                            <td class="text-[12px] font-semibold text-gray-700" colspan="3">晨讀</td>
-                            <td class="text-[12px] font-semibold text-gray-700">英聽</td>
+                            <div class="flex flex-col justify-center items-center h-full py-0.5">
+                                <span class="font-bold text-[14.5px] leading-tight tracking-wide" style="color: ${groupColor};">${course.subject}</span>
+                                ${studentListHTML}
+                            </div>
                         `;
                     } else {
-                        // 午休時間，整排合併顯示
-                        html += `
-                            <td colspan="5" class="text-[13px] font-bold tracking-[6px] text-gray-600">午休時間 (12:00-13:10)</td>
-                        `;
+                        // 空堂留白
+                        html += `<span class="text-gray-300">-</span>`;
                     }
-                    html += `</tr>`;
-                } else {
-                    // 正式上課節次，每日獨立一格，高度為 85px
-                    html += `
-                        <tr style="height: 85px;">
-                            <td class="text-[12px] font-bold py-1 leading-tight">
-                                ${row.name}<br>
-                                <span class="text-[10px] font-normal text-gray-600">${row.time}</span>
-                            </td>
-                    `;
-
-                    // 星期一 (1) 到 星期五 (5)
-                    for (let day = 1; day <= 5; day++) {
-                        const code = `${day}${row.id}`; // 組合如 "11"
-                        const course = scheduleDatabase[teacherName]?.[code];
-
-                        html += `<td class="text-center p-1">`;
-                        if (course) {
-                            const students = course.students || [];
-                            
-                            // 生成對稱智慧名牌格 HTML
-                            let studentGridHTML = "";
-                            if (students.length > 0) {
-                                studentGridHTML = `<div class="grid grid-cols-2 gap-x-1 gap-y-[3px] w-full mt-1 px-1">`;
-                                students.forEach((st, idx) => {
-                                    // 智慧對稱判斷：如果學生數是單數，且為最後一個學生，則跨兩欄置中
-                                    const isLast = idx === students.length - 1;
-                                    const isOddTotal = students.length % 2 !== 0;
-                                    const colSpanClass = (isLast && isOddTotal) ? 'col-span-2' : '';
-                                    
-                                    studentGridHTML += `
-                                        <div class="${colSpanClass} text-[11px] leading-tight text-black border border-gray-300 bg-gray-50/80 rounded py-[1px] text-center select-none truncate">
-                                            ${st}
-                                        </div>
-                                    `;
-                                });
-                                studentGridHTML += `</div>`;
-                            }
-
-                            html += `
-                                <div class="flex flex-col justify-center items-center h-full py-0.5">
-                                    <span class="font-bold text-[13.5px] leading-tight text-black tracking-wide">${course.subject}</span>
-                                    ${studentGridHTML}
-                                </div>
-                            `;
-                        } else {
-                            // 空堂留白
-                            html += `<span class="text-gray-300">-</span>`;
-                        }
-                        html += `</td>`;
-                    }
-                    html += `</tr>`;
+                    html += `</td>`;
                 }
+                html += `</tr>`;
             });
 
             return html;
@@ -517,7 +503,7 @@
                         <!-- 頂部官方大標題 -->
                         <div class="text-center">
                             <h1 class="text-[22px] font-bold tracking-[4px] m-0 p-0 leading-normal">臺南市立新市國民中學</h1>
-                            <h2 class="text-[20px] font-bold tracking-[2px] m-0 p-0 leading-normal mt-1">114學年度第二學期 異想教室教師課表</h2>
+                            <h2 class="text-[20px] font-bold tracking-[2px m-0 p-0 leading-normal mt-1">114學年度第二學期 異想教室教師課表</h2>
                             
                             <!-- 教師與版本資訊列 -->
                             <div class="flex justify-between items-center px-2 mt-4 text-[15px] font-bold">
@@ -533,7 +519,7 @@
                         </div>
 
                         <!-- 主功課表 -->
-                        <div class="flex-grow mt-3" style="height: 820px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div class="flex-grow mt-3" style="height: 850px; display: flex; flex-direction: column; justify-content: space-between;">
                             <table class="timetable-table h-full">
                                 <thead>
                                     <tr style="height: 40px;">
