@@ -121,8 +121,8 @@
     <!-- A4 直式主實體頁面 -->
     <div class="print-page portrait-page bg-white shadow-2xl rounded-sm border border-slate-300 p-5 flex flex-col justify-between overflow-hidden transition-all">
         
-        <!-- 一行式公文極簡標題 (日期與版本靠右) -->
-        <div class="flex items-baseline justify-between border-b-2 border-slate-900 pb-1 mb-2">
+        <!-- 一行式公文極簡標題 (已移除底部的橫條黑線，日期與版本靠右) -->
+        <div class="flex items-baseline justify-between mb-2">
             <span class="text-[14.5px] font-extrabold tracking-wide text-slate-950 timetable-font">
                 臺南市立新市國民中學 114 學年度第二學期 異想教室總課表
             </span>
@@ -131,9 +131,9 @@
             </span>
         </div>
 
-        <!-- 總課表核心 Table (100% 寬度，h-full 讓表格自動微調拉長均分賸餘空間) -->
-        <div class="flex-grow overflow-hidden flex flex-col h-full">
-            <table class="w-full h-full border-collapse border-2 border-slate-950 text-center timetable-font table-fixed">
+        <!-- 總課表核心 Table (100% 寬度，高度不撐滿，隨內容自由伸縮) -->
+        <div class="flex-grow overflow-hidden flex flex-col">
+            <table class="w-full border-collapse border-2 border-slate-950 text-center timetable-font table-fixed">
                 <!-- 星期標題列 -->
                 <thead>
                     <tr class="bg-slate-50 h-[24px] border-b-2 border-slate-955 text-slate-950 text-[11px] font-extrabold">
@@ -190,7 +190,7 @@
 ,陳一蘋,自閉症輔導,1,直播室,11,週一(1),"203莊竣凱"
 ,曾筱雯,巡迴輔導,1,校長室走廊,11,週一(1),"306陳紀嘉"
 ,陳秋錡,生活管理A,2,異想C,11,週一(1),"303黃振祐、304陳咸睿、204林獻堂、107黃湛晉"
-,许杏凰,生活訓練E,3,異想M,11,週一(1),"201程品璇"`;
+,許杏凰,生活訓練E,3,異想M,11,週一(1),"201程品璇"`;
 
         let activeRawData = [];
 
@@ -352,7 +352,6 @@
             return name.replace(/老師/g, '').trim();
         }
 
-        // 智慧型地點名稱精簡器
         function formatLocation(loc) {
             if (!loc) return "";
             loc = loc.trim();
@@ -379,7 +378,7 @@
             return fallbackPalettes[Math.abs(hash) % fallbackPalettes.length];
         }
 
-        // 學生姓名行距與間隙微調放大一滴滴
+        // 修改學生名單：標準雙軌道對齊，字體放大至 11px，行間距保持最密 leading-none
         function formatStudentsHTML(studentsStr) {
             if (!studentsStr) return "";
             const list = studentsStr.split(/[、,\s]+/).map(s => s.trim()).filter(s => s !== "");
@@ -389,7 +388,7 @@
                 const s1 = list[i] || "";
                 const s2 = list[i+1] || "";
                 html += `
-                    <div class="grid grid-cols-2 gap-x-1.5 w-full text-left font-semibold text-slate-900 tracking-tight leading-normal mt-[2px]">
+                    <div class="grid grid-cols-2 gap-x-1.5 w-full text-left font-semibold text-slate-900 tracking-tight leading-none mt-[1.5px]">
                         <span class="truncate pl-[2px] text-[11px]">${s1}</span>
                         <span class="truncate pl-[2px] text-[11px]">${s2}</span>
                     </div>
@@ -398,11 +397,12 @@
             return html;
         }
 
-        // 主渲染引擎
+        // 主渲染引擎 (只排 7 節)
         function renderTimetable() {
             const tbody = document.getElementById('timetable-body');
             tbody.innerHTML = "";
 
+            // 時空矩陣改為 7 節課
             const matrix = Array.from({ length: 7 }, () => Array.from({ length: 5 }, () => []));
 
             activeRawData.forEach(group => {
@@ -434,7 +434,7 @@
                 // 星期一至星期五各格
                 for (let dayIdx = 0; dayIdx < 5; dayIdx++) {
                     const td = document.createElement('td');
-                    td.className = "p-[3px] border-r border-slate-400 align-top h-full overflow-hidden";
+                    td.className = "p-[2px] border-r border-slate-400 align-top h-full overflow-hidden";
                     if (dayIdx === 4) td.classList.remove('border-r');
 
                     const cellGroups = matrix[periodIdx][dayIdx];
@@ -443,8 +443,8 @@
                         td.innerHTML = `<div class="w-full h-full min-h-[50px]"></div>`;
                     } else {
                         const wrapper = document.createElement('div');
-                        // 卡片間距微調為 gap-[3px]，自然舒適地由上至下堆疊
-                        wrapper.className = `flex flex-col w-full h-full justify-start gap-[3px] min-h-[50px]`;
+                        // 卡片間距縮小為 gap-[2px] (貼合剛好)，一律垂直順著往下排隊
+                        wrapper.className = `flex flex-col w-full h-full justify-start gap-[2px] min-h-[50px]`;
 
                         cellGroups.forEach(group => {
                             const colors = getTeacherColor(group.teacher);
@@ -452,19 +452,19 @@
                             const displayTeacher = formatTeacher(group.teacher);
                             
                             const card = document.createElement('div');
-                            // 卡片內距微幅調大，增加透氣感
-                            const padClass = 'py-[3px] px-1.5';
+                            // 縮小卡片內 Padding，行距不變
+                            const padClass = 'py-[2px] px-1';
                             card.className = `w-full rounded border flex flex-col items-stretch text-left ${colors.bg} ${colors.border} ${colors.text} ${padClass} relative overflow-hidden shadow-sm`;
                             
                             card.innerHTML = `
                                 <div class="absolute left-0 top-0 bottom-0 w-[3px] ${colors.bar}"></div>
                                 <div class="w-full">
-                                    <!-- 第一列：科目名稱(老師) 地點 (字體微調放大至 11.5px) -->
+                                    <!-- 第一列：科目名稱(老師) 地點 (字體加大，老師 11.5px) -->
                                     <div class="flex items-center justify-between text-[11.5px] font-extrabold leading-tight tracking-tight border-b border-black/10 pb-[1.5px]">
                                         <span class="truncate pr-0.5">${group.groupName}(${displayTeacher})</span>
-                                        <span class="flex-shrink-0 bg-black/10 px-1 rounded font-mono font-bold text-[9.5px]">${compressedLocation}</span>
+                                        <span class="flex-shrink-0 bg-black/10 px-1 rounded font-mono font-bold text-[9px]">${compressedLocation}</span>
                                     </div>
-                                    <!-- 學生名單 (標準雙軌道對齊) -->
+                                    <!-- 學生名單 (標準雙軌道對齊，學生 11px) -->
                                     <div class="w-full">
                                         ${formatStudentsHTML(group.studentsStr)}
                                     </div>
