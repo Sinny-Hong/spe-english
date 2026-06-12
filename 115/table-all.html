@@ -3,31 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>異想教室 - 全校總課表系統</title>
+    <title>異想教室 - 全校總課表系統 (A4直式極致版)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* 嚴格 A4 橫式列印控制 */
+        /* 嚴格 A4 直式列印控制與防卡死機制 */
         @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
             body {
                 background: white !important;
                 color: black !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
             .no-print {
                 display: none !important;
             }
             .print-page {
-                width: 297mm;
-                height: 210mm;
+                width: 210mm !important;
+                height: 297mm !important;
                 margin: 0 !important;
-                padding: 6mm 10mm !important;
+                padding: 10mm 8mm !important;
                 box-shadow: none !important;
                 background: white !important;
                 page-break-after: always;
+                box-sizing: border-box;
             }
-            /* 強制瀏覽器在列印時渲染背景顏色與框線 */
+            /* 強制背景顏色與框線印出 */
             * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -39,17 +46,11 @@
             font-family: "DFKai-SB", "標楷體", "BiauKai", "Noto Serif TC", serif;
         }
 
-        /* A4 橫式預覽容器 (297mm x 210mm) */
-        .landscape-page {
-            width: 297mm;
-            height: 210mm;
+        /* A4 直式預覽容器 (210mm x 297mm) */
+        .portrait-page {
+            width: 210mm;
+            height: 297mm;
             box-sizing: border-box;
-        }
-
-        /* 縮減字體避免超出頁面 */
-        .micro-text {
-            font-size: 8.5px;
-            line-height: 1.1;
         }
 
         /* 隱藏滾動條 */
@@ -69,27 +70,30 @@
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col items-center py-6 px-4 select-none">
 
     <!-- 頂部控制面板 (列印時自動隱藏) -->
-    <div class="no-print w-full max-w-[297mm] bg-white rounded-2xl shadow-md border border-slate-200/80 p-4 mb-6 transition-all">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="no-print w-full max-w-[210mm] bg-white rounded-2xl shadow-md border border-slate-200/80 p-4 mb-6 transition-all animate-fade-in">
+        <div class="flex flex-col gap-4">
             <!-- 標題與狀態 -->
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-200">
-                    <i data-lucide="grid"></i>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                        <i data-lucide="grid"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            全校總課表 <span class="text-xs px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded">A4直式優化版</span>
+                        </h1>
+                        <p class="text-xs text-slate-500 mt-0.5">來源：A3授課分頁 (一格最多支援5組)</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        異想教室全校總課表
-                        <span id="sync-status" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 border border-amber-200 animate-pulse">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                            連線讀取中...
-                        </span>
-                    </h1>
-                    <p class="text-xs text-slate-500 mt-0.5">數據來源：A3授課分頁 ─ 專門進行跨組別大數據融合</p>
-                </div>
+                <!-- 連線狀態 -->
+                <span id="sync-status" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 border border-amber-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    連線讀取中...
+                </span>
             </div>
 
             <!-- 操作區 -->
-            <div class="flex flex-wrap items-center gap-2.5">
+            <div class="flex items-center justify-between gap-2 border-t border-slate-100 pt-3 flex-wrap">
                 <!-- 教師篩選器 -->
                 <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5">
                     <span class="text-xs font-medium text-slate-500 flex items-center gap-1">
@@ -100,81 +104,82 @@
                     </select>
                 </div>
 
-                <!-- 手動重新整理 -->
-                <button onclick="fetchData(true)" class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 hover:text-slate-900 active:scale-95 transition-all">
-                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="sync-icon"></i>
-                    同步最新資料
-                </button>
+                <div class="flex items-center gap-2">
+                    <!-- 手動重新整理 -->
+                    <button onclick="fetchData(true)" class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 hover:text-slate-900 active:scale-95 transition-all">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="sync-icon"></i>
+                        同步資料
+                    </button>
 
-                <!-- 一鍵列印 -->
-                <button onclick="window.print()" class="flex items-center gap-1.5 px-4 py-1.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold hover:bg-indigo-700 hover:shadow-lg active:scale-95 transition-all shadow-md shadow-indigo-100">
-                    <i data-lucide="printer" class="w-3.5 h-3.5"></i>
-                    列印總課表 (A4橫式)
-                </button>
+                    <!-- 一鍵列印 -->
+                    <button onclick="window.print()" class="flex items-center gap-1.5 px-4 py-1.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold hover:bg-indigo-700 hover:shadow-lg active:scale-95 transition-all shadow-md shadow-indigo-100">
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                        列印 A4 直式總表
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- 提示框與錯誤顯示 (列印時隱藏) -->
-    <div id="error-toast" class="no-print hidden w-full max-w-[297mm] mb-4 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs flex items-start gap-3">
+    <div id="error-toast" class="no-print hidden w-full max-w-[210mm] mb-4 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs flex items-start gap-3">
         <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
         <div>
-            <span class="font-bold">連線失敗提示：</span>
-            <span id="error-message">無法取得試算表內容，請確認您的試算表已發布為網路 CSV 檔。系統目前已自動載入離線暫存數據提供預覽。</span>
+            <span class="font-bold">連線提示：</span>
+            <span id="error-message">雲端載入失敗，已啟用離線預覽模式。</span>
         </div>
     </div>
 
-    <!-- A4 橫式主實體頁面 -->
-    <div class="print-page landscape-page bg-white shadow-2xl rounded-sm border border-slate-300 p-6 flex flex-col justify-between overflow-hidden transition-all">
+    <!-- A4 直式主實體頁面 -->
+    <div class="print-page portrait-page bg-white shadow-2xl rounded-sm border border-slate-300 p-5 flex flex-col justify-between overflow-hidden transition-all">
         
-        <!-- 一行式極致精簡標題 -->
-        <div class="flex items-baseline justify-between border-b-2 border-slate-900 pb-1.5 mb-1.5">
-            <div class="flex items-baseline gap-2">
-                <span class="text-base font-extrabold tracking-wide text-slate-950 timetable-font">
-                    臺南市立新市國中 114 學年度第二學期 異想教室總課表
+        <!-- 一行式公文極簡標題 -->
+        <div class="flex items-baseline justify-between border-b-2 border-slate-900 pb-1.5 mb-2">
+            <div class="flex flex-col">
+                <span class="text-[15px] font-extrabold tracking-wide text-slate-950 timetable-font">
+                    臺南市立新市國民中學 114 學年度第二學期 異想教室總課表
                 </span>
-                <span class="text-xs text-slate-600 font-medium timetable-font" id="version-tag">
+                <span class="text-[9.5px] text-slate-600 font-medium timetable-font mt-0.5" id="version-tag">
                     ( 實施日期: 讀取中... | 版本: 讀取中... )
                 </span>
             </div>
-            <div class="text-[10px] text-slate-500 font-medium no-print">
-                實體尺寸：A4 橫式 (297mm × 210mm)
+            <div class="text-[9px] text-slate-500 font-medium no-print">
+                實體尺寸：A4 直式 (210mm × 297mm)
             </div>
         </div>
 
-        <!-- 總課表核心 Table -->
+        <!-- 總課表核心 Table (h-full 加上 table-layout: fixed 可實作自動高度分配) -->
         <div class="flex-grow overflow-hidden flex flex-col">
-            <table class="w-full h-full table-fixed border-collapse border-2 border-slate-900 text-center timetable-font">
+            <table class="w-full h-full table-fixed border-collapse border-2 border-slate-950 text-center timetable-font">
                 <!-- 星期標題列 -->
                 <thead>
-                    <tr class="bg-slate-100 h-[22px] border-b-2 border-slate-900 text-slate-950 text-xs font-bold">
-                        <!-- 時間欄佔比 6% -->
-                        <th class="w-[6%] border-r-2 border-slate-900 text-[10px]">節次 / 時間</th>
-                        <!-- 五個工作天各佔 18.8% -->
-                        <th class="w-[18.8%] border-r border-slate-400">星期一</th>
-                        <th class="w-[18.8%] border-r border-slate-400">星期二</th>
-                        <th class="w-[18.8%] border-r border-slate-400">星期三</th>
-                        <th class="w-[18.8%] border-r border-slate-400">星期四</th>
-                        <th class="w-[18.8%]">星期五</th>
+                    <tr class="bg-slate-50 h-[24px] border-b-2 border-slate-950 text-slate-950 text-[11px] font-extrabold">
+                        <!-- 時間欄佔比 8%，留下 92% 給五天均分 -->
+                        <th class="w-[8%] border-r-2 border-slate-950 text-[10px]">節次/時間</th>
+                        <th class="w-[18.4%] border-r border-slate-400">星期一</th>
+                        <th class="w-[18.4%] border-r border-slate-400">星期二</th>
+                        <th class="w-[18.4%] border-r border-slate-400">星期三</th>
+                        <th class="w-[18.4%] border-r border-slate-400">星期四</th>
+                        <th class="w-[18.4%]">星期五</th>
                     </tr>
                 </thead>
-                <tbody id="timetable-body">
+                <tbody id="timetable-body" class="text-slate-950">
                     <!-- 由 JavaScript 動態生成 8 節課的內容 -->
                 </tbody>
             </table>
         </div>
 
         <!-- 極精簡底部備註 -->
-        <div class="flex justify-between items-center mt-1 text-[8.5px] text-slate-500 border-t border-slate-200 pt-1 timetable-font">
-            <div>
-                <span>* 本表依任課特教教師著色：</span>
-                <span class="inline-flex items-center gap-0.5 ml-1"><span class="w-2 h-2 rounded-sm bg-emerald-100 border border-emerald-300"></span>陳秋錡</span>
-                <span class="inline-flex items-center gap-0.5 ml-1"><span class="w-2 h-2 rounded-sm bg-sky-100 border border-sky-300"></span>許杏凰</span>
-                <span class="inline-flex items-center gap-0.5 ml-1"><span class="w-2 h-2 rounded-sm bg-rose-100 border border-rose-300"></span>洪欣怡</span>
-                <span class="inline-flex items-center gap-0.5 ml-1"><span class="w-2 h-2 rounded-sm bg-fuchsia-100 border border-fuchsia-300"></span>孫瑞彤</span>
-                <span class="inline-flex items-center gap-0.5 ml-1"><span class="w-2 h-2 rounded-sm bg-indigo-100 border border-indigo-300"></span>曾筱雯/其他</span>
+        <div class="flex justify-between items-center mt-2 text-[9px] text-slate-600 border-t border-slate-300 pt-1.5 timetable-font">
+            <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-semibold">* 任課特教教師色調：</span>
+                <span class="inline-flex items-center gap-0.5"><span class="w-2.5 h-2.5 rounded bg-emerald-100 border border-emerald-300"></span>陳秋錡</span>
+                <span class="inline-flex items-center gap-0.5"><span class="w-2.5 h-2.5 rounded bg-sky-100 border border-sky-300"></span>許杏凰</span>
+                <span class="inline-flex items-center gap-0.5"><span class="w-2.5 h-2.5 rounded bg-rose-100 border border-rose-300"></span>洪欣怡</span>
+                <span class="inline-flex items-center gap-0.5"><span class="w-2.5 h-2.5 rounded bg-fuchsia-100 border border-fuchsia-300"></span>孫瑞彤</span>
+                <span class="inline-flex items-center gap-0.5"><span class="w-2.5 h-2.5 rounded bg-indigo-100 border border-indigo-300"></span>曾筱雯/其他</span>
             </div>
-            <div id="print-time-stamp">
+            <div id="print-time-stamp" class="font-mono text-[8.5px]">
                 列印時間: --
             </div>
         </div>
@@ -200,16 +205,16 @@
 
         // 特教教師專屬粉嫩色調配置
         const PRESET_COLORS = {
-            '陳秋錡': { bg: 'bg-emerald-50/90', text: 'text-emerald-950', border: 'border-emerald-300', bar: 'bg-emerald-500' },
-            '許杏凰': { bg: 'bg-sky-50/90', text: 'text-sky-950', border: 'border-sky-300', bar: 'bg-sky-500' },
-            '洪欣怡': { bg: 'bg-rose-50/90', text: 'text-rose-950', border: 'border-rose-300', bar: 'bg-rose-500' },
-            '孫瑞彤': { bg: 'bg-fuchsia-50/90', text: 'text-fuchsia-955', border: 'border-fuchsia-300', bar: 'bg-fuchsia-500' },
-            '曾筱雯': { bg: 'bg-indigo-50/90', text: 'text-indigo-950', border: 'border-indigo-300', bar: 'bg-indigo-500' },
-            '陳一蘋': { bg: 'bg-amber-50/90', text: 'text-amber-950', border: 'border-amber-300', bar: 'bg-amber-500' },
-            '陳瑛質': { bg: 'bg-teal-50/90', text: 'text-teal-950', border: 'border-teal-300', bar: 'bg-teal-500' }
+            '陳秋錡': { bg: 'bg-emerald-50/95', text: 'text-emerald-950', border: 'border-emerald-300/80', bar: 'bg-emerald-500' },
+            '許杏凰': { bg: 'bg-sky-50/95', text: 'text-sky-950', border: 'border-sky-300/80', bar: 'bg-sky-500' },
+            '洪欣怡': { bg: 'bg-rose-50/95', text: 'text-rose-950', border: 'border-rose-300/80', bar: 'bg-rose-500' },
+            '孫瑞彤': { bg: 'bg-fuchsia-50/95', text: 'text-fuchsia-955', border: 'border-fuchsia-300/80', bar: 'bg-fuchsia-500' },
+            '曾筱雯': { bg: 'bg-indigo-50/95', text: 'text-indigo-950', border: 'border-indigo-300/80', bar: 'bg-indigo-500' },
+            '陳一蘋': { bg: 'bg-amber-50/95', text: 'text-amber-950', border: 'border-amber-300/80', bar: 'bg-amber-500' },
+            '陳瑛質': { bg: 'bg-teal-50/95', text: 'text-teal-950', border: 'border-teal-300/80', bar: 'bg-teal-500' }
         };
 
-        // 離線備用暫存資料 (當雲端 API 斷線時的防呆備份)
+        // 離線備用暫存資料
         const mockCSVData = `備註,特教教師,分組,節數,上課地點,時間代碼,時間,學生
 改版日期,陳秋錡,國文三A,3,異想C,11,週一(1),"302陳炯浩、307周晉全、307鄭佩雯、310陳軒琛"
 115.5.12,許杏凰,數學三B,4,異想M,"22,55,43",週二(2),"204黃佳羽、205陳暐澄、205潘正貴、208劉濬紳"
@@ -220,51 +225,40 @@
 ,陳秋錡,生活管理A,2,異想C,11,週一(1),"303黃振祐、304陳咸睿、204林獻堂、107黃湛晉"
 ,許杏凰,生活訓練E,3,異想M,11,週一(1),"201程品璇"`;
 
-        let activeRawData = []; // 原始讀入組別資料
+        let activeRawData = [];
 
-        // 初始化載入
         window.onload = function() {
             lucide.createIcons();
-            
-            // 填寫列印時間
             const now = new Date();
             document.getElementById('print-time-stamp').innerText = `列印時間: ${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            
             fetchData();
         };
 
-        // 從雲端抓取 CSV 資料
+        // 同步 CSV 資料
         async function fetchData(forceRefresh = false) {
             const syncIcon = document.getElementById('sync-icon');
-            const syncStatus = document.getElementById('sync-status');
             const toast = document.getElementById('error-toast');
             
             if (syncIcon) syncIcon.classList.add('animate-spin');
-            updateStatus('connecting', '正在與 Google 雲端建立安全連線...');
+            updateStatus('connecting', '與雲端安全連線中...');
 
             let url = csvUrl;
-            if (forceRefresh) {
-                // 破壞快取機制
-                url += `&t=${new Date().getTime()}`;
-            }
+            if (forceRefresh) url += `&t=${new Date().getTime()}`;
 
             try {
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('網路回應不成功');
                 const text = await response.text();
                 
-                // 隱藏錯誤提示框並進行解析
                 toast.classList.add('hidden');
                 parseAndProcessData(text);
-                updateStatus('success', '已同步最新雲端排課');
+                updateStatus('success', '雲端資料同步完成');
                 
             } catch (err) {
-                console.warn("無法取得雲端試算表資料，自動切換至離線本地快取預覽:", err);
-                // 顯示錯誤 Toast
+                console.warn("無法取得雲端試算表資料，自動切換至離線預覽:", err);
                 toast.classList.remove('hidden');
-                document.getElementById('error-message').innerText = `無法即時串接 Google 試算表 (${err.message})。系統目前已自動載入離線暫存數據提供預覽。`;
+                document.getElementById('error-message').innerText = `無法串接雲端數據庫 (${err.message})。系統目前已自動載入離線暫存數據提供預覽。`;
                 
-                // 解析暫存備份資料
                 parseAndProcessData(mockCSVData);
                 updateStatus('fallback', '目前顯示離線暫存資料');
             } finally {
@@ -272,11 +266,10 @@
             }
         }
 
-        // 修改頂端連線狀態 Badge
         function updateStatus(type, message) {
             const badge = document.getElementById('sync-status');
             if (!badge) return;
-            badge.className = "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ";
+            badge.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ";
             
             if (type === 'connecting') {
                 badge.classList.add('bg-blue-50', 'text-blue-600', 'border', 'border-blue-200');
@@ -290,7 +283,7 @@
             }
         }
 
-        // 強大的雙引號 CSV 安全解析演算法
+        // CSV 安全解析
         function parseCSV(text) {
             let lines = [];
             let row = [""];
@@ -315,9 +308,7 @@
                     if (inQuotes) {
                         row[row.length - 1] += c;
                     } else {
-                        if (c === '\r' && next === '\n') {
-                            i++;
-                        }
+                        if (c === '\r' && next === '\n') i++;
                         lines.push(row);
                         row = [""];
                     }
@@ -325,18 +316,14 @@
                     row[row.length - 1] += c;
                 }
             }
-            if (row.length > 1 || row[0] !== "") {
-                lines.push(row);
-            }
+            if (row.length > 1 || row[0] !== "") lines.push(row);
             return lines;
         }
 
-        // 解析並建立內部資料結構
         function parseAndProcessData(csvText) {
             const parsed = parseCSV(csvText);
             if (parsed.length < 2) return;
 
-            // 1. 動態抓取欄位索引，不綁死物理順序
             const headers = parsed[0];
             const teacherIdx = headers.findIndex(h => h.trim() === '特教教師');
             const groupIdx = headers.findIndex(h => h.trim() === '分組');
@@ -345,40 +332,34 @@
             const studentIdx = headers.findIndex(h => h.trim() === '學生');
             const noteIdx = headers.findIndex(h => h.trim() === '備註');
 
-            // 2. 智慧解析「備註欄位」提取版本號與改版日期
+            // 提取版本資訊
             let versionDate = "未指定";
             let versionNote = "無備註";
             
-            // 掃描備註欄位中的非空資料
             const noteValues = parsed.slice(1)
                 .map(row => row[noteIdx])
                 .filter(val => val && val.trim() !== "");
 
             if (noteValues.length > 0) {
-                // 找出有沒有類似日期的格式
                 const datePattern = /\d{3}\.\d{1,2}\.\d{1,2}/;
                 const foundDate = noteValues.find(v => datePattern.test(v));
                 if (foundDate) versionDate = foundDate.trim();
 
-                // 找出含有小括號或包含中文改版名稱的文字
                 const foundNote = noteValues.find(v => v.includes('改版') || v.includes('實施') || (v.startsWith('(') && v.endsWith(')')));
                 if (foundNote) {
                     versionNote = foundNote.trim().replace(/[()]/g, '');
                 } else {
-                    // 找不到特別的，就拿第一個非日期的資料當作備註
                     const otherNote = noteValues.find(v => !datePattern.test(v) && v !== "改版日期" && v !== "列印日期");
                     if (otherNote) versionNote = otherNote.trim();
                 }
             }
             document.getElementById('version-tag').innerText = `( 實施日期: ${versionDate} | 版本: ${versionNote} )`;
 
-            // 3. 過濾並包裝合法的排課資料
             activeRawData = [];
             const teacherSet = new Set();
 
             for (let i = 1; i < parsed.length; i++) {
                 const row = parsed[i];
-                // 排除空白列與表頭宣告列
                 if (!row[groupIdx] || row[groupIdx].trim() === "" || row[groupIdx] === "分組") continue;
 
                 const teacher = row[teacherIdx] ? row[teacherIdx].trim() : "";
@@ -393,9 +374,8 @@
                 });
             }
 
-            // 4. 更新頂部教師篩選下拉選單
+            // 更新篩選器
             const filterDropdown = document.getElementById('teacher-filter');
-            // 保留第一個
             filterDropdown.innerHTML = '<option value="all">顯示所有教師</option>';
             Array.from(teacherSet).sort().forEach(t => {
                 const opt = document.createElement('option');
@@ -404,72 +384,52 @@
                 filterDropdown.appendChild(opt);
             });
 
-            // 5. 渲染總表
             renderTimetable("all");
         }
 
-        // 解析多節課時間代碼 (e.g. "22, 55, 43" 轉成 [22, 55, 43])
         function parseTimeCodes(codeStr) {
             if (!codeStr) return [];
             return codeStr.toString()
-                .replace(/['"]/g, '') // 拔掉引號
-                .split(/[\s,、]+/)   // 依照空格或逗號切分
+                .replace(/['"]/g, '')
+                .split(/[\s,、]+/)
                 .map(c => c.trim())
-                .filter(c => c.length === 2 && !isNaN(c)); // 嚴格篩選雙位數代碼
+                .filter(c => c.length === 2 && !isNaN(c));
         }
 
-        // 整理老師名稱
         function formatTeacher(name) {
             if (!name) return "";
             return name.replace(/老師/g, '').trim();
         }
 
-        // 智慧型地點名稱精簡器
         function formatLocation(loc) {
             if (!loc) return "";
             loc = loc.trim();
-            
-            // 規則 A: 移除「異想」字眼
-            if (loc.startsWith('異想')) {
-                loc = loc.substring(2);
-            }
-            
-            // 如果剩下的是純英數字代號 (例如 C, M, E, L)，直接原封不動回傳
-            if (/^[A-Za-z0-9]+$/.test(loc)) {
-                return loc;
-            }
-
-            // 規則 B: 中文地點名 (例如 直播室、校長室走廊)，根據指令「至少保留第一個字」
-            if (loc.length > 1) {
-                return loc.charAt(0); // 壓縮成：直、校、團
-            }
+            if (loc.startsWith('異想')) loc = loc.substring(2);
+            if (/^[A-Za-z0-9]+$/.test(loc)) return loc;
+            if (loc.length > 1) return loc.charAt(0);
             return loc;
         }
 
-        // 取得顏色樣式
         function getTeacherColor(name) {
             name = formatTeacher(name);
             if (PRESET_COLORS[name]) return PRESET_COLORS[name];
 
-            // 動態雜湊演算，讓非預設的其他教師也能配對到一組協調的色系
             let hash = 0;
             for (let i = 0; i < name.length; i++) {
                 hash = name.charCodeAt(i) + ((hash << 5) - hash);
             }
             const fallbackPalettes = [
-                { bg: 'bg-teal-50/90', text: 'text-teal-950', border: 'border-teal-300', bar: 'bg-teal-500' },
-                { bg: 'bg-violet-50/90', text: 'text-violet-955', border: 'border-violet-300', bar: 'bg-violet-500' },
-                { bg: 'bg-orange-50/90', text: 'text-orange-950', border: 'border-orange-300', bar: 'bg-orange-500' },
-                { bg: 'bg-lime-50/90', text: 'text-lime-950', border: 'border-lime-300', bar: 'bg-lime-500' },
-                { bg: 'bg-pink-50/90', text: 'text-pink-955', border: 'border-pink-300', bar: 'bg-pink-500' }
+                { bg: 'bg-teal-50/95', text: 'text-teal-950', border: 'border-teal-300/80', bar: 'bg-teal-500' },
+                { bg: 'bg-violet-50/95', text: 'text-violet-955', border: 'border-violet-300/80', bar: 'bg-violet-500' },
+                { bg: 'bg-orange-50/95', text: 'text-orange-950', border: 'border-orange-300/80', bar: 'bg-orange-500' },
+                { bg: 'bg-lime-50/95', text: 'text-lime-950', border: 'border-lime-300/80', bar: 'bg-lime-500' }
             ];
             return fallbackPalettes[Math.abs(hash) % fallbackPalettes.length];
         }
 
-        // 將學生名單切分成二人一排
+        // 修改學生名單：雙軌道（grid grid-cols-2）對齊，徹底消除名字不自然擠壓與縫隙
         function formatStudentsHTML(studentsStr) {
             if (!studentsStr) return "";
-            // 以中文頓號、逗號或空白切割名單
             const list = studentsStr.split(/[、,\s]+/).map(s => s.trim()).filter(s => s !== "");
             let html = "";
             
@@ -477,80 +437,63 @@
                 const s1 = list[i] || "";
                 const s2 = list[i+1] || "";
                 html += `
-                    <div class="flex items-center justify-between gap-1 w-full mt-0.5">
-                        <span class="w-[49%] text-left truncate font-semibold">${s1}</span>
-                        <span class="w-[49%] text-left truncate font-semibold">${s2}</span>
+                    <div class="grid grid-cols-2 gap-x-1 w-full text-left font-semibold text-slate-900 tracking-tight leading-normal mt-[1.5px]">
+                        <span class="truncate pl-[3px] text-[10.5px]">${s1}</span>
+                        <span class="truncate pl-[3px] text-[10.5px]">${s2}</span>
                     </div>
                 `;
             }
             return html;
         }
 
-        // 主渲染控制中心 (支援篩選機制)
+        // 主渲染引擎 (移除 tr 物理高度設定，利用 table 彈性撐開特性讓高密度行自動上下拉長)
         function renderTimetable(selectedTeacher = "all") {
             const tbody = document.getElementById('timetable-body');
             tbody.innerHTML = "";
 
-            // 建立空的大課表矩陣 (8節次 x 5工作天)
-            // 結構：matrix[periodIndex][dayIndex] = []
             const matrix = Array.from({ length: 8 }, () => Array.from({ length: 5 }, () => []));
 
-            // 將各組別投射到時空矩陣中
             activeRawData.forEach(group => {
-                // 如果有指定篩選特定教師，排除不符合的
-                if (selectedTeacher !== "all" && formatTeacher(group.teacher) !== selectedTeacher) {
-                    return;
-                }
+                if (selectedTeacher !== "all" && formatTeacher(group.teacher) !== selectedTeacher) return;
 
                 group.timeCodes.forEach(code => {
-                    const dayDigit = parseInt(code.charAt(0));   // 1 to 5 (星期)
-                    const periodDigit = parseInt(code.charAt(1)); // 1 to 8 (節次)
+                    const dayDigit = parseInt(code.charAt(0));
+                    const periodDigit = parseInt(code.charAt(1));
 
                     if (dayDigit >= 1 && dayDigit <= 5 && periodDigit >= 1 && periodDigit <= 8) {
-                        const dayIdx = dayDigit - 1;
-                        const periodIdx = periodDigit - 1;
-                        matrix[periodIdx][dayIdx].push(group);
+                        matrix[periodDigit - 1][dayDigit - 1].push(group);
                     }
                 });
             });
 
-            // 開始循環輸出 8 列 HTML Row
             periodTimes.forEach((pt, periodIdx) => {
                 const tr = document.createElement('tr');
-                tr.className = "border-b border-slate-900";
+                tr.className = "border-b border-slate-950";
                 
-                // 動態精準分配高度，把課表壓縮鎖死在 A4 橫式內部
-                // 8節課，每節課高度約為 22.5mm
-                tr.style.height = "21.2mm";
-
-                // 最左側：節次與作息時間 (極致縮窄寬度)
+                // 左側作息時間
                 const timeTd = document.createElement('td');
-                timeTd.className = "bg-slate-100 border-r-2 border-slate-900 font-bold flex flex-col justify-center items-center h-full p-0.5";
+                timeTd.className = "bg-slate-50 border-r-2 border-slate-950 font-bold flex flex-col justify-center items-center h-full p-1 min-h-[50px]";
                 timeTd.innerHTML = `
                     <div class="text-[10px] text-slate-900 leading-tight">${pt.period}</div>
-                    <div class="text-[7.5px] text-slate-500 mt-0.5 scale-95 leading-none">${pt.time}</div>
+                    <div class="text-[8px] text-slate-500 mt-1 scale-90 leading-none font-mono font-medium">${pt.time}</div>
                 `;
                 tr.appendChild(timeTd);
 
-                // 星期一至星期五各格渲染
+                // 星期一至星期五各格
                 for (let dayIdx = 0; dayIdx < 5; dayIdx++) {
                     const td = document.createElement('td');
-                    td.className = "p-1 border-r border-slate-300 align-top h-full overflow-hidden";
-                    if (dayIdx === 4) {
-                        td.classList.remove('border-r'); // 週五最後一欄去除右框線
-                    }
+                    td.className = "p-[3px] border-r border-slate-400 align-top h-full overflow-hidden";
+                    if (dayIdx === 4) td.classList.remove('border-r');
 
                     const cellGroups = matrix[periodIdx][dayIdx];
 
                     if (cellGroups.length === 0) {
-                        // 空堂，留白呈現乾淨感
-                        td.innerHTML = `<div class="w-full h-full"></div>`;
+                        td.innerHTML = `<div class="w-full h-full min-h-[45px]"></div>`;
                     } else {
-                        // 有組別上課，使用微型多重卡片堆疊
                         const wrapper = document.createElement('div');
-                        // 依照該格組別數動態調整間距 gap
-                        const gapClass = cellGroups.length >= 4 ? 'gap-0.5' : 'gap-1';
-                        wrapper.className = `flex flex-col h-full w-full justify-start ${gapClass}`;
+                        // 智慧型微調間距：組別多時用微型 gap-0.5，普通時用 gap-1.5 
+                        const gapClass = cellGroups.length >= 4 ? 'gap-0.5' : 'gap-1.5';
+                        wrapper.className = `flex flex-col w-full h-full justify-start ${gapClass}`;
 
                         cellGroups.forEach(group => {
                             const colors = getTeacherColor(group.teacher);
@@ -558,21 +501,20 @@
                             const displayTeacher = formatTeacher(group.teacher);
                             
                             const card = document.createElement('div');
-                            // 根據同格子內卡片多寡，微調卡片 padding
-                            const padClass = cellGroups.length >= 4 ? 'p-0.5' : 'p-1';
-                            card.className = `w-full rounded border flex flex-col items-stretch text-left ${colors.bg} ${colors.border} ${colors.text} ${padClass} relative overflow-hidden`;
+                            // 智慧型卡片 Padding：高密度時自動收窄，正常時留有舒服空隙
+                            const padClass = cellGroups.length >= 4 ? 'py-0.5 px-1' : 'py-1 px-1.5';
+                            card.className = `w-full rounded border flex flex-col items-stretch text-left ${colors.bg} ${colors.border} ${colors.text} ${padClass} relative overflow-hidden shadow-sm`;
                             
-                            // 左側裝飾厚條 (列印時亦會顯色)
                             card.innerHTML = `
-                                <div class="absolute left-0 top-0 bottom-0 w-0.5 ${colors.bar}"></div>
-                                <div class="pl-1 w-full">
+                                <div class="absolute left-0 top-0 bottom-0 w-[3px] ${colors.bar}"></div>
+                                <div class="w-full">
                                     <!-- 第一列：科目名稱(老師) 地點 -->
-                                    <div class="flex items-center justify-between text-[8px] font-extrabold leading-none tracking-tight border-b border-black/10 pb-0.5">
-                                        <span class="truncate pr-1">${group.groupName}(${displayTeacher})</span>
-                                        <span class="flex-shrink-0 bg-black/5 px-1 py-0.2 rounded font-mono font-bold scale-90">${compressedLocation}</span>
+                                    <div class="flex items-center justify-between text-[10.5px] font-extrabold leading-tight tracking-tight border-b border-black/10 pb-[1px]">
+                                        <span class="truncate pr-0.5">${group.groupName}(${displayTeacher})</span>
+                                        <span class="flex-shrink-0 bg-black/10 px-1 rounded font-mono font-bold text-[9px]">${compressedLocation}</span>
                                     </div>
-                                    <!-- 學生名單 (二人一排) -->
-                                    <div class="micro-text text-black/90 w-full mt-0.5 font-medium">
+                                    <!-- 學生名單 (標準雙軌道對齊) -->
+                                    <div class="w-full">
                                         ${formatStudentsHTML(group.studentsStr)}
                                     </div>
                                 </div>
@@ -589,7 +531,6 @@
             });
         }
 
-        // 下拉式選單觸發篩選
         function filterTimetable() {
             const val = document.getElementById('teacher-filter').value;
             renderTimetable(val);
