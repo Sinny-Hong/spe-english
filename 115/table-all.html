@@ -53,6 +53,11 @@
             box-sizing: border-box;
         }
 
+        /* 鎖定 7 節課在 Table 中完全等高均分，徹底防止某節課被過度撐開，並確保不溢頁 */
+        #timetable-body tr {
+            height: calc((100% - 24px) / 7);
+        }
+
         /* 隱藏滾動條 */
         ::-webkit-scrollbar {
             width: 6px;
@@ -378,23 +383,34 @@
             return fallbackPalettes[Math.abs(hash) % fallbackPalettes.length];
         }
 
-        // 修改學生名單：標準雙軌道對齊，行間距調整為 leading-none (極致緊湊)
-        function formatStudentsHTML(studentsStr) {
+        // 修改學生名單：支援 dynamic inline 格式，徹底杜絕高密度格子因高度不足崩塌
+        function formatStudentsHTML(studentsStr, forceInline = false) {
             if (!studentsStr) return "";
             const list = studentsStr.split(/[、,\s]+/).map(s => s.trim()).filter(s => s !== "");
-            let html = "";
+            if (list.length === 0) return "";
             
-            for (let i = 0; i < list.length; i += 2) {
-                const s1 = list[i] || "";
-                const s2 = list[i+1] || "";
-                html += `
-                    <div class="grid grid-cols-2 gap-x-1 w-full text-left font-semibold text-slate-900 tracking-tight leading-none mt-[1px]">
-                        <span class="truncate pl-[2px] text-[10px]">${s1}</span>
-                        <span class="truncate pl-[2px] text-[10px]">${s2}</span>
+            if (forceInline) {
+                // 超高密度模式：橫向緊湊排列，省下大筆垂直高度
+                return `
+                    <div class="w-full text-left font-semibold text-slate-800 tracking-tight leading-none mt-[1.5px] text-[8.5px] truncate pl-[2px]">
+                        ${list.join('、')}
                     </div>
                 `;
+            } else {
+                // 標準雙列軌道對齊
+                let html = "";
+                for (let i = 0; i < list.length; i += 2) {
+                    const s1 = list[i] || "";
+                    const s2 = list[i+1] || "";
+                    html += `
+                        <div class="grid grid-cols-2 gap-x-1.5 w-full text-left font-semibold text-slate-900 tracking-tight leading-none mt-[1px]">
+                            <span class="truncate pl-[2px] text-[10px]">${s1}</span>
+                            <span class="truncate pl-[2px] text-[10px]">${s2}</span>
+                        </div>
+                    `;
+                }
+                return html;
             }
-            return html;
         }
 
         // 主渲染引擎 (只排 7 節)
@@ -420,12 +436,14 @@
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-slate-950";
                 
-                // 左側作息時間
+                // 左側作息時間 (修復：移除 TD 本身的 Flex，改用 DIV 包裹防崩塌)
                 const timeTd = document.createElement('td');
-                timeTd.className = "bg-slate-50 border-r-2 border-slate-950 font-bold flex flex-col justify-center items-center h-full p-1 min-h-[50px]";
+                timeTd.className = "bg-slate-50 border-r-2 border-slate-950 p-0.5";
                 timeTd.innerHTML = `
-                    <div class="text-[10px] text-slate-900 leading-tight">${pt.period}</div>
-                    <div class="text-[8px] text-slate-500 mt-1 scale-90 leading-none font-mono font-medium">${pt.time}</div>
+                    <div class="flex flex-col justify-center items-center h-full min-h-[48px] font-bold">
+                        <div class="text-[10px] text-slate-900 leading-tight">${pt.period}</div>
+                        <div class="text-[8px] text-slate-500 mt-1 scale-90 leading-none font-mono font-medium">${pt.time}</div>
+                    </div>
                 `;
                 tr.appendChild(timeTd);
 
@@ -449,22 +467,36 @@
                             const compressedLocation = formatLocation(group.location);
                             const displayTeacher = formatTeacher(group.teacher);
                             
+                            // 智慧型卡片縮放：根據格子內總組數，動態調降 font-size 與內外距，保證 Monday 1st 完美塞入
+                            const groupCount = cellGroups.length;
+                            let cardPadding = "py-1 px-1.5";
+                            let titleFontSize = "text-[10.5px]";
+                            let forceInline = false;
+
+                            if (groupCount >= 5) {
+                                cardPadding = "py-[1px] px-1";
+                                titleFontSize = "text-[8.5px]";
+                                forceInline = true; // 啟動一列式學生
+                            } else if (groupCount >= 3) {
+                                cardPadding = "py-[2px] px-1";
+                                titleFontSize = "text-[9.5px]";
+                                forceInline = false;
+                            }
+
                             const card = document.createElement('div');
-                            // 縮小卡片內 Padding 
-                            const padClass = 'py-[2px] px-1';
-                            card.className = `w-full rounded border flex flex-col items-stretch text-left ${colors.bg} ${colors.border} ${colors.text} ${padClass} relative overflow-hidden shadow-sm`;
+                            card.className = `w-full rounded border flex flex-col items-stretch text-left ${colors.bg} ${colors.border} ${colors.text} ${cardPadding} relative overflow-hidden shadow-sm`;
                             
                             card.innerHTML = `
                                 <div class="absolute left-0 top-0 bottom-0 w-[3px] ${colors.bar}"></div>
                                 <div class="w-full">
                                     <!-- 第一列：科目名稱(老師) 地點 -->
-                                    <div class="flex items-center justify-between text-[10.5px] font-extrabold leading-tight tracking-tight border-b border-black/10 pb-[1px]">
+                                    <div class="flex items-center justify-between ${titleFontSize} font-extrabold leading-tight tracking-tight border-b border-black/10 pb-[1px]">
                                         <span class="truncate pr-0.5">${group.groupName}(${displayTeacher})</span>
-                                        <span class="flex-shrink-0 bg-black/10 px-1 rounded font-mono font-bold text-[9px]">${compressedLocation}</span>
+                                        <span class="flex-shrink-0 bg-black/10 px-1 rounded font-mono font-bold text-[8.5px]">${compressedLocation}</span>
                                     </div>
-                                    <!-- 學生名單 (標準雙軌道對齊) -->
+                                    <!-- 學生名單 (智慧格式化) -->
                                     <div class="w-full">
-                                        ${formatStudentsHTML(group.studentsStr)}
+                                        ${formatStudentsHTML(group.studentsStr, forceInline)}
                                     </div>
                                 </div>
                             `;
