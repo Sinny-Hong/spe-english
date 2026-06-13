@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新市國中異想教室 - 教室日誌系統 (table-diary)</title>
+    <title>教室日誌</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -461,7 +461,6 @@
             });
 
             renderArea.innerHTML = allHtml;
-            // 延遲驅動列印，確保瀏覽器重新排版完成
             setTimeout(() => {
                 window.print();
                 renderCurrentView(); 
@@ -537,7 +536,7 @@
             renderCurrentView();
         }
 
-        // 🛡️ 終極攔截：列印時動態清空 title，完美抹除「新市國中特教教室日誌系統:table-diary.html」系統頁首列
+        // 🛡️ 終極攔截：列印時動態清空 title，完美抹除系統頁首頁尾與 URL 網址
         let originalTitle = document.title;
         window.addEventListener('beforeprint', () => {
             originalTitle = document.title;
