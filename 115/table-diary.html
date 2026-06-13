@@ -3,548 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>教室日誌</title>
+    <title>新市國中特教教室日誌系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700&display=swap');
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f1f5f9;
-            margin: 0; padding: 0;
+            font-family: "標楷體", "KAIU", "DFKai-SB", serif;
+            background-color: #f3f4f6;
         }
-
-        /* 嚴格標楷體公文風格（用於 A4 容器內所有文字） */
-        .official-doc {
-            font-family: "DFKai-SB", "標楷體", "BiauKai", "Noto Serif TC", serif !important;
-            color: black;
-            line-height: 1.35;
-        }
-
-        /* A4 直式列印紙張標準規格容器 */
-        .page-container {
+        
+        /* A4 直式列印規範 */
+        .page-a4 {
             width: 210mm;
-            height: 297mm;
-            padding: 15mm 16mm;
-            margin: 20px auto;
-            background: white;
+            min-height: 297mm;
+            padding: 15mm 15mm;
+            margin: 10px auto;
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             box-sizing: border-box;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
             position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
         }
 
-        /* 正式粗黑框線表格 */
-        .diary-table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 2px solid black;
-            table-layout: fixed;
-        }
-
+        /* 產生手寫空間的公文線條 */
         .diary-table th, .diary-table td {
-            border: 1px solid black;
-            text-align: center;
-            vertical-align: middle;
-            box-sizing: border-box;
-            /* 修正帶無色差：確保所有儲存格背景都是純白色 */
-            background-color: #ffffff !important;
+            border: 1.5px solid #000000 !important;
+            height: 88px;
+            vertical-align: top;
+            padding: 4px;
+            background-color: #ffffff !important; /* 強制移除底色 */
         }
-
-        /* 表頭星期欄位高度與字體 */
+        
         .diary-table th {
-            font-weight: bold;
-            font-size: 16px;
-            height: 44px;
-        }
-
-        /* 左側節次時間欄寬度 */
-        .time-col {
-            font-weight: bold;
-            font-size: 15px;
-            width: 14%;
-        }
-
-        /* 星期每日欄位寬度 */
-        .day-col {
-            width: 17.2%;
-        }
-
-        /* 撰寫區 Row 高度 (加高手寫物理空間) */
-        .lesson-row, .lesson-row td, .lesson-row th {
-            height: 88px !important;
-        }
-
-        /* 點名缺席區 Row 高度 (純白無色差) */
-        .absent-row, .absent-row td, .absent-row th {
-            height: 42px !important;
-        }
-
-        /* 撰寫內容排版：左右至中、上下至中、組別名稱縮小 */
-        .write-cell {
-            text-align: center !important;
-            vertical-align: middle !important;
-            padding: 4px 6px !important;
-            font-size: 14px; /* 組別縮小，留出周圍大量空間供手寫進度 */
+            height: 35px !important;
+            vertical-align: middle;
             font-weight: bold;
         }
 
-        /* 缺席名單手寫格排版 */
-        .absent-cell {
-            text-align: left !important;
-            vertical-align: middle !important;
-            padding: 4px 8px !important;
+        /* 控制台樣式 */
+        #control-panel {
+            background: #1f2937;
+            color: white;
+            padding: 15px;
+            max-width: 210mm;
+            margin: 0 auto;
+            border-radius: 8px 8px 0 0;
+            font-family: system-ui, -apple-system, sans-serif;
         }
 
-        /* 🌐 核心列印防護與邊距設定 */
+        /* 列印防護 */
         @media print {
-            /* 阻斷瀏覽器預設的頁首頁尾、網址與系統名稱列印 */
-            @page { 
-                margin: 0; 
+            body {
+                background: none;
             }
-            .no-print {
+            #control-panel {
                 display: none !important;
             }
-            body {
-                background-color: white;
+            .page-a4 {
                 margin: 0;
-                padding: 0;
-            }
-            .page-container {
-                margin: 0 !important;
-                box-shadow: none !important;
-                /* 確保多頁一鍵列印時精準換頁不溢出 */
-                page-break-after: always; 
-                page-break-inside: avoid;
+                box-shadow: none;
+                width: 210mm;
+                height: 297mm;
+                page-break-after: always;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="no-print bg-slate-900 text-white p-4 sticky top-0 z-50 shadow-md">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <span class="bg-purple-600 px-2.5 py-1 rounded text-sm font-bold tracking-wider">教室日誌</span>
-                <h1 class="text-lg font-bold">特教教室日誌系統 (table-diary)</h1>
+    <div id="control-panel" class="shadow-md">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-yellow-400">選擇填寫教師：</span>
+                <select id="teacher-select" class="bg-gray-700 text-white px-3 py-1.5 rounded border border-gray-600 focus:outline-none focus:border-yellow-400">
+                    <option value="洪欣怡">洪欣怡 老師</option>
+                    <option value="許杏凰">許杏凰 老師</option>
+                    <option value="陳秋錡">陳秋錡 老師</option>
+                    <option value="孫瑞彤">孫瑞彤 老師</option>
+                    <option value="曾筱雯">曾筱雯 老師</option>
+                </select>
+                <span id="sync-status" class="text-xs text-gray-400 ml-2">正在與雲端連線...</span>
             </div>
-            
-            <div class="flex flex-wrap items-center gap-4">
-                <div>
-                    <label class="text-xs text-slate-400 block mb-1">選擇特教教師</label>
-                    <select id="teacher-select" onchange="renderCurrentView()" class="bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium focus:outline-none focus:border-purple-500 w-44 text-white">
-                        <option value="">讀取雲端資料中...</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="text-xs text-slate-400 block mb-1">日期顯示模式</label>
-                    <select id="date-mode-select" onchange="toggleDateMode()" class="bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium focus:outline-none focus:border-purple-500 w-44 text-white">
-                        <option value="blank">模式A：多人空白日期</option>
-                        <option value="auto">模式B：自動推算日期</option>
-                    </select>
-                </div>
-
-                <div id="week-select-container" class="hidden">
-                    <label class="text-xs text-slate-400 block mb-1">選擇特定週次</label>
-                    <select id="week-select" onchange="renderCurrentView()" class="bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-sm font-medium focus:outline-none focus:border-purple-500 w-24 text-white">
-                        </select>
-                </div>
-
-                <div class="flex items-end gap-2 pt-4 md:pt-0">
-                    <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-500 px-4 py-1.5 rounded text-sm font-bold tracking-wide transition-colors">
-                        🖨️ 列印目前預覽
-                    </button>
-                    <button onclick="printAllTeachersBlank()" id="btn-print-all-blank" class="bg-blue-600 hover:bg-blue-500 px-4 py-1.5 rounded text-sm font-bold tracking-wide transition-colors">
-                        👥 一鍵列印多人空白範本
-                    </button>
-                    <button onclick="printSingleTeacher22Weeks()" id="btn-print-22weeks" class="hidden bg-purple-600 hover:bg-purple-500 px-4 py-1.5 rounded text-sm font-bold tracking-wide transition-colors">
-                        📅 一鍵列印單人22週
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="status-bar" class="no-print max-w-4xl mx-auto mt-4 px-4">
-        <div class="bg-amber-900/40 border border-amber-700/50 rounded-lg p-3 text-sm text-amber-200 flex items-center justify-between">
-            <span id="status-text">🔄 正在與 Google 試算表 A3 授課分頁連線中...</span>
-            <span id="info-date" class="text-xs opacity-80"></span>
-        </div>
-    </div>
-
-    <div id="custom-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden no-print">
-        <div class="bg-slate-900 border border-slate-700 p-6 rounded-lg max-w-md w-full mx-4 text-white">
-            <h3 class="text-lg font-bold mb-2 flex items-center gap-2 text-amber-400">
-                ⚠️ 系統提示
-            </h3>
-            <p id="modal-msg" class="text-sm text-slate-300 mb-6"></p>
-            <div class="flex justify-end">
-                <button onclick="closeModal()" class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-1.5 rounded text-sm font-bold">
-                    確認
+            <div class="flex gap-2">
+                <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded text-sm font-semibold transition-colors">
+                    🖨️ 列印本頁日誌
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="main-render-area">
+    <div class="page-a4">
+        <div class="text-center mb-4">
+            <h1 class="text-2xl font-bold tracking-wider" style="font-family: 'Noto Serif TC', serif;">
+                114學年度第二學期 <span id="title-classroom">異想教室</span>日誌
+            </h1>
+            <div class="flex justify-between mt-2 text-base px-2">
+                <div>教師：<span id="info-teacher" class="font-bold text-lg">洪欣怡</span></div>
+                <div>第_______週</div>
+            </div>
         </div>
 
+        <table class="w-full diary-table text-sm">
+            <thead>
+                <tr class="text-center">
+                    <th style="width: 10%;">節次</th>
+                    <th style="width: 18%;">星期一</th>
+                    <th style="width: 18%;">星期二</th>
+                    <th style="width: 18%;">星期三</th>
+                    <th style="width: 18%;">星期四</th>
+                    <th style="width: 18%;">星期五</th>
+                </tr>
+            </thead>
+            <tbody id="diary-tbody">
+                </tbody>
+        </table>
+
+        <div class="mt-8 flex justify-between text-base px-4">
+            <div>任課教師：</div>
+            <div>輔導主任：</div>
+            <div>教務主任：</div>
+        </div>
+    </div>
+
     <script>
-        // 資料庫網址：連動 A3 授課分頁 CSV
+        // A3授課的 Google CSV 發布網址
         const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNEots8pxAuco9lAY1ZNv1nVH-GgKODMA_DN-diDP40jsoR-ZXEN7fAdmBmdEKm0NMkPYDvGY7KfCk/pub?gid=1823409322&single=true&output=csv";
+        
+        // 防呆備用本地資料庫（若連線失敗或無對應資料時，直接查表顯示該老師的地點簡稱）
+        const fallbackRooms = {
+            "洪欣怡": "異想C",
+            "許杏凰": "異想E",
+            "陳秋錡": "異想M",
+            "孫瑞彤": "團諮室",
+            "曾筱雯": "直播室"
+        };
 
-        // 全域核心變數
-        let rawLessons = [];        // 課程資料
-        let teacherList = [];       // 不重複特教老師清單
-        let globalSchoolStart = "";  // 開學日字串
-        let parsedStartDate = null;  // 第一週週一 Date 對象
+        let rawDatabase = []; // 存放從 Google 撈回來的原始陣列
 
-        // 7節課作息時間配置
-        const timeTable = [
-            { section: "第一節", time: "08:20<br>09:05" },
-            { section: "第二節", time: "09:15<br>10:00" },
-            { section: "第三節", time: "10:10<br>10:55" },
-            { section: "第四節", time: "11:05<br>11:50" },
-            { section: "第五節", time: "13:15<br>14:00" },
-            { section: "第六節", time: "14:10<br>14:55" },
-            { section: "第七節", time: "15:05<br>15:50" }
+        // 節次名稱與時間對照
+        const periodConfig = [
+            { id: 1, name: "第一節", time: "08:20-09:05" },
+            { id: 2, name: "第二節", time: "09:15-10:00" },
+            { id: 3, name: "第三節", time: "10:10-10:55" },
+            { id: 4, name: "第四節", time: "11:05-11:50" },
+            { id: 5, name: "第五節", time: "13:15-14:00" },
+            { id: 6, name: "第六節", time: "14:10-14:55" },
+            { id: 7, name: "第七節", time: "15:05-15:50" }
         ];
 
-        const dayKeys = ["一", "二", "三", "四", "五"];
-
-        window.addEventListener('DOMContentLoaded', () => {
-            // 生成 1~22週 下拉選項
-            const weekSelect = document.getElementById('week-select');
-            for(let i = 1; i <= 22; i++) {
-                let opt = document.createElement('option');
-                opt.value = i;
-                opt.innerText = `第 ${i} 週`;
-                weekSelect.appendChild(opt);
-            }
-            fetchCSVData();
+        // 初始化
+        window.addEventListener("DOMContentLoaded", () => {
+            initTableStructure();
+            fetchCloudData();
+            
+            // 監聽下拉選單切換
+            document.getElementById("teacher-select").addEventListener("change", (e) => {
+                renderTeacherDiary(e.target.value);
+            });
         });
 
-        // 獲取雲端試算表 CSV
-        function fetchCSVData() {
-            const cacheBuster = csvUrl + "&t=" + new Date().getTime();
-            fetch(cacheBuster)
-                .then(response => response.text())
+        // 1. 建立空的 7 節表格架構
+        function initTableStructure() {
+            const tbody = document.getElementById("diary-tbody");
+            tbody.innerHTML = "";
+            
+            periodConfig.forEach(p => {
+                let rowHtml = `<tr data-period="${p.id}">
+                    <td class="text-center font-bold flex flex-col justify-center items-center" style="height:88px; vertical-align:middle; line-height:1.2;">
+                        <div>${p.name}</div>
+                        <div class="text-[11px] font-normal text-gray-500 mt-1">${p.time}</div>
+                    </td>`;
+                for (let day = 1; day <= 5; day++) {
+                    rowHtml += `<td data-day="${day}" class="relative flex flex-col justify-between">
+                        <div class="course-title font-bold text-left leading-tight"></div>
+                        <div class="flex justify-end items-center text-[11px] border-t border-gray-300 pt-1 mt-auto">
+                            <span class="mr-3">缺席：</span>
+                            <span class="border border-black w-3 h-3 inline-block mr-1"></span>
+                            <span class="border border-black w-3 h-3 inline-block mr-1"></span>
+                            <span class="border border-black w-3 h-3 inline-block"></span>
+                        </div>
+                    </td>`;
+                }
+                rowHtml += `</tr>`;
+                tbody.innerHTML += rowHtml;
+            });
+        }
+
+        // 2. 異步撈取 Google 試算表發布的 CSV
+        function fetchCloudData() {
+            const statusEl = document.getElementById("sync-status");
+            // 加入時間戳記破解快取
+            const finalUrl = csvUrl + "&t=" + new Date().getTime();
+
+            fetch(finalUrl)
+                .then(response => {
+                    if (!response.ok) throw new Error("網路連線不穩定");
+                    return response.text();
+                })
                 .then(text => {
                     parseCSV(text);
-                    updateStatus("success", "🟢 雲端資料庫連線成功！教室日誌結構已完美對接。");
+                    statusEl.innerText = "● 雲端資料同步成功";
+                    statusEl.className = "text-xs text-green-400 ml-2";
+                    
+                    // 動態更新下拉選單中的老師名單（保持不重複）
+                    refreshTeacherDropdown();
+                    
+                    // 預設渲染第一個老師
+                    const currentTeacher = document.getElementById("teacher-select").value;
+                    renderTeacherDiary(currentTeacher);
                 })
                 .catch(err => {
                     console.error(err);
-                    updateStatus("fallback", "⚠️ 無法即時讀取雲端試算表，已啟用本地快取範本。");
-                    generateFallbackData();
+                    statusEl.innerText = "⚠️ 讀取失敗，已載入本機防呆模板";
+                    statusEl.className = "text-xs text-red-400 ml-2";
+                    // 失敗時依然可以使用預設名單渲染防呆格線
+                    renderTeacherDiary(document.getElementById("teacher-select").value);
                 });
         }
 
-        // 解析 CSV 邏輯
+        // 3. 解析 CSV 成為物件陣列
         function parseCSV(text) {
             const lines = text.split("\n").map(line => line.trim()).filter(line => line.length > 0);
-            rawLessons = [];
-            let teachersSet = new Set();
+            if (lines.length < 2) return;
 
-            lines.forEach((line, index) => {
-                let cols = [];
-                let matches = line.match(/(".*?"|[^,]+|( Lyons)?)/g);
-                if (matches) {
-                    cols = matches.map(m => m.replace(/^"|"$/g, '').trim());
+            // 抓取表頭
+            const headers = lines[0].split(",").map(h => h.trim().replace(/"/g, ""));
+            
+            // 尋找必要欄位索引
+            const teacherIdx = headers.indexOf("特教教師");
+            const groupIdx = headers.indexOf("分組名稱");
+            const roomIdx = headers.indexOf("上課地點");
+            const timeIdx = headers.indexOf("時間代碼");
+
+            rawDatabase = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                // 精準處理逗號（避免學生名單或多節次逗號爆開）
+                const row = parseCSVLine(lines[i]);
+                if (row.length < headers.length) continue;
+
+                const teacher = row[teacherIdx]?.trim().replace(/"/g, "") || "";
+                const group = row[groupIdx]?.trim().replace(/"/g, "") || "";
+                const room = row[roomIdx]?.trim().replace(/"/g, "") || "";
+                const timeStr = row[timeIdx]?.trim().replace(/"/g, "") || "";
+
+                if (teacher) {
+                    rawDatabase.push({ teacher, group, room, timeStr });
                 }
-
-                // 讀取開學日（位於 A3 改版日期的正下方列）
-                if (index === 1 && cols[0]) {
-                    globalSchoolStart = cols[0];
-                }
-
-                if (cols.length >= 7 && index > 0) {
-                    let teacher = cols[1];
-                    let groupName = cols[2];
-                    let timeCodeStr = cols[5];
-
-                    if (teacher && teacher !== "特教教師" && groupName) {
-                        teachersSet.add(teacher);
-                        
-                        let codes = timeCodeStr.replace(/"/g, '').split(",").map(c => c.trim());
-                        codes.forEach(code => {
-                            if(code.length === 2) {
-                                rawLessons.push({
-                                    teacher: teacher,
-                                    group: groupName,
-                                    day: parseInt(code.charAt(0)), // 星期 1~5
-                                    slot: parseInt(code.charAt(1))  // 節次 1~7
-                                });
-                            }
-                        });
-                    }
-                }
-            });
-
-            teacherList = Array.from(teachersSet);
-            processSchoolStartDate();
-
-            // 更新選擇老師選單
-            const select = document.getElementById('teacher-select');
-            select.innerHTML = "";
-            teacherList.forEach(t => {
-                let opt = document.createElement('option');
-                opt.value = t;
-                opt.innerText = t + " 老師";
-                select.appendChild(opt);
-            });
-
-            renderCurrentView();
+            }
         }
 
-        // 週日起點回推大腦
-        function processSchoolStartDate() {
-            const dateInfoSpan = document.getElementById('info-date');
-            let baseDateStr = "2026/08/31"; 
-            if (globalSchoolStart && globalSchoolStart.match(/^\d{4}[\/\.-]\d{1,2}[\/\.-]\d{1,2}$/)) {
-                baseDateStr = globalSchoolStart;
+        // 處理包含雙引號與逗號的特殊 CSV 行
+        function parseCSVLine(line) {
+            let arr = [];
+            let current = "";
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                let char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    arr.push(current);
+                    current = "";
+                } else {
+                    current += char;
+                }
             }
-            
-            let d = new Date(baseDateStr.replace(/[\.-]/g, '/'));
-            if (isNaN(d.getTime())) {
-                d = new Date("2026/08/31");
-            }
-
-            let dayOfWeek = d.getDay();
-            let diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; 
-            
-            parsedStartDate = new Date(d);
-            parsedStartDate.setDate(d.getDate() + diffToMonday);
-
-            dateInfoSpan.innerText = `開學日基準：${baseDateStr} (自動推算當週週一：${formatDateString(parsedStartDate)})`;
+            arr.push(current);
+            return arr;
         }
 
-        // 切換 A/B 顯示模式
-        function toggleDateMode() {
-            const mode = document.getElementById('date-mode-select').value;
-            const weekContainer = document.getElementById('week-select-container');
-            const btnPrintAllBlank = document.getElementById('btn-print-all-blank');
-            const btnPrint22Weeks = document.getElementById('btn-print-22weeks');
+        // 4. 動態更新教師下拉選單（連動優先）
+        function refreshTeacherDropdown() {
+            if (rawDatabase.length === 0) return;
+            
+            // 從資料中萃取出所有不重複的教師名字
+            let teachers = [...new Set(rawDatabase.map(item => item.teacher))].filter(t => t);
+            
+            if (teachers.length > 0) {
+                const select = document.getElementById("teacher-select");
+                const savedValue = select.value; // 保留當前選擇
+                
+                select.innerHTML = "";
+                teachers.forEach(t => {
+                    const option = document.createElement("option");
+                    option.value = t;
+                    option.innerText = t + " 老師";
+                    select.appendChild(option);
+                });
+                
+                // 恢復原本選擇或預設第一個
+                if (teachers.includes(savedValue)) {
+                    select.value = savedValue;
+                }
+            }
+        }
 
-            if (mode === 'blank') {
-                weekContainer.classList.add('hidden');
-                btnPrintAllBlank.classList.remove('hidden');
-                btnPrint22Weeks.classList.add('hidden');
+        // 5. 渲染指定老師的教室日誌課表
+        function renderTeacherDiary(teacherName) {
+            // 先清空課表內的所有文字欄位，保留底部缺席框
+            document.querySelectorAll("#diary-tbody .course-title").forEach(div => div.innerText = "");
+            
+            // 更新基本個資顯示
+            document.getElementById("info-teacher").innerText = teacherName;
+            
+            // 找出該教師對應的教室/地點（優先連動雲端，無資料則抓本機防呆）
+            let matchedRoom = fallbackRooms[teacherName] || "特教教室";
+            const teacherCourses = rawDatabase.filter(item => item.teacher === teacherName);
+            if (teacherCourses.length > 0 && teacherCourses[0].room) {
+                matchedRoom = teacherCourses[0].room;
+            }
+            
+            // 轉換顯示名稱（例如 異想C -> 異想教室C）
+            if (matchedRoom.startsWith("異想") && !matchedRoom.endsWith("教室")) {
+                document.getElementById("title-classroom").innerText = `異想教室 ${matchedRoom.replace("異想", "")}`;
             } else {
-                weekContainer.classList.remove('hidden');
-                btnPrintAllBlank.classList.add('hidden');
-                btnPrint22Weeks.classList.remove('hidden');
-            }
-            renderCurrentView();
-        }
-
-        function formatDateString(dateObj) {
-            return `${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
-        }
-
-        function getCalculatedDateStr(weekNum, dayNum) {
-            if (!parsedStartDate) return "";
-            let targetDate = new Date(parsedStartDate);
-            let totalDaysAdded = (weekNum - 1) * 7 + (dayNum - 1);
-            targetDate.setDate(targetDate.getDate() + totalDaysAdded);
-            return formatDateString(targetDate);
-        }
-
-        // 核心排版引擎：生成單頁 A4 HTML（極簡精準滿版結構）
-        function generateSinglePageHTML(teacherName, dateMode, targetWeek) {
-            let weekHeaderStr = "第_____週";
-
-            if (dateMode === 'auto') {
-                weekHeaderStr = `第 ${targetWeek} 週`;
+                document.getElementById("title-classroom").innerText = matchedRoom;
             }
 
-            // 標題與個資合併單行，完全無框線、無底線
-            let html = `
-            <div class="page-container official-doc">
-                <div>
-                    <div class="flex justify-between items-center w-full mb-4 font-bold" style="font-size: 19px; letter-spacing: 0.5px;">
-                        <div>114學年度第二學期 異想教室日誌</div>
-                        <div>教師：<span style="border-bottom: 1.5px solid black; padding: 0 20px; font-size: 21px;">${teacherName}</span></div>
-                        <div>(${weekHeaderStr})</div>
-                    </div>
-
-                    <table class="diary-table">
-                        <thead>
-                            <tr style="height: 44px;">
-                                <th class="time-col" style="font-size: 16px;">星期</th>
-                                ${dayKeys.map(day => `<th class="day-col" style="font-size: 16px;">星期${day}</th>`).join('')}
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            // 依序交叉渲染 7 節課的撰寫列與缺席列
-            timeTable.forEach((row, rIdx) => {
-                let slotNum = rIdx + 1;
-
-                // 1. 上課內容撰寫列 (加高至 88px，組別置中)
-                html += `
-                <tr class="lesson-row">
-                    <td class="time-col" style="background-color: #ffffff !important;">
-                        <div style="font-size:15px; font-weight:bold;">${row.section}</div>
-                        <div style="font-size:12px; font-weight:normal; margin-top:3px; line-height:1.25;">${row.time}</div>
-                    </td>
-                `;
-
-                for (let dNum = 1; dNum <= 5; dNum++) {
-                    let match = rawLessons.find(l => l.teacher === teacherName && l.day === dNum && l.slot === slotNum);
-                    let groupName = match ? match.group : ""; // 乾淨顯示組別名稱
-
-                    html += `
-                    <td class="day-col write-cell">
-                        ${groupName}
-                    </td>
-                    `;
-                }
-                html += `</tr>`;
-
-                // 2. 缺席點名列 (高 42px，純白無色差背景，缺席放最左側欄位)
-                html += `
-                <tr class="absent-row">
-                    <td class="time-col" style="font-size: 15px; font-weight: bold; background-color: #ffffff !important; text-align: center;">
-                        缺席
-                    </td>
-                `;
-
-                for (let dNum = 1; dNum <= 5; dNum++) {
-                    html += `
-                    <td class="day-col absent-cell">
-                        </td>
-                    `;
-                }
-                html += `</tr>`;
+            // 開始將課程倒入表格
+            teacherCourses.forEach(course => {
+                // 解析時間代碼（可能單節 "11"，或多節 "22, 55, 43"）
+                const tokens = course.timeStr.split(",").map(t => t.trim());
+                
+                tokens.forEach(token => {
+                    if (token.length === 2) {
+                        const day = parseInt(token[0]);     // 十位數為星期
+                        const period = parseInt(token[1]);  // 個位數為節次
+                        
+                        // 尋找對應的格子
+                        const cell = document.querySelector(`#diary-tbody tr[data-period="${period}"] td[data-day="${day}"] .course-title`);
+                        if (cell) {
+                            // 寫入組別名稱
+                            cell.innerText = course.group;
+                        }
+                    }
+                });
             });
-
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="flex justify-between items-center pt-2 font-bold" style="font-size: 16px;">
-                    <div>任課教師：＿＿＿＿＿＿＿</div>
-                    <div>輔導主任：＿＿＿＿＿＿＿</div>
-                    <div>教務主任：＿＿＿＿＿＿＿</div>
-                </div>
-            </div>
-            `;
-            return html;
         }
-
-        // 渲染畫面
-        function renderCurrentView() {
-            const currentTeacher = document.getElementById('teacher-select').value;
-            const dateMode = document.getElementById('date-mode-select').value;
-            const targetWeek = parseInt(document.getElementById('week-select').value) || 1;
-            const renderArea = document.getElementById('main-render-area');
-
-            if (!currentTeacher) {
-                renderArea.innerHTML = `<div class="text-center py-20 text-slate-500 font-medium">請在控制選單選擇特教任課教師，以顯示教室日誌。</div>`;
-                return;
-            }
-
-            renderArea.innerHTML = generateSinglePageHTML(currentTeacher, dateMode, targetWeek);
-        }
-
-        // 模式 A：一鍵列印所有老師空白日期日誌 (優先最高)
-        function printAllTeachersBlank() {
-            const renderArea = document.getElementById('main-render-area');
-            let allHtml = "";
-            
-            teacherList.forEach(teacher => {
-                allHtml += generateSinglePageHTML(teacher, 'blank', 1);
-            });
-
-            renderArea.innerHTML = allHtml;
-            setTimeout(() => {
-                window.print();
-                renderCurrentView(); 
-            }, 300);
-        }
-
-        // 模式 B：一鍵列印單人 22 週日誌
-        function printSingleTeacher22Weeks() {
-            const currentTeacher = document.getElementById('teacher-select').value;
-            const renderArea = document.getElementById('main-render-area');
-            
-            if(!currentTeacher) {
-                showModal("請先在上方選單選擇一位特教老師，再生成學期22週日誌！");
-                return;
-            }
-
-            let allHtml = "";
-            for (let w = 1; w <= 22; w++) {
-                allHtml += generateSinglePageHTML(currentTeacher, 'auto', w);
-            }
-
-            renderArea.innerHTML = allHtml;
-            setTimeout(() => {
-                window.print();
-                renderCurrentView(); 
-            }, 300);
-        }
-
-        function showModal(msg) {
-            document.getElementById('modal-msg').innerText = msg;
-            document.getElementById('custom-modal').classList.remove('hidden');
-        }
-        function closeModal() {
-            document.getElementById('custom-modal').classList.add('hidden');
-        }
-
-        function updateStatus(type, message) {
-            const statusBar = document.getElementById('status-bar');
-            const statusText = document.getElementById('status-text');
-            
-            statusBar.className = "no-print max-w-4xl mx-auto mt-4 px-4";
-            if (type === 'success') {
-                statusBar.classList.add('bg-emerald-950/60', 'border', 'border-emerald-700', 'text-emerald-200');
-            } else if (type === 'fallback') {
-                statusBar.classList.add('bg-amber-950/60', 'border', 'border-amber-700', 'text-amber-200');
-            }
-            statusText.innerText = message;
-        }
-
-        // 本地模擬資料庫 (防呆機制)
-        function generateFallbackData() {
-            globalSchoolStart = "2026/08/31";
-            rawLessons = [
-                { teacher: "洪欣怡", group: "英語二C", day: 2, slot: 1 },
-                { teacher: "洪欣怡", group: "英語二B", day: 4, slot: 1 },
-                { teacher: "洪欣怡", group: "英語一A", day: 1, slot: 1 },
-                { teacher: "陳秋錡", group: "國文一A", day: 1, slot: 1 },
-                { teacher: "陳秋錡", group: "國文二B", day: 3, slot: 1 },
-                { teacher: "許杏凰", group: "數學二B", day: 1, slot: 1 },
-                { teacher: "孫瑞彤", group: "國文三C", day: 2, slot: 5 }
-            ];
-            teacherList = ["洪欣怡", "陳秋錡", "許杏凰", "孫瑞彤"];
-            processSchoolStartDate();
-            
-            const select = document.getElementById('teacher-select');
-            select.innerHTML = "";
-            teacherList.forEach(t => {
-                let opt = document.createElement('option');
-                opt.value = t;
-                opt.innerText = t + " 老師";
-                select.appendChild(opt);
-            });
-            renderCurrentView();
-        }
-
-        // 🛡️ 終極攔截：列印時動態清空 title，完美抹除系統頁首頁尾與 URL 網址
-        let originalTitle = document.title;
-        window.addEventListener('beforeprint', () => {
-            originalTitle = document.title;
-            document.title = ""; 
-        });
-        window.addEventListener('afterprint', () => {
-            document.title = originalTitle; 
-        });
     </script>
 </body>
 </html>
