@@ -36,7 +36,7 @@
     .info-text { font-size: 16px; font-weight: 500; }
     
     .answer-input:focus {
-      border-color: #ef4444; /* 聚焦時改為紅色系提示 */
+      border-color: #ef4444;
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
       background-color: #fef2f2;
     }
@@ -116,138 +116,153 @@
     const database = {
       "L1": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "blind", ch: "瞎的" }, { eng: "deaf", ch: "聾的" }, { eng: "convenient", ch: "方便的" },
-          { eng: "menu", ch: "菜單" }, { eng: "braille", ch: "點字" }, { eng: "sign language", ch: "手語" },
-          { eng: "actress", ch: "女演員" }, { eng: "restaurant", ch: "餐廳" }
+          { eng: "dress", ch: "洋裝" }, { eng: "on sale", ch: "特價" }, { eng: "shirt", ch: "襯衫" },
+          { eng: "shorts", ch: "短褲" }, { eng: "jeans", ch: "牛仔褲" }, { eng: "sweater", ch: "毛衣" },
+          { eng: "jacket", ch: "夾克" }, { eng: "skirt", ch: "裙子" }, { eng: "ring", ch: "戒指" },
+          { eng: "sock", ch: "襪子" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "notice", ch: "注意到" }, { eng: "correct", ch: "正確的" }, { eng: "matter", ch: "事情" },
-          { eng: "honest", ch: "誠實的" }, { eng: "course", ch: "課程" }, { eng: "fool", ch: "愚弄" },
-          { eng: "worker", ch: "工人" }, { eng: "copy", ch: "複製；抄襲" }, { eng: "group", ch: "團體；群組" },
-          { eng: "cheat", ch: "作弊；欺騙" }
+          { eng: "cap", ch: "（有帽舌的）帽子" }, { eng: "tie", ch: "領帶" }, { eng: "belt", ch: "腰帶" },
+          { eng: "pants", ch: "長褲" }, { eng: "wallet", ch: "錢包" }, { eng: "a pair of", ch: "一件（褲子）；一雙（鞋）" },
+          { eng: "glove", ch: "手套" }, { eng: "try on", ch: "試穿" }, { eng: "take / took off", ch: "脫下" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "appear", ch: "似乎；出現" }, { eng: "act", ch: "舉止；表現" }, { eng: "mean", ch: "刻薄的" },
-          { eng: "thoughtful", ch: "體貼的" }, { eng: "bright", ch: "聰明的" }, { eng: "glad", ch: "高興的" },
-          { eng: "happen", ch: "發生" }, { eng: "angrily", ch: "生氣地" }
+          { eng: "be full of", ch: "充滿" }, { eng: "fashionable", ch: "流行的；時尚的" }, { eng: "as… as…", ch: "如同……一樣地……" },
+          { eng: "than", ch: "比；比較" }, { eng: "already", ch: "已經" }, { eng: "fashion", ch: "流行；時尚" },
+          { eng: "medium", ch: "中等尺寸；中等的" }, { eng: "fitting room", ch: "試衣間" }, { eng: "agree", ch: "同意" },
+          { eng: "comfortable", ch: "舒服的" }, { eng: "light", ch: "輕薄的" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "drive ... away", ch: "驅離" }, { eng: "solve", ch: "解決" }, { eng: "problem", ch: "問題" },
-          { eng: "paper", ch: "考卷；報告" }, { eng: "drop", ch: "掉落" }, { eng: "alone", ch: "獨自的" },
-          { eng: "care about", ch: "關心" }, { eng: "fall behind", ch: "落後" }, { eng: "team up with", ch: "與…組隊" },
-          { eng: "pass away", ch: "過世" }, { eng: "get along with", ch: "與…相處" }, { eng: "take ... seriously", ch: "認真看待…" }
+          { eng: "recycle", ch: "回收" }, { eng: "planet", ch: "星球" }, { eng: "business", ch: "公司；生意" },
+          { eng: "customer", ch: "顧客" }, { eng: "actually", ch: "實際上" }, { eng: "owner", ch: "所有人" },
+          { eng: "item", ch: "項目" }, { eng: "fresh", ch: "新鮮的" }, { eng: "mean / meant", ch: "意指" },
+          { eng: "Earth", ch: "地球" }, { eng: "turn… into…", ch: "（使）成為……" }
         ]}
       ],
       "L2": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "stomach", ch: "胃" }, { eng: "throat", ch: "喉嚨" }, { eng: "fever", ch: "發燒" },
-          { eng: "flu", ch: "流行性感冒" }, { eng: "symptom", ch: "症狀" }, { eng: "headache", ch: "頭痛" },
-          { eng: "cough", ch: "咳嗽" }, { eng: "knee", ch: "膝蓋" }, { eng: "nail", ch: "指甲" },
-          { eng: "neck", ch: "脖子" }
+          { eng: "sofa", ch: "沙發" }, { eng: "lamp", ch: "燈" }, { eng: "piano", ch: "鋼琴" },
+          { eng: "radio", ch: "收音機" }, { eng: "washing machine", ch: "洗衣機" }, { eng: "refrigerator (fridge)", ch: "冰箱" },
+          { eng: "violin", ch: "小提琴" }, { eng: "bow", ch: "（弦樂器的）琴弓" }, { eng: "tape", ch: "膠帶" },
+          { eng: "concert", ch: "演唱會；音樂會" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "medicine", ch: "藥" }, { eng: "rest", ch: "休息" }, { eng: "honey", ch: "蜂蜜" },
-          { eng: "lemon", ch: "檸檬" }, { eng: "recipe", ch: "食譜" }, { eng: "feeling", ch: "想法；感覺" },
-          { eng: "secret", ch: "秘密" }, { eng: "well", ch: "健康的" }, { eng: "useful", ch: "有用的" },
-          { eng: "weak", ch: "虛弱的" }
+          { eng: "turn on", ch: "打開（電器）" }, { eng: "turn off", ch: "關上（電器）" }, { eng: "screen", ch: "螢幕" },
+          { eng: "power bank", ch: "行動電源" }, { eng: "out of order", ch: "故障的" }, { eng: "sweet", ch: "甜的；甜蜜的" },
+          { eng: "most", ch: "最；最多的" }, { eng: "envelope", ch: "信封" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "care", ch: "照顧；在乎" }, { eng: "stand", ch: "忍受" }, { eng: "treat", ch: "治療" },
-          { eng: "agree", ch: "同意" }, { eng: "point", ch: "想法；觀點" }, { eng: "voice", ch: "（說話的）聲音" },
-          { eng: "head", ch: "頭" }, { eng: "cold", ch: "感冒" }
+          { eng: "used to", ch: "過去經常" }, { eng: "useful", ch: "有用的" }, { eng: "fake", ch: "假的" },
+          { eng: "deal", ch: "交易" }, { eng: "scam", ch: "詐騙" }, { eng: "strange", ch: "奇怪的；命生的" },
+          { eng: "joke", ch: "玩笑；笑話" }, { eng: "seller", ch: "賣家" }, { eng: "anymore", ch: "再也（不……）" },
+          { eng: "stop by", ch: "順道拜訪" }, { eng: "pick up", ch: "取（某物）" }, { eng: "trick", ch: "欺騙；騙局" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "believe", ch: "相信" }, { eng: "smell", ch: "聞起來" }, { eng: "taste", ch: "嚐起來" },
-          { eng: "sound", ch: "聽起來" }, { eng: "under the weather", ch: "身體不舒服" }, { eng: "take care of", ch: "照顧" },
-          { eng: "have a sweet tooth", ch: "愛吃甜食" }, { eng: "fight off", ch: "擊退" }
+          { eng: "billion", ch: "十億" }, { eng: "part", ch: "部分" }, { eng: "tip", ch: "提示；指導" },
+          { eng: "secret", ch: "祕密（的）" }, { eng: "word", ch: "字" }, { eng: "sentence", ch: "句子" },
+          { eng: "information", ch: "資料；消息" }, { eng: "stranger", ch: "陌生人" }, { eng: "tell / told... from...", ch: "區分 ⋯⋯ 與 ⋯⋯" },
+          { eng: "stay", ch: "保持" }
         ]}
       ],
       "L3": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "fan", ch: "狂熱愛好者" }, { eng: "hometown", ch: "家鄉" }, { eng: "career", ch: "職業" },
-          { eng: "modern", ch: "現代的" }, { eng: "hall", ch: "禮堂；大廳" }, { eng: "wall", ch: "牆壁" },
-          { eng: "corner", ch: "角落" }, { eng: "painting", ch: "畫作" }, { eng: "museum", ch: "博物館" }
+          { eng: "salad", ch: "沙拉" }, { eng: "hamburger (burger)", ch: "漢堡" }, { eng: "coffee", ch: "咖啡" },
+          { eng: "steak", ch: "牛排" }, { eng: "French fries", ch: "薯條" }, { eng: "fried chicken", ch: "炸雞" },
+          { eng: "ham", ch: "火腿" }, { eng: "cheese", ch: "起司；乳酪" }, { eng: "pork", ch: "豬肉" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "bright", ch: "鮮豔的；明亮的" }, { eng: "dark", ch: "深色的；暗的" }, { eng: "unhappy", ch: "不快樂的" },
-          { eng: "alive", ch: "活著的" }, { eng: "born", ch: "出學的" }, { eng: "die", ch: "死亡" },
-          { eng: "death", ch: "死亡" }, { eng: "mad", ch: "瘋狂的；生氣的" }, { eng: "stair", ch: "樓梯" }
+          { eng: "bean soup", ch: "豆子湯" }, { eng: "vegetable", ch: "蔬菜" }, { eng: "pizza", ch: "披薩" },
+          { eng: "bun", ch: "小圓麵包" }, { eng: "toast", ch: "烤麵包片" }, { eng: "meat", ch: "肉" },
+          { eng: "bread", ch: "麵包" }, { eng: "wall", ch: "牆壁" }, { eng: "meal", ch: "一餐" },
+          { eng: "oil", ch: "油；石油" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "lifetime", ch: "一生" }, { eng: "world", ch: "世界" }, { eng: "star", ch: "明星；星星" },
-          { eng: "cut", ch: "割；切" }, { eng: "ear", ch: "耳朵" }, { eng: "paint", ch: "繪畫" },
-          { eng: "painter", ch: "畫家" }, { eng: "oil", ch: "油" }
+          { eng: "sound", ch: "聽起來；聲音" }, { eng: "weight", ch: "體重；重量" }, { eng: "smell", ch: "聞起來；氣味" },
+          { eng: "taste", ch: "嘗起來；味道" }, { eng: "dig / dug in", ch: "開始吃" }, { eng: "soon", ch: "很快地" },
+          { eng: "order", ch: "點餐；訂購" }, { eng: "put / put on", ch: "增加（體重）" }, { eng: "get / got", ch: "變得" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "few", ch: "很少的" }, { eng: "into", ch: "沉迷於" }, { eng: "post", ch: "張貼" },
-          { eng: "check out", ch: "看一看" }, { eng: "give up on", ch: "放棄" }, { eng: "bring ... to life", ch: "賦予生命" },
-          { eng: "turn into", ch: "變成" }, { eng: "such as", ch: "例如" }
+          { eng: "notice", ch: "注意；看到" }, { eng: "invite", ch: "邀請" }, { eng: "besides", ch: "此外；而且" },
+          { eng: "probably", ch: "也許" }, { eng: "bite", ch: "一口的量；咬" }, { eng: "stand / stood for", ch: "代表" },
+          { eng: "matter", ch: "有關係" }, { eng: "sign", ch: "招牌；标志" }, { eng: "friendly", ch: "（某處）令人愉快的" }
         ]}
       ],
       "L4": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "earth", ch: "地球" }, { eng: "plastic", ch: "塑膠（的）" }, { eng: "ocean", ch: "海洋" },
-          { eng: "whale", ch: "鯨魚" }, { eng: "truth", ch: "真相" }, { eng: "stomach", ch: "胃" },
-          { eng: "net", ch: "網子" }, { eng: "waste", ch: "廢棄物" }, { eng: "trash", ch: "垃圾" }
+          { eng: "set / set up", ch: "搭（帳篷）；建立" }, { eng: "make / made a fire", ch: "生火" }, { eng: "boil", ch: "煮沸" },
+          { eng: "bug", ch: "蟲" }, { eng: "picnic", ch: "野餐" }, { eng: "hang / hung out", ch: "晾（掛）" },
+          { eng: "towel", ch: "毛巾" }, { eng: "lie / lay", ch: "躺下" }, { eng: "grass", ch: "草地；草" },
+          { eng: "string lights", ch: "繩燈" }, { eng: "moon", ch: "月亮" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "reduce", ch: "減少" }, { eng: "reuse", ch: "重複使用" }, { eng: "recycle", ch: "回收" },
-          { eng: "action", ch: "行動" }, { eng: "environment", ch: "環境" }, { eng: "shore", ch: "海岸" },
-          { eng: "scientist", ch: "科學家" }, { eng: "shock", ch: "使震驚" }
+          { eng: "count", ch: "數數；計算" }, { eng: "pack", ch: "打包" }, { eng: "perfect", ch: "完美的" },
+          { eng: "be able to", ch: "能夠" }, { eng: "well", ch: "很好地" }, { eng: "loudly", ch: "大聲地" },
+          { eng: "slowly", ch: "緩慢地" }, { eng: "gently", ch: "輕柔地" }, { eng: "smile", ch: "微笑" },
+          { eng: "hop", ch: "單腳跳躍" }, { eng: "hard", ch: "努力地" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "sad", ch: "令人傷心的" }, { eng: "ton", ch: "噸" }, { eng: "produce", ch: "生產" },
-          { eng: "float", ch: "漂浮" }, { eng: "clean", ch: "清理" }, { eng: "die", ch: "死亡" },
-          { eng: "island", ch: "島嶼" }, { eng: "world", ch: "世界" }
+          { eng: "trip", ch: "絆倒" }, { eng: "experience", ch: "經歷" }, { eng: "diary", ch: "日記" },
+          { eng: "arrive", ch: "抵達" }, { eng: "area", ch: "區域；地區" }, { eng: "successfully", ch: "成功地" },
+          { eng: "pot", ch: "鍋子；壺" }, { eng: "burn", ch: "燒焦；燃燒" }, { eng: "unhappy", ch: "不開心的" },
+          { eng: "hold / held", ch: "舉辦；握住" }, { eng: "circle", ch: "圓圈" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "instead of", ch: "代替；而不是" }, { eng: "bring ... to light", ch: "揭露" }, { eng: "make a difference", ch: "發揮影響" },
-          { eng: "take action", ch: "採取行動" }, { eng: "end up", ch: "最後" }, { eng: "throw away", ch: "丟棄" },
-          { eng: "cut down on", ch: "減少" }, { eng: "play a part", ch: "扮演角色" }
+          { eng: "shy", ch: "害羞的" }, { eng: "line", ch: "列；線條" }, { eng: "laugh", ch: "笑" },
+          { eng: "anyone (anybody)", ch: "任何人" }, { eng: "else", ch: "其他" }, { eng: "clap", ch: "拍手；鼓掌" },
+          { eng: "cheer", ch: "歡呼；鼓舞" }, { eng: "festival", ch: "節慶；節日" }, { eng: "heart", ch: "愛心；內心" },
+          { eng: "shape", ch: "形狀" }, { eng: "lucky", ch: "幸運的" }
         ]}
       ],
       "L5": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "giant panda", ch: "大貓熊" }, { eng: "bamboo", ch: "竹子" }, { eng: "form", ch: "類型" },
-          { eng: "creature", ch: "生物" }, { eng: "hometown", ch: "家鄉" }, { eng: "forest", ch: "森林" },
-          { eng: "reason", ch: "原因" }, { eng: "disappearance", ch: "消失" }, { eng: "expert", ch: "專家" }
+          { eng: "earthquake", ch: "地震" }, { eng: "cover", ch: "遮蓋；遮蔽" }, { eng: "typhoon", ch: "颱風" },
+          { eng: "candle", ch: "蠟燭" }, { eng: "smoke alarm", ch: "煙霧警報器" }, { eng: "elevator", ch: "電梯" },
+          { eng: "raise", ch: "舉起；增加" }, { eng: "pull", ch: "拉；抽出" }, { eng: "push", ch: "推；按" },
+          { eng: "rich", ch: "富有的；豐富的" }, { eng: "deep", ch: "深的" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "endanger", ch: "使危急" }, { eng: "protect", ch: "保護" }, { eng: "survive", ch: "存活" },
-          { eng: "destroy", ch: "破壞" }, { eng: "kill", ch: "殺死" }, { eng: "fur", ch: "毛皮" },
-          { eng: "meat", ch: "肉" }, { eng: "law", ch: "法律" }, { eng: "area", ch: "區域" }
+          { eng: "hold / held on", ch: "緊緊抓牢；堅持下去" }, { eng: "abroad", ch: "在國外" }, { eng: "dangerous", ch: "危險的" },
+          { eng: "moment", ch: "時刻" }, { eng: "hear / heard", ch: "聽到" }, { eng: "someone (somebody)", ch: "某人" },
+          { eng: "scary", ch: "嚇人的" }, { eng: "fall / fell off", ch: "（從 ⋯⋯ ）掉下" }, { eng: "cut / cut", ch: "割傷；切" },
+          { eng: "nothing", ch: "沒有事情；沒有東西" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "main", ch: "主要的" }, { eng: "low", ch: "低的" }, { eng: "human", ch: "人類的" },
-          { eng: "birth", ch: "出生" }, { eng: "rate", ch: "率" }, { eng: "earth", ch: "地球" },
-          { eng: "baby", ch: "嬰兒" }, { eng: "number", ch: "數量" }
+          { eng: "scene", ch: "場景" }, { eng: "leading", ch: "主要的" }, { eng: "real-life", ch: "真實生活中的" },
+          { eng: "ever", ch: "在任何時候" }, { eng: "go / went out", ch: "（燈、火）熄滅" }, { eng: "lesson", ch: "教訓；（一節）課" },
+          { eng: "land", ch: "陸地；降落" }, { eng: "several", ch: "數個的" }, { eng: "grow / grew", ch: "成長；增加" },
+          { eng: "gray", ch: "灰色的；灰色" }, { eng: "dozen", ch: "一打" }, { eng: "scared", ch: "感到害怕的" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "pass laws", ch: "通過法律" }, { eng: "set up", ch: "設立" }, { eng: "make sure", ch: "確保" },
-          { eng: "in fact", ch: "事實上" }, { eng: "on earth", ch: "世界上" }, { eng: "die out", ch: "滅絕" },
-          { eng: "face to face", ch: "面對面" }, { eng: "worry about", ch: "擔心" }
+          { eng: "window", ch: "窗戶" }, { eng: "sight", ch: "景象" }, { eng: "surprise", ch: "驚訝；使……驚訝" },
+          { eng: "flood", ch: "淹沒；洪水" }, { eng: "apartment", ch: "公寓" }, { eng: "except", ch: "除了……之外" },
+          { eng: "cookie", ch: "餅乾" }, { eng: "drawer", ch: "抽屜" }, { eng: "quite", ch: "相當地" },
+          { eng: "angry", ch: "生氣的" }, { eng: "fool", ch: "傻瓜；愚弄" }
         ]}
       ],
       "L6": [
         { gTitle: "◎ 第一組", words: [
-          { eng: "temple", ch: "寺廟" }, { eng: "earthquake", ch: "地震" }, { eng: "history", ch: "歷史" },
-          { eng: "god", ch: "神" }, { eng: "culture", ch: "文化" }, { eng: "wood", ch: "木頭" },
-          { eng: "detail", ch: "細節" }, { eng: "nail", ch: "釘子" }, { eng: "pillar", ch: "柱子" }
+          { eng: "straw", ch: "吸管；稻草" }, { eng: "carry", ch: "攜帶" }, { eng: "metal", ch: "金屬" },
+          { eng: "spoon", ch: "湯匙" }, { eng: "chopsticks", ch: "筷子" }, { eng: "paper", ch: "紙" },
+          { eng: "stair", ch: "樓梯" }, { eng: "instead", ch: "作為……替代" }, { eng: "jog", ch: "慢跑" },
+          { eng: "newspaper", ch: "報紙" }
         ]},
         { gTitle: "◎ 第二組", words: [
-          { eng: "destroy", ch: "破壞" }, { eng: "rebuild", ch: "重建" }, { eng: "shake", ch: "搖晃" },
-          { eng: "pray", ch: "祈禱" }, { eng: "carve", ch: "雕刻" }, { eng: "marry", ch: "結婚" },
-          { eng: "burn down", ch: "燒毀" }, { eng: "rock", ch: "岩石；搖晃" }
+          { eng: "postcard", ch: "明信片" }, { eng: "businessman", ch: "商人" }, { eng: "workbook", ch: "習作" },
+          { eng: "bother", ch: "費心" }, { eng: "end up", ch: "最後成為" }, { eng: "ocean", ch: "海洋" },
+          { eng: "turtle", ch: "海龜；龜" }, { eng: "perhaps", ch: "也許" }, { eng: "if", ch: "如果" },
+          { eng: "take / took action", ch: "採取行動" }
         ]},
         { gTitle: "◎ 第三組", words: [
-          { eng: "safe", ch: "安全的" }, { eng: "amazing", ch: "神奇的" }, { eng: "beautiful", ch: "美麗的" },
-          { eng: "stone", ch: "石頭" }, { eng: "roof", ch: "屋頂" }, { eng: "dragon", ch: "龍" },
-          { eng: "story", ch: "故事" }, { eng: "century", ch: "世紀" }
+          { eng: "though / although", ch: "雖然" }, { eng: "break / broke down", ch: "分解" }, { eng: "correct", ch: "正確的；更正" },
+          { eng: "feed / fed", ch: "餵" }, { eng: "baby", ch: "幼鳥；嬰兒" }, { eng: "jellyfish", ch: "水母" },
+          { eng: "die", ch: "死亡" }, { eng: "crazy about", ch: "非常喜歡……" }, { eng: "service", ch: "服務" },
+          { eng: "excellent", ch: "優秀的" }
         ]},
         { gTitle: "◎ 第四組", words: [
-          { eng: "go through", ch: "經歷" }, { eng: "turn ... into ...", ch: "把…變成…" }, { eng: "come to mind", ch: "浮現心頭" },
-          { eng: "more than", ch: "超過" }, { eng: "with one's own eyes", ch: "親眼所見" }, { eng: "believe in", ch: "信任" },
-          { eng: "in the corner", ch: "在角落" }, { eng: "stay away from", ch: "遠離" }
+          { eng: "wish", ch: "願望；希望" }, { eng: "garbage", ch: "垃圾" }, { eng: "somewhere", ch: "在某處" },
+          { eng: "enter", ch: "進入；輸入" }, { eng: "knife", ch: "刀子" }, { eng: "fork", ch: "叉子" },
+          { eng: "choice", ch: "選擇" }, { eng: "possible", ch: "可能的" }, { eng: "no longer", ch: "不再" },
+          { eng: "gladly", ch: "樂意地" }
         ]}
       ]
     };
@@ -255,37 +270,7 @@
     let currentLesson = "L1";
     let showAnswersState = false;
     let quizOrders = {}; 
-    let groupAnswerStates = {}; // 紀錄單組答案狀態 (true代表顯示)
     const chineseTitles = ["第一題", "第二題", "第三題", "第四題", "第五題", "第六題", "第七題", "第八題", "第九題", "第十題", "第十一題", "第十二題"];
-
-    // 種子偽隨機洗牌演算法：確保不同課、不同組別算出截然不同的打亂順序，但每次計算結果百分之百固定不變
-    function seedShuffle(array, seedString) {
-      let h = 0;
-      for (let i = 0; i < seedString.length; i++) {
-        h = Math.imul(31, h) + seedString.charCodeAt(i) | 0;
-      }
-      function seededRandom() {
-        let x = Math.sin(h++) * 10000;
-        return x - Math.floor(x);
-      }
-      let shuffled = [...array];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(seededRandom() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      return shuffled;
-    }
-
-    // 初始化特定課程所有組別的固定打亂順序
-    function initLessonOrders(lessonKey) {
-      const groups = database[lessonKey];
-      groups.forEach((groupData, idx) => {
-        const orderKey = `${lessonKey}-${idx}`;
-        let wordsArray = groupData.words.map(w => w.eng);
-        // 使用課號與組別編號作為獨一無二的種子字串，確保四個組別序列完全不同
-        quizOrders[orderKey] = seedShuffle(wordsArray, orderKey);
-      });
-    }
 
     function speakWord(word) {
       if ('speechSynthesis' in window) {
@@ -313,7 +298,7 @@
               uEng2.rate = 0.85;
               if (onDone) uEng2.onend = onDone;
               window.speechSynthesis.speak(uEng2);
-            }, 1200); // 題內重複兩次單字間距維持1.2秒
+            }, 1200);
           };
           window.speechSynthesis.speak(uEng1);
         }, 400);
@@ -341,9 +326,17 @@
     }
 
     function startGroupQuiz(groupIndex) {
+      const gData = database[currentLesson][groupIndex];
+      let wordsArray = gData.words.map(w => w.eng);
       document.querySelectorAll(`input[data-gidx="${groupIndex}"]`).forEach(input => input.value = '');
+
+      for (let i = wordsArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [wordsArray[i], wordsArray[j]] = [wordsArray[j], wordsArray[i]];
+      }
+
       const orderKey = `${currentLesson}-${groupIndex}`;
-      // 直接讀取已產生的固定隨機順序，達成完美重播與答案對齊
+      quizOrders[orderKey] = wordsArray;
       executeAudioLoop(orderKey, 0);
     }
 
@@ -351,35 +344,11 @@
       const currentList = quizOrders[orderKey];
       if (index < currentList.length) {
         speakQuizChain(chineseTitles[index], currentList[index], () => {
-          setTimeout(() => { executeAudioLoop(orderKey, index + 1); }, 1800); // 跨題空格間距縮短至1.8秒，維持慢速
+          setTimeout(() => { executeAudioLoop(orderKey, index + 1); }, 3500);
         });
       }
     }
 
-    // 單組顯示/隱藏答案控制
-    function toggleSingleGroupAnswer(groupIndex) {
-      const stateKey = `${currentLesson}-${groupIndex}`;
-      groupAnswerStates[stateKey] = !groupAnswerStates[stateKey];
-      
-      document.querySelectorAll(`input[data-gidx="${groupIndex}"]`).forEach(input => {
-        const eng = input.getAttribute('data-eng');
-        const orderKey = `${currentLesson}-${groupIndex}`;
-        
-        if (groupAnswerStates[stateKey] || showAnswersState) {
-          if (quizOrders[orderKey]) {
-            input.value = quizOrders[orderKey].indexOf(eng) + 1;
-          } else {
-            input.value = "-";
-          }
-          input.classList.add('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
-        } else {
-          input.value = '';
-          input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
-        }
-      });
-    }
-
-    // 全新無大框排版：py-1.5 微加深行距，答案字改為 text-red-600
     function buildGroupHtml(groupData, groupIndex, isPrintMode = false) {
       const orderKey = `${currentLesson}-${groupIndex}`;
       let rowsHtml = '';
@@ -393,7 +362,7 @@
               <input type="text" maxlength="2" data-gidx="${groupIndex}" data-eng="${wordItem.eng}" onclick="event.stopPropagation();" class="answer-input w-7 h-5 text-center font-bold text-slate-800 border-b-2 border-slate-400 focus:outline-none bg-transparent shrink-0 text-[15px]">
               <span class="text-slate-800 font-bold ml-1 shrink-0 text-[15px]">)</span>
               <span class="ml-2 font-medium font-english truncate flex-grow tracking-tight text-slate-800 word-eng-span" style="max-width: 155px; font-size:16px;">${wordItem.eng}</span>
-              <span class="font-chinese text-slate-500 text-[14px] pl-2 truncate text-right shrink-0 font-medium" style="max-width: 125px;">${wordItem.ch}</span>
+              <span class="font-chinese text-slate-500 text-[14px] pl-2 truncate text-right shrink-0 font-medium word-ch-span" style="max-width: 125px;">${wordItem.ch}</span>
             </div>
           `;
         } else {
@@ -412,11 +381,9 @@
         <div class="flex gap-1.5">
           <button onclick="startGroupPreview(${groupIndex})" class="no-print bg-sky-500/90 hover:bg-sky-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">預習</button>
           <button onclick="startGroupQuiz(${groupIndex})" class="no-print bg-orange-400/90 hover:bg-orange-500 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">📢 小考</button>
-          <button onclick="toggleSingleGroupAnswer(${groupIndex})" class="no-print bg-emerald-500/90 hover:bg-emerald-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow font-english">√Ans</button>
         </div>
       `;
 
-      // 核心改造：移除大包覆框，將組別與按鈕用灰色框線小卡（bg-slate-100）單獨框起，版面極度穩定
       return `
         <div class="bg-white flex flex-col justify-start flex-grow">
           <div class="flex justify-between items-center bg-slate-100/90 border border-slate-300 rounded-lg px-3 py-1.5 mb-2 shrink-0">
@@ -430,14 +397,9 @@
       `;
     }
 
-    styleLength = 0;
     function loadLesson(lessonKey) {
       currentLesson = lessonKey;
       showAnswersState = false;
-      groupAnswerStates = {}; // 清空單組答案狀態
-
-      // 切換單元時自動生成該單元全新的固定打亂序列
-      initLessonOrders(lessonKey);
 
       document.querySelectorAll('.lesson-btn').forEach(btn => {
         const k = btn.getAttribute('data-lesson');
@@ -460,20 +422,33 @@
     }
 
     function applyMicroScaling() {
+      // 智慧縮小過長的英文
       document.querySelectorAll('.word-eng-span').forEach(span => {
         const textLength = span.innerText.length;
-        if (textLength > 18) {
-          span.style.fontSize = "12.5px";
+        if (textLength > 22) {
+          span.style.fontSize = "11.5px";
           span.style.letterSpacing = "-0.5px";
-        } else if (textLength > 12) {
-          span.style.fontSize = "14px";
+        } else if (textLength > 15) {
+          span.style.fontSize = "13.5px";
         } else {
           span.style.fontSize = "16px";
         }
       });
+
+      // 智慧縮小過長的中文，防止換行撐大行高
+      document.querySelectorAll('.word-ch-span').forEach(span => {
+        const textLength = span.innerText.length;
+        if (textLength > 9) {
+          span.style.fontSize = "10.5px";
+          span.style.letterSpacing = "-0.5px";
+        } else if (textLength > 6) {
+          span.style.fontSize = "12px";
+        } else {
+          span.style.fontSize = "14px";
+        }
+      });
     }
 
-    // 初始化功能選單 (按鈕名稱調整為八下L1格式)
     function initApp() {
       const selectorContainer = document.getElementById('lesson-selectors');
       selectorContainer.innerHTML = '';
@@ -485,7 +460,7 @@
         btn.onclick = () => loadLesson(key);
         selectorContainer.appendChild(btn);
       });
-      loadLesson("L4"); // 直接預設加載 L4 方便你立刻檢查原本溢出的部分
+      loadLesson("L1");
     }
 
     function bindInputLogic() {
@@ -509,7 +484,6 @@
       });
     }
 
-    // 全域答案核對
     function toggleAnswers() {
       showAnswersState = !showAnswersState;
       document.querySelectorAll('.answer-input').forEach(input => {
@@ -532,8 +506,7 @@
     }
 
     function clearAnswers() {
-      // 重設清除時僅排空輸入框與停止語音，保留該課獨特的固定隨機序列，確保依然能對齊答案
-      groupAnswerStates = {};
+      quizOrders = {};
       document.querySelectorAll('.answer-input').forEach(input => {
         input.value = '';
         input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
@@ -550,13 +523,15 @@
         const page = document.createElement('div');
         page.className = "print-page";
 
-        // 列印前確保各單元的獨立固定隨機代碼存在
-        initLessonOrders(lessonKey);
+        const savedLesson = currentLesson;
+        currentLesson = lessonKey;
 
         let allGroupsHtml = '';
         database[lessonKey].forEach((groupData, idx) => {
           allGroupsHtml += buildGroupHtml(groupData, idx, true);
         });
+
+        currentLesson = savedLesson;
 
         page.innerHTML = `
           <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
