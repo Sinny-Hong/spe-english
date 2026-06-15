@@ -102,7 +102,7 @@
         </div>
       </div>
       <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
-        <span class="text-[14px] font-bold text-slate-700 font-chinese">◎錯字用紅筆訂正，中文、英文各 1 次。</span>
+        <span class="text-[14px] font-bold text-slate-700 font-chinese">◎ 錯字用紅筆訂正，中文、英文各1次。</span>
       </div>
     </div>
 
@@ -170,7 +170,7 @@
         ]},
         { gTitle: "◎ 第二組", words: [
           { eng: "bright", ch: "鮮豔的；明亮的" }, { eng: "dark", ch: "深色的；暗的" }, { eng: "unhappy", ch: "不快樂的" },
-          { eng: "alive", ch: "活著的" }, { eng: "born", ch: "出生的" }, { eng: "die", ch: "死亡" },
+          { eng: "alive", ch: "活著的" }, { eng: "born", ch: "出學的" }, { eng: "die", ch: "死亡" },
           { eng: "death", ch: "死亡" }, { eng: "mad", ch: "瘋狂的；生氣的" }, { eng: "stair", ch: "樓梯" }
         ]},
         { gTitle: "◎ 第三組", words: [
@@ -255,6 +255,7 @@
     let currentLesson = "L1";
     let showAnswersState = false;
     let quizOrders = {}; 
+    let groupAnswerStates = {}; // 紀錄單組答案狀態 (true代表顯示)
     const chineseTitles = ["第一題", "第二題", "第三題", "第四題", "第五題", "第六題", "第七題", "第八題", "第九題", "第十題", "第十一題", "第十二題"];
 
     // 種子偽隨機洗牌演算法：確保不同課、不同組別算出截然不同的打亂順序，但每次計算結果百分之百固定不變
@@ -312,7 +313,7 @@
               uEng2.rate = 0.85;
               if (onDone) uEng2.onend = onDone;
               window.speechSynthesis.speak(uEng2);
-            }, 1200);
+            }, 1200); // 題內重複兩次單字間距維持1.2秒
           };
           window.speechSynthesis.speak(uEng1);
         }, 400);
@@ -350,9 +351,32 @@
       const currentList = quizOrders[orderKey];
       if (index < currentList.length) {
         speakQuizChain(chineseTitles[index], currentList[index], () => {
-          setTimeout(() => { executeAudioLoop(orderKey, index + 1); }, 3500);
+          setTimeout(() => { executeAudioLoop(orderKey, index + 1); }, 1800); // 跨題空格間距縮短至1.8秒，維持慢速
         });
       }
+    }
+
+    // 單組顯示/隱藏答案控制
+    function toggleSingleGroupAnswer(groupIndex) {
+      const stateKey = `${currentLesson}-${groupIndex}`;
+      groupAnswerStates[stateKey] = !groupAnswerStates[stateKey];
+      
+      document.querySelectorAll(`input[data-gidx="${groupIndex}"]`).forEach(input => {
+        const eng = input.getAttribute('data-eng');
+        const orderKey = `${currentLesson}-${groupIndex}`;
+        
+        if (groupAnswerStates[stateKey] || showAnswersState) {
+          if (quizOrders[orderKey]) {
+            input.value = quizOrders[orderKey].indexOf(eng) + 1;
+          } else {
+            input.value = "-";
+          }
+          input.classList.add('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        } else {
+          input.value = '';
+          input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        }
+      });
     }
 
     // 全新無大框排版：py-1.5 微加深行距，答案字改為 text-red-600
@@ -388,6 +412,7 @@
         <div class="flex gap-1.5">
           <button onclick="startGroupPreview(${groupIndex})" class="no-print bg-sky-500/90 hover:bg-sky-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">預習</button>
           <button onclick="startGroupQuiz(${groupIndex})" class="no-print bg-orange-400/90 hover:bg-orange-500 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">📢 小考</button>
+          <button onclick="toggleSingleGroupAnswer(${groupIndex})" class="no-print bg-emerald-500/90 hover:bg-emerald-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow font-english">√Ans</button>
         </div>
       `;
 
@@ -405,9 +430,11 @@
       `;
     }
 
+    styleLength = 0;
     function loadLesson(lessonKey) {
       currentLesson = lessonKey;
       showAnswersState = false;
+      groupAnswerStates = {}; // 清空單組答案狀態
 
       // 切換單元時自動生成該單元全新的固定打亂序列
       initLessonOrders(lessonKey);
@@ -482,7 +509,7 @@
       });
     }
 
-    // 投影核對專用：答案字型與框線一律改為刺眼的紅色 (text-red-600)
+    // 全域答案核對
     function toggleAnswers() {
       showAnswersState = !showAnswersState;
       document.querySelectorAll('.answer-input').forEach(input => {
@@ -506,6 +533,7 @@
 
     function clearAnswers() {
       // 重設清除時僅排空輸入框與停止語音，保留該課獨特的固定隨機序列，確保依然能對齊答案
+      groupAnswerStates = {};
       document.querySelectorAll('.answer-input').forEach(input => {
         input.value = '';
         input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
@@ -546,7 +574,7 @@
               </div>
             </div>
             <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
-              <span class="text-[14px] font-bold text-slate-700 font-chinese">◎錯字用紅筆訂正，中文、英文各 1 次。</span>
+              <span class="text-[14px] font-bold text-slate-700 font-chinese">◎ 錯字用紅筆訂正，中文、英文各1次。</span>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden">
