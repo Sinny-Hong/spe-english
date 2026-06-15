@@ -36,7 +36,7 @@
     .info-text { font-size: 16px; font-weight: 500; }
     
     .answer-input:focus {
-      border-color: #ef4444;
+      border-color: #ef4444; /* 聚焦時改為紅色系提示 */
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
       background-color: #fef2f2;
     }
@@ -102,7 +102,7 @@
         </div>
       </div>
       <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
-        <span class="text-[14px] font-bold text-slate-700 font-chinese">◎ 錯字用紅筆訂正，中文、英文各1次。</span>
+        <span class="text-[14px] font-bold text-slate-700 font-chinese">◎錯字用紅筆訂正，中文、英文各 1 次。</span>
       </div>
     </div>
 
@@ -270,7 +270,37 @@
     let currentLesson = "L1";
     let showAnswersState = false;
     let quizOrders = {}; 
+    let groupAnswerStates = {}; // 紀錄單組答案狀態 (true代表顯示)
     const chineseTitles = ["第一題", "第二題", "第三題", "第四題", "第五題", "第六題", "第七題", "第八題", "第九題", "第十題", "第十一題", "第十二題"];
+
+    // 種子偽隨機洗牌演算法：確保不同課、不同組別算出截然不同的打亂順序，但每次計算結果百分之百固定不變
+    function seedShuffle(array, seedString) {
+      let h = 0;
+      for (let i = 0; i < seedString.length; i++) {
+        h = Math.imul(31, h) + seedString.charCodeAt(i) | 0;
+      }
+      function seededRandom() {
+        let x = Math.sin(h++) * 10000;
+        return x - Math.floor(x);
+      }
+      let shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(seededRandom() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // 初始化特定課程所有組別的固定打亂順序
+    function initLessonOrders(lessonKey) {
+      const groups = database[lessonKey];
+      groups.forEach((groupData, idx) => {
+        const orderKey = `${lessonKey}-${idx}`;
+        let wordsArray = groupData.words.map(w => w.eng);
+        // 使用課號與組別編號作為獨一無二的種子字串，確保四個組別序列完全不同
+        quizOrders[orderKey] = seedShuffle(wordsArray, orderKey);
+      });
+    }
 
     function speakWord(word) {
       if ('speechSynthesis' in window) {
@@ -298,7 +328,7 @@
               uEng2.rate = 0.85;
               if (onDone) uEng2.onend = onDone;
               window.speechSynthesis.speak(uEng2);
-            }, 1200);
+            }, 1200); // 題內重複兩次單字間距維持1.2秒
           };
           window.speechSynthesis.speak(uEng1);
         }, 400);
@@ -326,17 +356,9 @@
     }
 
     function startGroupQuiz(groupIndex) {
-      const gData = database[currentLesson][groupIndex];
-      let wordsArray = gData.words.map(w => w.eng);
       document.querySelectorAll(`input[data-gidx="${groupIndex}"]`).forEach(input => input.value = '');
-
-      for (let i = wordsArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [wordsArray[i], wordsArray[j]] = [wordsArray[j], wordsArray[i]];
-      }
-
       const orderKey = `${currentLesson}-${groupIndex}`;
-      quizOrders[orderKey] = wordsArray;
+      // 直接讀取已產生的固定隨機順序，達成完美重播與答案對齊
       executeAudioLoop(orderKey, 0);
     }
 
@@ -344,11 +366,35 @@
       const currentList = quizOrders[orderKey];
       if (index < currentList.length) {
         speakQuizChain(chineseTitles[index], currentList[index], () => {
-          setTimeout(() => { executeAudioLoop(orderKey, index + 1); }, 3500);
+          setTimeout(() => { executeAudioLoop(orderKey, index + 1); }, 1800); // 跨題空格間距縮短至1.8秒，維持慢速
         });
       }
     }
 
+    // 單組顯示/隱藏答案控制 (√Ans 按鈕)
+    function toggleSingleGroupAnswer(groupIndex) {
+      const stateKey = `${currentLesson}-${groupIndex}`;
+      groupAnswerStates[stateKey] = !groupAnswerStates[stateKey];
+      
+      document.querySelectorAll(`input[data-gidx="${groupIndex}"]`).forEach(input => {
+        const eng = input.getAttribute('data-eng');
+        const orderKey = `${currentLesson}-${groupIndex}`;
+        
+        if (groupAnswerStates[stateKey] || showAnswersState) {
+          if (quizOrders[orderKey]) {
+            input.value = quizOrders[orderKey].indexOf(eng) + 1;
+          } else {
+            input.value = "-";
+          }
+          input.classList.add('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        } else {
+          input.value = '';
+          input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
+        }
+      });
+    }
+
+    // 全新無大框排版：py-1.5 微加深行距，答案字改為 text-red-600
     function buildGroupHtml(groupData, groupIndex, isPrintMode = false) {
       const orderKey = `${currentLesson}-${groupIndex}`;
       let rowsHtml = '';
@@ -362,7 +408,7 @@
               <input type="text" maxlength="2" data-gidx="${groupIndex}" data-eng="${wordItem.eng}" onclick="event.stopPropagation();" class="answer-input w-7 h-5 text-center font-bold text-slate-800 border-b-2 border-slate-400 focus:outline-none bg-transparent shrink-0 text-[15px]">
               <span class="text-slate-800 font-bold ml-1 shrink-0 text-[15px]">)</span>
               <span class="ml-2 font-medium font-english truncate flex-grow tracking-tight text-slate-800 word-eng-span" style="max-width: 155px; font-size:16px;">${wordItem.eng}</span>
-              <span class="font-chinese text-slate-500 text-[14px] pl-2 truncate text-right shrink-0 font-medium word-ch-span" style="max-width: 125px;">${wordItem.ch}</span>
+              <span class="font-chinese text-slate-500 text-[14px] pl-2 truncate text-right shrink-0 font-medium" style="max-width: 125px;">${wordItem.ch}</span>
             </div>
           `;
         } else {
@@ -381,9 +427,11 @@
         <div class="flex gap-1.5">
           <button onclick="startGroupPreview(${groupIndex})" class="no-print bg-sky-500/90 hover:bg-sky-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">預習</button>
           <button onclick="startGroupQuiz(${groupIndex})" class="no-print bg-orange-400/90 hover:bg-orange-500 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow">📢 小考</button>
+          <button onclick="toggleSingleGroupAnswer(${groupIndex})" class="no-print bg-emerald-500/90 hover:bg-emerald-600 text-white text-[11px] font-bold py-0.5 px-2 rounded shadow font-english">√Ans</button>
         </div>
       `;
 
+      // 核心改造：移除大包覆框，將組別與按鈕用灰色框線小卡（bg-slate-100）單獨框起，版面極度穩定
       return `
         <div class="bg-white flex flex-col justify-start flex-grow">
           <div class="flex justify-between items-center bg-slate-100/90 border border-slate-300 rounded-lg px-3 py-1.5 mb-2 shrink-0">
@@ -400,6 +448,10 @@
     function loadLesson(lessonKey) {
       currentLesson = lessonKey;
       showAnswersState = false;
+      groupAnswerStates = {}; // 清空單組答案狀態
+
+      // 切換單元時自動生成該單元全新的固定打亂序列
+      initLessonOrders(lessonKey);
 
       document.querySelectorAll('.lesson-btn').forEach(btn => {
         const k = btn.getAttribute('data-lesson');
@@ -422,33 +474,20 @@
     }
 
     function applyMicroScaling() {
-      // 智慧縮小過長的英文
       document.querySelectorAll('.word-eng-span').forEach(span => {
         const textLength = span.innerText.length;
-        if (textLength > 22) {
-          span.style.fontSize = "11.5px";
+        if (textLength > 18) {
+          span.style.fontSize = "12.5px";
           span.style.letterSpacing = "-0.5px";
-        } else if (textLength > 15) {
-          span.style.fontSize = "13.5px";
+        } else if (textLength > 12) {
+          span.style.fontSize = "14px";
         } else {
           span.style.fontSize = "16px";
         }
       });
-
-      // 智慧縮小過長的中文，防止換行撐大行高
-      document.querySelectorAll('.word-ch-span').forEach(span => {
-        const textLength = span.innerText.length;
-        if (textLength > 9) {
-          span.style.fontSize = "10.5px";
-          span.style.letterSpacing = "-0.5px";
-        } else if (textLength > 6) {
-          span.style.fontSize = "12px";
-        } else {
-          span.style.fontSize = "14px";
-        }
-      });
     }
 
+    // 初始化功能選單 (按鈕名稱調整為八下L1格式)
     function initApp() {
       const selectorContainer = document.getElementById('lesson-selectors');
       selectorContainer.innerHTML = '';
@@ -460,7 +499,7 @@
         btn.onclick = () => loadLesson(key);
         selectorContainer.appendChild(btn);
       });
-      loadLesson("L1");
+      loadLesson("L1"); // 預設加載八下 L1
     }
 
     function bindInputLogic() {
@@ -484,6 +523,7 @@
       });
     }
 
+    // 全域答案核對
     function toggleAnswers() {
       showAnswersState = !showAnswersState;
       document.querySelectorAll('.answer-input').forEach(input => {
@@ -506,7 +546,8 @@
     }
 
     function clearAnswers() {
-      quizOrders = {};
+      // 重設清除時僅排空輸入框與停止語音，保留該課獨特的固定隨機序列，確保依然能對齊答案
+      groupAnswerStates = {};
       document.querySelectorAll('.answer-input').forEach(input => {
         input.value = '';
         input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
@@ -523,15 +564,13 @@
         const page = document.createElement('div');
         page.className = "print-page";
 
-        const savedLesson = currentLesson;
-        currentLesson = lessonKey;
+        // 列印前確保各單元的獨立固定隨機代碼存在
+        initLessonOrders(lessonKey);
 
         let allGroupsHtml = '';
         database[lessonKey].forEach((groupData, idx) => {
           allGroupsHtml += buildGroupHtml(groupData, idx, true);
         });
-
-        currentLesson = savedLesson;
 
         page.innerHTML = `
           <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
@@ -549,7 +588,7 @@
               </div>
             </div>
             <div class="mt-2 flex justify-between items-center bg-slate-100 px-3 py-1 rounded border-l-4 border-slate-500 shrink-0">
-              <span class="text-[14px] font-bold text-slate-700 font-chinese">◎ 錯字用紅筆訂正，中文、英文各1次。</span>
+              <span class="text-[14px] font-bold text-slate-700 font-chinese">◎錯字用紅筆訂正，中文、英文各 1 次。</span>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden">
