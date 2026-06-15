@@ -199,7 +199,7 @@
           { eng: "meal", ch: "餐" }, { eng: "snack", ch: "點心" }, { eng: "candy", ch: "糖果" },
           { eng: "popcorn", ch: "爆米花" }, { eng: "milk shake", ch: "奶昔" }, { eng: "fruit salad", ch: "水果沙拉" },
           { eng: "glass", ch: "玻璃杯；玻璃" }, { eng: "bottle", ch: "瓶子" }, { eng: "cup", ch: "杯" },
-          { eng: "bowl", ch: "碗" }, { eng: "plate", ch: "盤子" }, { eng: "can", ch: "罐子" }
+          { eng: "bowl", w: "碗", ch: "碗" }, { eng: "plate", ch: "盤子" }, { eng: "can", ch: "罐子" }
         ]},
         { gTitle: "◎ 第三組", words: [
           { eng: "wear", ch: "戴；穿" }, { eng: "mask", ch: "口罩；面具" }, { eng: "sick", ch: "生病的" },
@@ -267,6 +267,35 @@
     let quizOrders = {}; 
     const chineseTitles = ["第一題", "第二題", "第三題", "第四題", "第五題", "第六題", "第七題", "第八題", "第九題", "第十題", "第十一題", "第十二題"];
 
+    // 種子偽隨機洗牌演算法：確保不同課、不同組別算出截然不同的打亂順序，但每次計算結果百分之百固定不變
+    function seedShuffle(array, seedString) {
+      let h = 0;
+      for (let i = 0; i < seedString.length; i++) {
+        h = Math.imul(31, h) + seedString.charCodeAt(i) | 0;
+      }
+      function seededRandom() {
+        let x = Math.sin(h++) * 10000;
+        return x - Math.floor(x);
+      }
+      let shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(seededRandom() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    // 初始化特定課程所有組別的固定打亂順序
+    function initLessonOrders(lessonKey) {
+      const groups = database[lessonKey];
+      groups.forEach((groupData, idx) => {
+        const orderKey = `${lessonKey}-${idx}`;
+        let wordsArray = groupData.words.map(w => w.eng);
+        // 使用課號與組別編號作為獨一無二的種子字串，確保四個組別序列完全不同
+        quizOrders[orderKey] = seedShuffle(wordsArray, orderKey);
+      });
+    }
+
     function speakWord(word) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -321,17 +350,9 @@
     }
 
     function startGroupQuiz(groupIndex) {
-      const gData = database[currentLesson][groupIndex];
-      let wordsArray = gData.words.map(w => w.eng);
       document.querySelectorAll(`input[data-gidx="${groupIndex}"]`).forEach(input => input.value = '');
-
-      for (let i = wordsArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [wordsArray[i], wordsArray[j]] = [wordsArray[j], wordsArray[i]];
-      }
-
       const orderKey = `${currentLesson}-${groupIndex}`;
-      quizOrders[orderKey] = wordsArray;
+      // 直接讀取已產生的固定隨機順序，達成完美重播與答案對齊
       executeAudioLoop(orderKey, 0);
     }
 
@@ -397,6 +418,9 @@
     function loadLesson(lessonKey) {
       currentLesson = lessonKey;
       showAnswersState = false;
+
+      // 切換單元時自動生成該單元全新的固定打亂序列
+      initLessonOrders(lessonKey);
 
       document.querySelectorAll('.lesson-btn').forEach(btn => {
         const k = btn.getAttribute('data-lesson');
@@ -491,7 +515,7 @@
     }
 
     function clearAnswers() {
-      quizOrders = {};
+      // 重設清除時僅排空輸入框與停止語音，保留該課獨特的固定隨機序列，確保依然能對齊答案
       document.querySelectorAll('.answer-input').forEach(input => {
         input.value = '';
         input.classList.remove('bg-red-50', 'text-red-600', 'border-red-500', 'font-extrabold');
@@ -507,6 +531,9 @@
       Object.keys(database).forEach(lessonKey => {
         const page = document.createElement('div');
         page.className = "print-page";
+
+        // 列印前確保各單元的獨立固定隨機代碼存在
+        initLessonOrders(lessonKey);
 
         let allGroupsHtml = '';
         database[lessonKey].forEach((groupData, idx) => {
