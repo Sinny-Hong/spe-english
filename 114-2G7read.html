@@ -3,466 +3,485 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>七下 課文翻譯理解講義看板</title>
+  <title>七下 課文句子翻譯理解講義 (大電視互動點擊版)</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Noto Sans TC (Chinese) & Lexend (English) -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
   
   <style>
     body {
-      font-family: 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+      font-family: 'Noto Sans TC', sans-serif;
       background-color: #f1f5f9;
     }
-    .font-chinese { font-family: 'Noto Sans TC', system-ui, sans-serif; }
-    .font-english { font-family: 'Lexend', 'Segoe UI', sans-serif; }
+    .font-chinese { font-family: 'Noto Sans TC', sans-serif; }
+    .font-english { font-family: 'Lexend', sans-serif; }
     
-    /* 嚴格 A4 尺寸邊界 */
     .page-a4 {
       width: 210mm;
       height: 297mm;
       background-color: #ffffff;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-      margin: 15px auto;
-      padding: 9mm 14mm; 
+      margin: 20px auto;
+      padding: 8mm 15mm;
       box-sizing: border-box;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
+      justify-content: space-between;
     }
-    .title-large { font-size: 24px; font-weight: 700; }
-    .info-text { font-size: 16px; font-weight: 500; }
-    
-    .text-main { font-size: 16px; font-weight: 500; line-height: 1.35; }
-    .text-helper { font-size: 14.5px; font-weight: 400; line-height: 1.3; }
-    
-    .answer-input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-      background-color: #eff6ff;
+
+    /* 大電視選取中題目的聚焦特效底色 */
+    .active-row {
+      background-color: #fef08a !important; 
     }
-    #print-all-container {
-      display: none;
-    }
-    
+
+    /* 列印專用配置 */
     @media print {
-      @page {
-        size: A4;
-        margin: 0;
-      }
-      body { background-color: #ffffff; margin: 0; padding: 0; }
-      .no-print { display: none !important; }
-      
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        color-adjust: exact !important;
-      }
-      
-      body.printing-all .page-a4 { display: none !important; }
-      body.printing-all #print-all-container {
-        display: block !important;
-        width: 210mm;
-      }
-      
+      @page { size: A4; margin: 0; }
+      body { background-color: #ffffff; margin: 0; }
       .page-a4 {
-        box-shadow: none;
-        border: none;
-        margin: 0;
-        padding: 9mm 14mm;
-      }
-      .print-page {
         width: 210mm;
         height: 297mm;
-        padding: 9mm 14mm;
-        box-sizing: border-box;
-        background-color: #ffffff;
-        page-break-after: always;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
+        margin: 0;
+        padding: 8mm 15mm;
+        box-shadow: none;
+        border: none;
         overflow: hidden;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
-      .print-page:last-child {
-        page-break-after: avoid;
-      }
+      .no-print { display: none !important; }
+      /* 確保列印時提示顏色不印出來 */
+      .hint-active-text { color: inherit !important; font-weight: inherit !important; }
+      .hint-active-box { background-color: transparent !important; color: inherit !important; border-color: transparent !important; }
     }
+    
+    .break-avoid { break-inside: avoid; }
   </style>
 </head>
 <body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
 
-  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-4 border border-slate-200">
-    <div class="flex flex-wrap gap-2 items-center justify-between">
+  <!-- 頂端控制列（整合雙排選課功能，列印時自動隱藏） -->
+  <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
+    <div class="flex flex-wrap gap-2 items-center justify-between border-b border-slate-100 pb-2">
       <div class="flex items-center gap-2">
-        <span class="inline-block w-2.5 h-2.5 bg-emerald-500 rounded-full" id="status-dot"></span>
-        <span class="text-slate-700 font-medium text-[13px] font-chinese" id="status-text">✅ 本地離線講義庫載入成功！無網路狀態下亦可穩定運作。</span>
+        <span class="inline-block w-3 h-3 bg-blue-500 rounded-full animate-pulse"></span>
+        <span class="text-slate-700 font-medium text-sm font-chinese">📺 大電視已啟動：點擊題目任一列（變黃底），再點下方任一中文選項即可填入答案！點句子可聽慢速發音。</span>
       </div>
       <div class="flex gap-2">
-        <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏答案</button>
-        <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除</button>
-        <button onclick="window.print()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印本頁</button>
-        <button onclick="printAllLessons()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-bold font-chinese">🖨️ 全部列印 (4頁)</button>
+        <button onclick="toggleAnswers()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">顯示 / 隱藏全頁答案</button>
+        <button onclick="clearAnswers()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-xs transition border border-slate-300 font-chinese">重設清除全頁</button>
+        <button onclick="window.print()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs transition shadow-sm font-chinese">🖨️ 列印學習單</button>
       </div>
     </div>
     
+    <!-- 雙排選課功能區 -->
     <div class="flex flex-col gap-2">
-      <div class="grid grid-cols-2 gap-1.5" id="selector-dialogue"></div>
-      <div class="grid grid-cols-2 gap-1.5" id="selector-reading"></div>
+      <div class="flex items-center gap-2 text-xs font-bold text-slate-500 font-chinese shrink-0">💬 課文對話版：</div>
+      <div class="grid grid-cols-6 gap-1.5" id="dialogue-selectors"></div>
+      <div class="flex items-center gap-2 text-xs font-bold text-slate-500 font-chinese shrink-0 mt-1">📖 課文閱讀版：</div>
+      <div class="grid grid-cols-6 gap-1.5" id="reading-selectors"></div>
     </div>
   </div>
 
+  <!-- A4 靜態列印主結構 -->
   <div class="page-a4">
-    <div class="pb-1.5 border-b-2 border-slate-300 shrink-0 mb-3">
+    <!-- 頂部標頭與學生資料填寫區 -->
+    <div class="pb-2 mb-2 border-b-2 border-slate-200 shrink-0">
       <div class="flex justify-between items-end">
-        <h1 class="title-large text-slate-900 tracking-wider font-chinese leading-none" id="main-title">七下 課文翻譯理解講義</h1>
-        <div class="flex gap-6 info-text font-medium text-slate-800 leading-none pb-0.5 font-chinese">
+        <div>
+          <h1 class="text-[23px] font-bold text-slate-800 tracking-wider font-chinese text-left leading-none" id="main-title">七下 L6 課文句子翻譯理解講義</h1>
+        </div>
+        <div class="flex gap-6 text-[15px] font-medium text-slate-700 text-right leading-none mb-1 font-chinese">
           <div>班級/座號：______</div>
           <div>姓名：__________</div>
         </div>
       </div>
     </div>
 
-    <div class="flex flex-col space-y-2 overflow-hidden flex-grow" id="questions-container"></div>
-    <div class="pt-0.5 shrink-0"></div>
+    <!-- 核心作答連續區區塊 (動態生成) -->
+    <div class="flex-grow flex flex-col justify-between space-y-2 overflow-hidden" id="levels-container"></div>
   </div>
 
-  <div id="print-all-container"></div>
-
   <script>
-    // 移除所有網路雲端連動機制，直接精準內嵌最新提供之題庫資料
+    // 講義資料庫：預留 L1 ~ L6 欄位，先將您提供的 L6 閱讀版放入
     const database = {
-      "L1對話": [
-        { no: 1, q: "Do you like sports, Zac?", a: "運動", b1: "遊戲", b2: "畫圖" },
-        { no: 2, q: "I'm on the school team.", a: "隊伍", b1: "時間", b2: "課堂" },
-        { no: 3, q: "I practice basketball after school every day.", a: "練習", b1: "游泳", b2: "看書" },
-        { no: 4, q: "Do you also play basketball on weekends?", a: "你也在週末打籃球嗎？", b1: "你放學後每天練習籃球嗎？", b2: "下次我可以加入你們嗎？" },
-        { no: 5, q: "On Saturdays, I read at home.", a: "在星期六，我在家看書。", b1: "在星期日，我和朋友游泳。", b2: "我在空閒時間打籃球。" },
-        { no: 6, q: "On Sundays, I swim with my friends.", a: "在星期日，我和我的朋友們游泳。", b1: "在星期六，我在家看書。", b2: "你在空閒時間做什麼？" },
-        { no: 7, q: "Can I join you guys next time?", a: "下次我可以加入你們嗎？", b1: "你也喜歡運動嗎？", b2: "你週末都做些什麼？" },
-        { no: 8, q: "He has brown eyes and nice hair.", a: "他有咖啡色的眼睛和好看的頭髮。", b1: "他是學校籃球隊的隊員。", b2: "他是 Yuki 的表哥。" },
-        { no: 9, q: "他很可愛。", a: "He's cute.", b1: "That's Shin.", b2: "Do you know him?" },
-        { no: 10, q: "他是 Yuki 的表哥。", a: "He's Yuki's cousin.", b1: "I'm on the school team.", b2: "I also swim on weekends." }
-      ],
-      "L1閱讀": [
-        { no: 1, q: "Lorna is from the USA.", a: "美國", b1: "英國", b2: "日本" },
-        { no: 2, q: "She's new to Bird's Creek.", a: "新來的", b1: "離開的", b2: "喜歡的" },
-        { no: 3, q: "He is strong and tall.", a: "強壯的", b1: "傷心的", b2: "遲到的" },
-        { no: 4, q: "Friends are important to her.", a: "朋友對她來說很重要。", b1: "朋友對他來說很重要。", b2: "朋友對我們來說很重要。" },
-        { no: 5, q: "She's always there for them.", a: "她總是在那裡支持他們。", b1: "她從不留在那裡陪他們。", b2: "她只有星期日會去那裡。" },
-        { no: 6, q: "He is a player in the NBA.", a: "他是一位 NBA 的球員。", b1: "他是一位學校籃球隊的隊員。", b2: "他是一位吉他老師。" },
-        { no: 7, q: "He's also good at music.", a: "他也很擅長音樂。", b1: "他也很喜歡看書。", b2: "他也經常練習游泳。" },
-        { no: 8, q: "Cassandra knows everyone in Bird's Creek.", a: "Cassandra 認識 Bird's Creek 的每個人。", b1: "Cassandra 認識 Gavin 的同班同學。", b2: "Cassandra 認識 Yuki 的表哥。" },
-        { no: 9, q: "Gavin 和 Paul 對此感到非常傷心。", a: "Gavin and Paul are very sad about it.", b1: "Gavin doesn't really like her.", b2: "Friends are important to her." },
-        { no: 10, q: "但她總是遲到。", a: "But she is always late for it.", b1: "He can play the guitar and the piano.", b2: "She's new to Bird's Creek." }
-      ],
-      "L2對話": [
-        { no: 1, q: "Good morning, Yuki. You're an early bird.", a: "早起的人", b1: "晚睡的人", b2: "忙碌的人" },
-        { no: 2, q: "My parents go to work at six.", a: "工作", b1: "上學", b2: "運動" },
-        { no: 3, q: "They often wake me up before six.", a: "叫醒我", b1: "陪伴我", b2: "帶領我" },
-        { no: 4, q: "Are you a morning person?", a: "你是個早起的人嗎？", b1: "你通常幾點去睡覺？", b2: "你週末都在做什麼？" },
-        { no: 5, q: "What time do you usually go to bed?", a: "你通常幾點去睡覺？", b1: "你每天幾點起床？", b2: "你也在週末游泳嗎？" },
-        { no: 6, q: "I seldom go to sleep before eleven.", a: "我很少在十一點前入睡。", b1: "我每天五點鐘起床。", b2: "我在補習班待到九點。" },
-        { no: 7, q: "Sometimes, I even go to bed after twelve.", a: "有時候，我甚至在十二點後才上床睡覺。", b1: "我在星期六都在家看書。", b2: "下次我可以加入你們嗎？" },
-        { no: 8, q: "I'm at cram school from six to nine.", a: "我從六點到九點在補習班。", b1: "我放學後每天練習籃球。", b2: "我和我的朋友們去游泳。" },
-        { no: 9, q: "我每天五點起床。", a: "I get up at five every day.", b1: "That's late! It's not good for you.", b2: "Then I do my homework at home." },
-        { no: 10, q: "我知道，但我沒辦法。", a: "I know, but I can't help it.", b1: "That's early.", b2: "That's too bad." }
-      ]
+      "L1_D": { title: "七下 L1 課文句子翻譯理解講義 (對話版)", levels: [] },
+      "L1_R": { title: "七下 L1 課文句子翻譯理解講義 (閱讀版)", levels: [] },
+      "L2_D": { title: "七下 L2 課文句子翻譯理解講義 (對話版)", levels: [] },
+      "L2_R": { title: "七下 L2 課文句子翻譯理解講義 (閱讀版)", levels: [] },
+      "L3_D": { title: "七下 L3 課文句子翻譯理解講義 (對話版)", levels: [] },
+      "L3_R": { title: "七下 L3 課文句子翻譯理解講義 (閱讀版)", levels: [] },
+      "L4_D": { title: "七下 L4 課文句子翻譯理解講義 (對話版)", levels: [] },
+      "L4_R": { title: "七下 L4 課文句子翻譯理解講義 (閱讀版)", levels: [] },
+      "L5_D": { title: "七下 L5 課文句子翻譯理解講義 (對話版)", levels: [] },
+      "L5_R": { title: "七下 L5 課文句子翻譯理解講義 (閱讀版)", levels: [] },
+      "L6_D": { title: "七下 L6 課文句子翻譯理解講義 (對話版)", levels: [] },
+      "L6_R": { title: "七下 L6 課文句子翻譯理解講義 (閱讀版)", levels: [
+        {
+          id: 1,
+          name: "Level 1",
+          desc: "基礎字詞理解：",
+          colorClass: "green",
+          bgClass: "bg-green-50 text-green-800",
+          badgeClass: "bg-green-600",
+          questions: [
+            { qNum: 1, ans: "A", type: "eng", keyWord: "India", txtPre: "Welcome to ", txtPost: ", Anna and Zac.", tts: "Welcome to India, Anna and Zac.", opts: [{id:"A", ch:"印度"}, {id:"B", ch:"印尼"}, {id:"C", ch:"泰國"}] },
+            { qNum: 2, ans: "B", type: "eng", keyWord: "slept", txtPre: "We're not tired; we ", txtPost: " a lot on the plane.", tts: "We're not tired; we slept a lot on the plane.", opts: [{id:"A", ch:"玩耍"}, {id:"B", ch:"睡覺"}, {id:"C", ch:"吃飯"}] },
+            { qNum: 3, ans: "C", type: "eng", keyWord: "popular", txtPre: "I got two cups of lassi. It's a ", txtPost: " drink in India.", tts: "I got two cups of lassi. It's a popular drink in India.", opts: [{id:"A", ch:"昂貴的"}, {id:"B", ch:"奇怪的"}, {id:"C", ch:"受歡迎的"}] }
+          ]
+        },
+        {
+          id: 2,
+          name: "Level 2",
+          desc: "句意翻譯理解：",
+          colorClass: "blue",
+          bgClass: "bg-blue-50 text-blue-800",
+          badgeClass: "bg-blue-600",
+          questions: [
+            { qNum: 4, ans: "B", type: "eng", keyWord: "rest", txtPre: "You two traveled a long way. Do you need a ", txtPost: "?", tts: "You two traveled a long way. Do you need a rest?", opts: [{id:"A", ch:"你們兩個走得很慢。你們需要一把椅子嗎？"}, {id:"B", ch:"你們兩個遠道而來。需不需要休息一下？"}, {id:"C", ch:"你們兩個跑得快。需要喝一杯水嗎？"}] },
+            { qNum: 5, ans: "A", type: "eng_full", keyWord: "I went to a bookstore the other day and bought a book about the Taj Mahal.", txtPre: "", txtPost: "", tts: "I went to a bookstore the other day and bought a book about the Taj Mahal.", opts: [{id:"A", ch:"我前幾天去了一間書店，買了一本關於泰姬瑪哈陵的書。"}, {id:"B", ch:"我昨天去圖書館，借了一本關於火車旅行的書。"}, {id:"C", ch:"我今天去文具店，買了泰姬瑪哈陵的漂亮明信片。"}] },
+            { qNum: 6, ans: "B", type: "eng_full", keyWord: "We took many beautiful pictures and learned the story behind the building.", txtPre: "", txtPost: "", tts: "We took many beautiful pictures and learned the story behind the building.", opts: [{id:"A", ch:"我們畫了許多美麗的畫，並講述這棟大樓的故事。"}, {id:"B", ch:"我們拍了許多美麗的照片，還學習了這座建築背後的故事。"}, {id:"C", ch:"我們買了許多美麗的照片，還參觀了這座歷史建築。"}] },
+            { qNum: 7, ans: "A", type: "eng_full", keyWord: "What's that man doing over there?", txtPre: "", txtPost: "", tts: "What's that man doing over there?", opts: [{id:"A", ch:"那個男人在那邊做什麼？"}, {id:"B", ch:"那個男人生病需要幫忙嗎？"}, {id:"C", ch:"那個男人想要去哪裡呢？"}] },
+            { qNum: 8, ans: "C", type: "eng_full", keyWord: "He's selling food and drinks. Do you want anything?", txtPre: "", txtPost: "", tts: "He's selling food and drinks. Do you want anything?", opts: [{id:"A", ch:"他在分發免費食物。你想吃點什麼嗎？"}, {id:"B", ch:"他在吃便當跟喝飲料。你需要幫他買嗎？"}, {id:"C", ch:"他在賣食物和飲料。你想要什麼嗎？"}] }
+          ]
+        },
+        {
+          id: 3,
+          name: "Level 3",
+          desc: "翻譯挑戰：",
+          colorClass: "purple",
+          bgClass: "bg-purple-50 text-purple-800",
+          badgeClass: "bg-purple-600",
+          questions: [
+            { qNum: 9, ans: "A", type: "ch_main", keyWord: "關於", txtPre: "中文：我前幾天去了一間書店，買了一本", txtPost: "泰姬瑪哈陵的書。", opts: [
+              {id:"A", ch:"I went to a bookstore and bought a book <strong class='keyword-target font-bold'>about</strong> the Taj Mahal.", tts: "I went to a bookstore and bought a book about the Taj Mahal."},
+              {id:"B", ch:"I went to a bookstore and bought a book <strong class='keyword-target font-bold'>above</strong> the Taj Mahal.", tts: "I went to a bookstore and bought a book above the Taj Mahal."},
+              {id:"C", ch:"I went to a bookstore and bought a book <strong class='keyword-target font-bold'>around</strong> the Taj Mahal.", tts: "I went to a bookstore and bought a book around the Taj Mahal."}
+            ]},
+            { qNum: 10, ans: "B", type: "ch_main", keyWord: "受歡迎的", txtPre: "中文：在印度這是一種", txtPost: "飲料。試試吧！", opts: [
+              {id:"A", ch:"It's a <strong class='keyword-target font-bold'>sweet</strong> drink in India. Try it!", tts: "It's a sweet drink in India. Try it!"},
+              {id:"B", ch:"It's a <strong class='keyword-target font-bold'>popular</strong> drink in India. Try it!", tts: "It's a popular drink in India. Try it!"},
+              {id:"C", ch:"It's a <strong class='keyword-target font-bold'>cold</strong> drink in India. Try it!", tts: "It's a cold drink in India. Try it!"}
+            ]}
+          ]
+        }
+      ]}
     };
 
-    const row1Keys = ["L1對話", "L2對話"];
-    const row2Keys = ["L1閱讀"];
-    const allLessonKeys = ["L1對話", "L1閱讀", "L2對話"];
-    
-    let currentLesson = "L1對話";
+    let currentKey = "L6_R"; 
     let showAnswersState = false;
+    let activeInput = null; 
+    let hintStates = { 1: false, 2: false, 3: false }; // 紀錄各 Level 提示是否開啟
 
-    function initDatabase() {
-      generateSelectorButtons();
-      loadLesson(currentLesson);
-    }
-
-    function generateSelectorButtons() {
-      const dContainer = document.getElementById('selector-dialogue');
-      const rContainer = document.getElementById('selector-reading');
-      dContainer.innerHTML = '';
-      rContainer.innerHTML = '';
-
-      row1Keys.forEach(key => dContainer.appendChild(createBtnElement(key)));
-      row2Keys.forEach(key => rContainer.appendChild(createBtnElement(key)));
-    }
-
-    function createBtnElement(key) {
-      const btn = document.createElement('button');
-      btn.innerText = key;
-      btn.id = `btn-${key}`;
-      btn.className = `py-1.5 rounded-md text-xs font-semibold border transition font-chinese ${key === currentLesson ? 'bg-slate-800 text-white border-slate-800' : 'bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200'}`;
-      btn.onclick = () => loadLesson(key);
-      return btn;
-    }
-
-    function buildQuestionHtml(item) {
-      const optionsArray = [
-        { text: item.a, isCorrect: true },
-        { text: item.b1, isCorrect: false },
-        { text: item.b2, isCorrect: false }
-      ];
-      shuffleArray(optionsArray);
-
-      let correctLetter = "A";
-      optionsArray.forEach((opt, idx) => {
-        if(opt.isCorrect) correctLetter = String.fromCharCode(65 + idx);
-      });
-
-      const hasChinese = /[\u4e00-\u9fa5]/.test(item.q);
-      const ttsAction = hasChinese ? '' : `onclick="fallbackToSystemTTS(this.innerText)"`;
-      const cursorClass = hasChinese ? '' : 'cursor-pointer hover:text-blue-600 transition decoration-dotted underline-offset-4 hover:underline';
-
-      let optionsHtml = '';
-      if (item.no <= 3) {
-        optionsHtml = `
-          <div class="pl-9 grid grid-cols-3 text-helper font-chinese text-slate-700 font-medium tracking-wide whitespace-nowrap opt-container mt-0.5">
-            <div>(A) ${optionsArray[0].text}</div>
-            <div>(B) ${optionsArray[1].text}</div>
-            <div>(C) ${optionsArray[2].text}</div>
-          </div>
-        `;
-      } else {
-        optionsHtml = `
-          <div class="pl-9 flex flex-col space-y-0.5 text-helper font-chinese text-slate-700 font-medium tracking-wide opt-container mt-0.5">
-            <div>(A) ${optionsArray[0].text}</div>
-            <div>(B) ${optionsArray[1].text}</div>
-            <div>(C) ${optionsArray[2].text}</div>
-          </div>
-        `;
-      }
-
-      return `
-        <div class="flex flex-col justify-start single-question-block py-0.5">
-          <div class="flex items-start">
-            <span class="text-slate-800 font-bold mr-0.5 shrink-0 text-main">(</span>
-            <input type="text" maxlength="1" data-answer="${correctLetter}" class="answer-input w-5 h-5 text-center font-bold text-blue-600 border-b border-slate-400 focus:outline-none uppercase bg-transparent text-main shrink-0">
-            <span class="text-slate-800 font-bold mr-1 shrink-0 text-main">) ${item.no}.</span>
-            <span ${ttsAction} class="${cursorClass} text-main font-english font-medium flex-grow q-text-span" title="點擊播音">${item.q}</span>
-          </div>
-          ${optionsHtml}
-        </div>
-      `;
-    }
-
-    function getLessonQuestions(lessonKey) {
-      return database[lessonKey] || [];
-    }
-
-    function loadLesson(lessonKey) {
-      currentLesson = lessonKey;
-      showAnswersState = false;
-      
-      allLessonKeys.forEach(key => {
-        const btn = document.getElementById(`btn-${key}`);
-        if(btn) {
-          btn.className = key === lessonKey ? 
-            "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-800 text-white border-slate-800" : 
-            "py-1.5 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
-        }
-      });
-
-      document.getElementById('main-title').innerText = `七下 ${lessonKey} 課文翻譯理解講義`;
-
-      const container = document.getElementById('questions-container');
-      container.innerHTML = '';
-
-      const questions = getLessonQuestions(lessonKey);
-
-      const levels = [
-        { title: "基礎字詞理解 (第 1-3 題)", border: "border-green-600", bg: "bg-green-50", text: "text-green-900", badge: "Level 1", start: 0, end: 3 },
-        { title: "句意翻譯理解 (第 4-8 題)", border: "border-blue-600", bg: "bg-blue-50", text: "text-blue-900", badge: "Level 2", start: 3, end: 8 },
-        { title: "綜合翻譯挑戰 (第 9-10 題)", border: "border-purple-600", bg: "bg-purple-50", text: "text-purple-900", badge: "Level 3", start: 8, end: 10 }
-      ];
-
-      levels.forEach(lvl => {
-        const groupWrapper = document.createElement('div');
-        groupWrapper.className = "flex flex-col space-y-1.5 shrink-0"; 
-
-        let questionsHtml = '';
-        for(let i = lvl.start; i < lvl.end; i++) {
-          if (questions[i]) questionsHtml += buildQuestionHtml(questions[i]);
-        }
-
-        groupWrapper.innerHTML = `
-          <h2 class="text-[14px] font-bold ${lvl.text} ${lvl.bg} border-l-4 ${lvl.border} px-2 py-0.5 rounded font-chinese flex items-center gap-2 mb-0.5 shrink-0">
-            <span class="px-1 py-0.2 bg-slate-800 text-white text-[9px] rounded font-english tracking-wider">${lvl.badge}</span>
-            <span>${lvl.title}</span>
-          </h2>
-          <div class="flex flex-col space-y-2 pl-1">
-            ${questionsHtml}
-          </div>
-        `;
-        container.appendChild(groupWrapper);
-      });
-
-      bindInputLogic();
-      
-      setTimeout(() => {
-        applySingleQuestionMicroScaling(document.querySelectorAll('.single-question-block'));
-      }, 30);
-    }
-
-    function applySingleQuestionMicroScaling(blocks) {
-      blocks.forEach(block => {
-        const qText = block.querySelector('.q-text-span');
-        const inputs = block.querySelectorAll('.answer-input');
-        const brackets = block.querySelectorAll('span.text-main');
-        const opts = block.querySelectorAll('.opt-container > div');
-
-        if (qText.clientHeight > 26) {
-          qText.style.fontSize = "14.5px";
-          inputs.forEach(el => { el.style.fontSize = "14.5px"; el.style.width = "18px"; el.style.height = "18px"; });
-          brackets.forEach(el => el.style.fontSize = "14.5px");
-          opts.forEach(el => el.style.fontSize = "13.5px");
-        }
-
-        if (qText.clientHeight > 40) {
-          qText.style.fontSize = "12.5px";
-          inputs.forEach(el => { el.style.fontSize = "12.5px"; });
-          brackets.forEach(el => el.style.fontSize = "12.5px");
-          opts.forEach(el => el.style.fontSize = "11.5px");
-        }
-      });
-    }
-
-    // 完全不靠網路、直接呼叫本機系統內建語音朗讀（速度調慢 0.85 適合學生）
-    function fallbackToSystemTTS(text) {
-      const cleanText = text.replace(/<[^>]*>/g, '').replace(/\.\.\./g, '').trim();
-      if (!cleanText) return;
+    function speakWord(word) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(cleanText);
+        const utterance = new SpeechSynthesisUtterance(word);
         utterance.lang = 'en-US';
-        utterance.rate = 0.85;
+        utterance.rate = 0.8; 
         window.speechSynthesis.speak(utterance);
       }
     }
 
-    function printAllLessons() {
-      const printContainer = document.getElementById('print-all-container');
-      printContainer.innerHTML = ''; 
+    // 渲染講義核心畫面
+    function renderLesson() {
+      const data = database[currentKey];
+      document.getElementById('main-title').innerText = data.title;
+      const container = document.getElementById('levels-container');
+      container.innerHTML = '';
 
-      allLessonKeys.forEach(key => {
-        const page = document.createElement('div');
-        page.className = "print-page";
+      if (data.levels.length === 0) {
+        container.innerHTML = `<div class="text-center py-12 text-slate-400 font-chinese font-bold text-[18px]">（本課欄位已預留，尚無測試資料）</div>`;
+        return;
+      }
 
-        const questions = getLessonQuestions(key);
+      data.levels.forEach(lvl => {
+        let qHtml = '';
+        
+        lvl.questions.forEach(q => {
+          let sentenceHtml = '';
+          if (q.type === 'eng') {
+            sentenceHtml = `<span onclick="speakWord('${q.tts.replace(/'/g, "\\'")}')" class="cursor-pointer hover:text-blue-600 transition text-[17px] pl-1 font-medium">${q.txtPre}<strong class="keyword-target font-bold text-slate-800">${q.keyWord}</strong>${q.txtPost}</span>`;
+          } else if (q.type === 'eng_full') {
+            sentenceHtml = `<span onclick="speakWord('${q.tts.replace(/'/g, "\\'")}')" class="cursor-pointer hover:text-blue-600 transition text-[17px] pl-1 font-medium keyword-target text-slate-800">${q.keyWord}</span>`;
+          } else if (q.type === 'ch_main') {
+            sentenceHtml = `<span class="text-[16px] pl-1 font-chinese font-semibold text-slate-700">${q.txtPre}<strong class="keyword-target underline decoration-2 text-slate-700">${q.keyWord}</strong>${q.txtPost}</span>`;
+          }
 
-        let l1Html = '', l2Html = '', l3Html = '';
-        for(let i=0; i<3; i++)  if(questions[i]) l1Html += buildQuestionHtml(questions[i]);
-        for(let i=3; i<8; i++)  if(questions[i]) l2Html += buildQuestionHtml(questions[i]);
-        for(let i=8; i<10; i++) if(questions[i]) l3Html += buildQuestionHtml(questions[i]);
+          let optsHtml = '';
+          q.opts.forEach(opt => {
+            if (q.type === 'ch_main') {
+              optsHtml += `<div onclick="selectAnswer('${opt.id}')" data-opt-id="${opt.id}" class="opt-box px-2 py-0.5 rounded transition cursor-pointer hover:bg-slate-100 flex items-center">(A) ${opt.ch}</div>`.replace('(A)', `(${opt.id})`);
+            } else {
+              optsHtml += `<div onclick="selectAnswer('${opt.id}')" data-opt-id="${opt.id}" class="opt-box px-2 py-0.5 rounded transition cursor-pointer hover:bg-slate-100 flex items-center">(${opt.id}) ${opt.ch}</div>`;
+            }
+          });
 
-        page.innerHTML = `
-          <div class="pb-1.5 border-b-2 border-slate-300 shrink-0 mb-3">
-            <div class="flex justify-between items-end">
-              <h1 class="title-large text-slate-900 tracking-wider font-chinese leading-none">七下 ${key} 課文翻譯理解講義</h1>
-              <div class="flex gap-6 info-text font-medium text-slate-800 leading-none pb-0.5 font-chinese">
-                <div>班級/座號：______</div>
-                <div>姓名：__________</div>
+          let flexLayout = (lvl.id === 1) ? "pl-14 flex gap-12 text-[14.5px] font-chinese text-slate-500 font-medium" : "pl-14 flex flex-col gap-1 text-[14.5px] font-chinese text-slate-500 font-medium";
+          if (lvl.id === 3) flexLayout = "pl-14 flex flex-col gap-1 text-[15px] font-medium text-slate-500";
+
+          qHtml += `
+            <div class="flex flex-col leading-tight quiz-row transition duration-200 py-0.5 rounded px-1">
+              <div class="flex items-start">
+                <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">(</span>
+                <input type="text" maxlength="1" data-ans="${q.ans}" readonly class="answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5 cursor-pointer pointer-events-none">
+                <span class="text-slate-700 font-bold shrink-0 mt-0.5 text-[17px]">) ${q.qNum}.</span>
+                ${sentenceHtml}
+              </div>
+              <div class="${flexLayout} mt-1">
+                ${optsHtml}
               </div>
             </div>
-          </div>
+          `;
+        });
 
-          <div class="flex flex-col space-y-3 overflow-hidden flex-grow">
-            <div class="flex flex-col space-y-1.5 shrink-0">
-              <h2 class="text-[14px] font-bold text-green-900 bg-green-50 border-l-4 border-green-600 px-2 py-0.5 rounded font-chinese flex items-center gap-2 mb-0.5 shrink-0">
-                <span class="px-1 py-0.2 bg-slate-800 text-white text-[9px] rounded font-english tracking-wider">Level 1</span>
-                <span>基礎字詞理解 (第 1-3 題)</span>
+        container.innerHTML += `
+          <div class="break-avoid sub-level-block" data-lvl-id="${lvl.id}">
+            <div class="flex justify-between items-center ${lvl.bgClass} px-2.5 py-0.5 rounded mb-1.5 shrink-0 border border-slate-200">
+              <h2 class="text-[15px] font-bold font-chinese flex items-center gap-2">
+                <span class="px-1.5 py-0.2 ${lvl.badgeClass} text-white text-[10px] rounded font-english">${lvl.name}</span>
+                <span>${lvl.desc}</span>
+                <span id="score-${lvl.id}" class="no-print hidden ml-2 px-1 py-0.2 bg-emerald-600 text-white rounded text-[10px] font-bold"></span>
               </h2>
-              <div class="flex flex-col space-y-2 pl-1">${l1Html}</div>
+              
+              <!-- 標題列互動三鍵列印時自動隱藏 -->
+              <div class="no-print flex gap-1.5">
+                <button onclick="checkLevel(${lvl.id})" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese">✅ 批改</button>
+                <button onclick="toggleHint(${lvl.id})" class="px-2 py-0.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese">🔍 提示</button>
+                <button onclick="toggleLevelAnswers(${lvl.id})" class="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese">💡 解答</button>
+              </div>
             </div>
-
-            <div class="flex flex-col space-y-1.5 shrink-0">
-              <h2 class="text-[14px] font-bold text-blue-900 bg-blue-50 border-l-4 border-blue-600 px-2 py-0.5 rounded font-chinese flex items-center gap-2 mb-0.5 shrink-0">
-                <span class="px-1 py-0.2 bg-slate-800 text-white text-[9px] rounded font-english tracking-wider">Level 2</span>
-                <span>句意翻譯理解 (第 4-8 題)</span>
-              </h2>
-              <div class="flex flex-col space-y-2 pl-1">${l2Html}</div>
-            </div>
-
-            <div class="flex flex-col space-y-1.5 shrink-0">
-              <h2 class="text-[14px] font-bold text-purple-900 bg-purple-50 border-l-4 border-purple-600 px-2 py-0.5 rounded font-chinese flex items-center gap-2 mb-0.5 shrink-0">
-                <span class="px-1 py-0.2 bg-slate-800 text-white text-[9px] rounded font-english tracking-wider">Level 3</span>
-                <span>綜合翻譯挑戰 (第 9-10 題)</span>
-              </h2>
-              <div class="flex flex-col space-y-2 pl-1">${l3Html}</div>
+            <div class="space-y-2.5 font-english text-slate-800 pl-1">
+              ${qHtml}
             </div>
           </div>
-          <div class="pt-0.5 shrink-0"></div>
         `;
-        printContainer.appendChild(page);
       });
-
-      setTimeout(() => {
-        applySingleQuestionMicroScaling(printContainer.querySelectorAll('.single-question-block'));
-        document.body.classList.add('printing-all');
-        window.print();
-        
-        setTimeout(() => {
-          document.body.classList.remove('printing-all');
-        }, 600);
-      }, 50);
+      
+      hintStates = { 1: false, 2: false, 3: false }; // 重設提示狀態
     }
 
-    function toggleAnswers() {
-      showAnswersState = !showAnswersState;
-      document.querySelectorAll('.answer-input').forEach(input => {
-        const correctAnswer = input.getAttribute('data-answer');
-        if (showAnswersState) {
-          input.value = correctAnswer;
-          input.classList.add('bg-blue-100', 'text-blue-800', 'border-blue-500');
+    // 大電視聚焦作答法
+    function setActiveRow(element) {
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      const parentRow = element.closest('.quiz-row');
+      parentRow.classList.add('active-row');
+      activeInput = parentRow.querySelector('.answer-input');
+      
+      // 點擊聚焦時，如果內有含英文語音，同步播放
+      const ttsSpan = parentRow.querySelector('[onclick^="speakWord"]');
+      if (ttsSpan) ttsSpan.click();
+    }
+
+    // 當直接點擊題目列時觸發聚焦
+    document.addEventListener('click', function(e) {
+      const row = e.target.closest('.quiz-row');
+      if (row && !e.target.classList.contains('opt-box') && !e.target.closest('.opt-box')) {
+        setActiveRow(row);
+      }
+    });
+
+    // 點選答案填入
+    function selectAnswer(letter) {
+      if (activeInput) {
+        activeInput.value = letter;
+        activeInput.className = "answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5 cursor-pointer pointer-events-none";
+        
+        const allRows = Array.from(document.querySelectorAll('.quiz-row'));
+        const currentIdx = allRows.indexOf(activeInput.closest('.quiz-row'));
+        
+        activeInput.closest('.quiz-row').classList.remove('active-row');
+        
+        // 自動聚焦下一題
+        if (currentIdx !== -1 && currentIdx < allRows.length - 1) {
+          setActiveRow(allRows[currentIdx + 1]);
         } else {
-          input.value = '';
-          input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-500');
+          activeInput = null;
+        }
+      }
+    }
+
+    // 功能四-1：✅ 批改按鈕
+    function checkLevel(lvlId) {
+      const lvlBlock = document.querySelector(`.sub-level-block[data-lvl-id="${lvlId}"]`);
+      if (!lvlBlock) return;
+
+      const rows = lvlBlock.querySelectorAll('.quiz-row');
+      let total = rows.length;
+      let correct = 0;
+
+      rows.forEach(row => {
+        const input = row.querySelector('.answer-input');
+        const userAns = input.value.trim().toUpperCase();
+        const correctAns = input.getAttribute('data-ans');
+
+        if (userAns === '') return;
+
+        if (userAns === correctAns) {
+          correct++;
+          input.className = "answer-input w-7 h-7 text-center font-bold text-emerald-700 bg-emerald-100 rounded focus:outline-none uppercase text-[16px] shrink-0 mx-0.5 cursor-pointer pointer-events-none border-b-2 border-emerald-500";
+        } else {
+          input.value = ''; // 錯了直接擦掉
+          input.className = "answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5 cursor-pointer pointer-events-none";
+        }
+      });
+
+      const scoreBadge = document.getElementById(`score-${lvlId}`);
+      if (scoreBadge) {
+        scoreBadge.innerText = `答對 ${correct} / ${total}`;
+        scoreBadge.classList.remove('hidden');
+      }
+    }
+
+    // 功能四-2：🔍 提示按鈕（關鍵字同步上色，不直接閃爍）
+    function toggleHint(lvlId) {
+      const lvlBlock = document.querySelector(`.sub-level-block[data-lvl-id="${lvlId}"]`);
+      if (!lvlBlock) return;
+
+      hintStates[lvlId] = !hintStates[lvlId];
+      const rows = lvlBlock.querySelectorAll('.quiz-row');
+
+      rows.forEach(row => {
+        const input = row.querySelector('.answer-input');
+        const correctAns = input.getAttribute('data-ans');
+        const isCorrect = input.classList.contains('bg-emerald-100'); // 已答對的不再提示
+
+        const keyWordTarget = row.querySelector('.keyword-target');
+        const targetOpt = row.querySelector(`[data-opt-id="${correctAns}"]`);
+
+        if (hintStates[lvlId] && !isCorrect) {
+          // 啟動關鍵字提示：中英文關鍵字與正確選項同步上色
+          if (keyWordTarget) {
+            keyWordTarget.classList.add('text-red-600', 'font-bold', 'hint-active-text');
+            if(keyWordTarget.classList.contains('text-slate-800')) keyWordTarget.classList.remove('text-slate-800');
+            if(keyWordTarget.classList.contains('text-slate-700')) keyWordTarget.classList.remove('text-slate-700');
+          }
+          if (targetOpt) {
+            targetOpt.classList.add('bg-red-50', 'text-red-600', 'font-bold', 'border', 'border-red-300', 'hint-active-box');
+          }
+        } else {
+          // 關閉提示：復原無顏色狀態
+          if (keyWordTarget) {
+            keyWordTarget.classList.remove('text-red-600', 'hint-active-text');
+            if (keyWordTarget.tagName === 'STRONG' && !keyWordTarget.classList.contains('underline')) {
+              keyWordTarget.classList.add('text-slate-800');
+            } else {
+              keyWordTarget.classList.add('text-slate-700');
+            }
+          }
+          if (targetOpt) {
+            targetOpt.classList.remove('bg-red-50', 'text-red-600', 'font-bold', 'border', 'border-red-300', 'hint-active-box');
+          }
         }
       });
     }
 
-    function clearAnswers() {
-      document.querySelectorAll('.answer-input').forEach(input => {
-        input.value = '';
-        input.classList.remove('bg-blue-100', 'text-blue-800', 'border-blue-500');
-      });
-      showAnswersState = false;
-    }
+    // 功能四-3：💡 解答按鈕 (單層開關)
+    function toggleLevelAnswers(lvlId) {
+      const lvlBlock = document.querySelector(`.sub-level-block[data-lvl-id="${lvlId}"]`);
+      if (!lvlBlock) return;
 
-    function bindInputLogic() {
-      const inputsArray = Array.from(document.querySelectorAll('.answer-input'));
-      inputsArray.forEach((input, index) => {
-        input.addEventListener('input', function() {
-          this.value = this.value.toUpperCase();
-          if (!/^[A-C]$/.test(this.value)) this.value = '';
-          if (this.value !== '' && index < inputsArray.length - 1) {
-            inputsArray[index + 1].focus();
-          }
-        });
-
-        input.addEventListener('keydown', function(e) {
-          if (e.key === 'Backspace' && this.value === '' && index > 0) {
-            inputsArray[index - 1].focus();
-          }
-        });
-      });
-    }
-
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+      const inputs = lvlBlock.querySelectorAll('.answer-input');
+      let isShowing = false;
+      if (inputs.length > 0 && inputs[0].value === inputs[0].getAttribute('data-ans') && inputs[0].classList.contains('bg-red-50')) {
+        isShowing = true;
       }
-      return array;
+
+      inputs.forEach(input => {
+        const ans = input.getAttribute('data-ans');
+        if (!isShowing) {
+          input.value = ans;
+          input.className = "answer-input w-7 h-7 text-center font-bold text-red-600 bg-red-50 rounded focus:outline-none uppercase text-[16px] shrink-0 mx-0.5 cursor-pointer pointer-events-none border-b-2 border-red-400";
+        } else {
+          input.value = '';
+          input.className = "answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5 cursor-pointer pointer-events-none";
+        }
+      });
+
+      const scoreBadge = document.getElementById(`score-${lvlId}`);
+      if (scoreBadge) scoreBadge.classList.add('hidden');
     }
 
-    window.onload = () => {
-      initDatabase();
-    };
+    // 全頁控制列功能
+    function toggleAnswers() {
+      showAnswersState = !showAnswersState;
+      const data = database[currentKey];
+      data.levels.forEach(lvl => {
+        const lvlBlock = document.querySelector(`.sub-level-block[data-lvl-id="${lvl.id}"]`);
+        if (!lvlBlock) return;
+        const inputs = lvlBlock.querySelectorAll('.answer-input');
+        inputs.forEach(input => {
+          if (showAnswersState) {
+            input.value = input.getAttribute('data-ans');
+            input.className = "answer-input w-7 h-7 text-center font-bold text-red-600 bg-red-50 rounded focus:outline-none uppercase text-[16px] shrink-0 mx-0.5 border-b-2 border-red-400 pointer-events-none";
+          } else {
+            input.value = '';
+            input.className = "answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5 pointer-events-none";
+          }
+        });
+        document.getElementById(`score-${lvl.id}`).classList.add('hidden');
+      });
+    }
+
+    function clearAnswers() {
+      const data = database[currentKey];
+      data.levels.forEach(lvl => {
+        const lvlBlock = document.querySelector(`.sub-level-block[data-lvl-id="${lvl.id}"]`);
+        if (!lvlBlock) return;
+        lvlBlock.querySelectorAll('.answer-input').forEach(input => {
+          input.value = '';
+          input.className = "answer-input w-7 h-7 text-center font-bold text-blue-600 border-b-2 border-slate-400 focus:outline-none uppercase bg-transparent text-[16px] shrink-0 mx-0.5 pointer-events-none";
+        });
+        document.getElementById(`score-${lvl.id}`).classList.add('hidden');
+      });
+      document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      showAnswersState = false;
+      activeInput = null;
+    }
+
+    // 初始化雙排選單按鈕
+    function initSelectors() {
+      const dContainer = document.getElementById('dialogue-selectors');
+      const rContainer = document.getElementById('reading-selectors');
+      dContainer.innerHTML = '';
+      rContainer.innerHTML = '';
+
+      for (let i = 1; i <= 6; i++) {
+        // 對話版按鈕
+        const btnD = document.createElement('button');
+        btnD.innerText = `💬 L${i} 對話`;
+        const keyD = `L${i}_D`;
+        btnD.className = "lesson-btn py-1 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+        btnD.onclick = () => switchLesson(keyD, btnD);
+        dContainer.appendChild(btnD);
+
+        // 閱讀版按鈕
+        const btnR = document.createElement('button');
+        btnR.innerText = `📖 L${i} 閱讀`;
+        const keyR = `L${i}_R`;
+        btnR.className = "lesson-btn py-1 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+        btnR.onclick = () => switchLesson(keyR, btnR);
+        rContainer.appendChild(btnR);
+      }
+
+      // 預設高亮 L6 閱讀版
+      const defaultBtn = rContainer.children[5];
+      if (defaultBtn) switchLesson("L6_R", defaultBtn);
+    }
+
+    function switchLesson(key, btnElement) {
+      currentKey = key;
+      document.querySelectorAll('.lesson-btn').forEach(btn => {
+        btn.className = "lesson-btn py-1 rounded-md text-xs font-semibold border transition font-chinese bg-slate-50 text-slate-700 hover:bg-slate-200 border-slate-200";
+      });
+      btnElement.className = "lesson-btn py-1 rounded-md text-xs font-semibold border transition font-chinese bg-blue-600 text-white border-blue-600 shadow-sm";
+      renderLesson();
+    }
+
+    window.onload = initSelectors;
   </script>
 </body>
 </html>
