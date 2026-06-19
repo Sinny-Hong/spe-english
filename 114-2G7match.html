@@ -77,7 +77,6 @@
 </head>
 <body class="p-0 m-0 min-h-screen flex flex-col items-center justify-start">
 
-  <!-- 控制功能列 -->
   <div class="no-print w-full max-w-[210mm] bg-white mt-4 p-4 rounded-xl shadow-md flex flex-col gap-3 border border-slate-200">
     <div class="flex flex-wrap gap-2 items-center justify-between">
       <div class="flex items-center gap-2">
@@ -94,7 +93,6 @@
     <div class="grid grid-cols-6 gap-1.5" id="lesson-selectors"></div>
   </div>
 
-  <!-- A4 主張紙 -->
   <div class="page-a4">
     <div class="border-b-4 border-double border-slate-400 pb-2 mb-4 shrink-0">
       <div class="flex justify-between items-end">
@@ -116,7 +114,6 @@
       </div>
     </div>
 
-    <!-- 雙欄主網格容器 -->
     <div class="grid grid-cols-2 gap-x-6 gap-y-4 flex-grow mb-1 overflow-hidden" id="groups-container"></div>
     <div class="h-1 shrink-0"></div>
   </div>
@@ -154,7 +151,7 @@
         { gTitle: "◎ 第一組", words: [
           { eng: "early", ch: "早的" }, { eng: "get up", ch: "起床" }, { eng: "brush one’s teeth", ch: "刷牙" },
           { eng: "face", ch: "臉" }, { eng: "shower", ch: "淋浴" }, { eng: "breakfast", ch: "早餐" },
-          { eng: "lunch", ch: "午餐" }, { eng: "do one’s homework", ch: "做功課" }, { eng: "late", ch: "晚的" }
+          { eng: "lunch", ch: "午餐" }, { eng: "do one’s homework", ch: "做功功課" }, { eng: "late", ch: "晚的" }
         ]},
         { gTitle: "◎ 第二組", words: [
           { eng: "always", ch: "總是" }, { eng: "usually", ch: "通常" }, { eng: "often", ch: "經常" },
@@ -243,7 +240,7 @@
         { gTitle: "◎ 第四組", words: [
           { eng: "yesterday", ch: "昨天" }, { eng: "ago", ch: "前；以前" }, { eng: "last", ch: "上一個的" },
           { eng: "then", ch: "那時候" }, { eng: "stop", ch: "停止" }, { eng: "happen", ch: "發生" },
-          { eng: "busy", ch: "忙碌的" }, { eng: "warm", ch: "溫慢的" }, { eng: "everything", ch: "每樣事物" },
+          { eng: "busy", ch: "忙碌的" }, { eng: "warm", ch: "溫暖的" }, { eng: "everything", ch: "每樣事物" },
           { eng: "miss", ch: "想念" }, { eng: "live", ch: "居住" }, { eng: "a few", ch: "幾個；一些" },
           { eng: "little by little", ch: "一點一點地；逐漸地" }, { eng: "How come?", ch: "怎麼會? / 為什麼?" }
         ]}
@@ -301,10 +298,11 @@
       return shuffled;
     }
 
-    // 核心排版：移除了 1~12 題之間的一般格線，僅保留 Part A/B 中央的大虛線
+    // 核心排版：維持手動編號，新增每組微型控制項與計分牌
     function buildFixedGroupHtml(groupData, groupIdx) {
       const totalWords = groupData.words;
-      const half = Math.ceil(totalWords.length / 2);
+      const totalCount = totalWords.length; // 這一組實際的總題數
+      const half = Math.ceil(totalCount / 2);
       
       const partA_Words = totalWords.slice(0, half);
       const partB_Words = totalWords.slice(half);
@@ -324,13 +322,11 @@
         let leftItem = currentLeftList[localIdx];  
         let rightItem = currentRightList[localIdx]; 
 
-        // 去除一般 border-b 橫線，僅在第 6 題完結處加上強烈的分隔線
         let rowClass = "flex items-center justify-between row-item px-1 quiz-row";
         if (i === 6) {
           rowClass += " border-t-2 border-dashed border-slate-300 pt-0.5";
         }
 
-        // 左側出題：點擊整列會觸發語音讀音，同時將此題鎖定為大電視作答目標
         let leftColHtml = '';
         if (leftItem) {
           const correctAnsLetter = optLetters[currentRightList.findIndex(x => x.ch === leftItem.ch)];
@@ -348,7 +344,6 @@
           leftColHtml = `<div class="flex-grow h-[28px] opacity-0 pointer-events-none"></div>`;
         }
 
-        // 右側中文答案：融合為一個整合大框，並添加大電視點擊一鍵填入功能
         let rightColHtml = '';
         if (rightItem) {
           const letterLabel = optLetters[localIdx];
@@ -377,8 +372,17 @@
 
       return `
         <div class="bg-white flex flex-col justify-start flex-grow">
-          <div class="flex justify-between items-center bg-slate-100 border border-slate-300 rounded-lg px-3 py-1.5 mb-1 shrink-0">
-            <h3 class="text-[15.5px] font-bold text-slate-800 font-chinese tracking-wide">${groupData.gTitle}</h3>
+          <div class="flex justify-between items-center bg-slate-100 border border-slate-300 rounded-lg px-2 py-1 mb-1 shrink-0">
+            <div class="flex items-center gap-2">
+              <h3 class="text-[15.5px] font-bold text-slate-800 font-chinese tracking-wide">${groupData.gTitle}</h3>
+              <span id="score-${groupIdx}" class="no-print hidden px-1.5 py-0.5 bg-emerald-100 text-emerald-800 border border-emerald-300 rounded text-[11px] font-bold font-chinese"></span>
+            </div>
+            
+            <div class="no-print flex gap-1">
+              <button onclick="checkGroupAnswers(${groupIdx}, ${totalCount})" title="檢查批改" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese flex items-center gap-0.5">✅ 檢查</button>
+              <button onclick="clearGroupAnswers(${groupIdx})" title="清空本組" class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded text-[11px] transition border border-slate-300 font-chinese flex items-center gap-0.5">🧼 清空</button>
+              <button onclick="toggleGroupAnswers(${groupIdx})" title="本組解答" class="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded text-[11px] transition shadow-sm font-chinese flex items-center gap-0.5">💡 解答</button>
+            </div>
           </div>
           <div class="flex flex-col flex-grow justify-start">
             ${rowsHtml}
@@ -389,39 +393,28 @@
 
     // 大電視專用：點擊左側英文列，高亮亮起黃底，並進入準備填入狀態
     function setActiveRow(element, engWord) {
-      // 先清除全網頁所有其他橫列的黃色亮底
       document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
-      
-      // 找到目前點擊的這一行整列變黃色
       const parentRow = element.closest('.quiz-row');
       parentRow.classList.add('active-row');
-      
-      // 鎖定裡面的 input 框作為稍後的填字目標
       activeInput = parentRow.querySelector('.match-input');
-      
-      // 同步發出慢速英語發音
       speakWord(engWord);
     }
 
     // 大電視專用：點擊右側中文大藍框的任一選項，自動把代號抓去黃色格子裡
     function selectChineseAnswer(letter) {
       if (activeInput) {
-        // 填入大寫字母代號
         activeInput.value = letter;
-        activeInput.classList.add('bg-red-50', 'text-red-600');
+        activeInput.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
         
-        // 自動尋找下一題（下一個 input），幫老師或學生自動啟動下一題的黃底，免去重複點選的麻煩
         const allInputs = Array.from(document.querySelectorAll('.match-input'));
         const currentIndex = allInputs.indexOf(activeInput);
         
-        // 清除當前黃底
         activeInput.closest('.quiz-row').classList.remove('active-row');
         
         if (currentIndex !== -1 && currentIndex < allInputs.length - 1) {
           const nextInput = allInputs[currentIndex + 1];
           const nextRow = nextInput.closest('.quiz-row');
           
-          // 如果下一題是有題目的（非空白格），就自動幫他亮起下一題
           if (nextRow && !nextRow.classList.contains('opacity-0')) {
             nextRow.classList.add('active-row');
             activeInput = nextInput;
@@ -432,6 +425,90 @@
           activeInput = null;
         }
       }
+    }
+
+    // 功能一：✅ 獨立檢查批改功能 (附帶非外顯擁擠的計分牌機制)
+    function checkGroupAnswers(groupIdx, totalCount) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      let correctScore = 0;
+      let filledCount = 0;
+
+      inputs.forEach(input => {
+        const userAns = input.value.trim().toUpperCase();
+        const correctAns = input.getAttribute('data-ans');
+        
+        if (userAns === '') return; // 沒寫的不算分
+        
+        filledCount++;
+        if (userAns === correctAns) {
+          correctScore++;
+          // 正確：變綠底、深綠字
+          input.className = "match-input w-5 h-5 text-center font-black text-emerald-700 focus:outline-none bg-emerald-100 rounded text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        } else {
+          // 錯誤：用橡皮擦擦掉，維持透明底藍框狀態等待重新作答
+          input.value = '';
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        }
+      });
+
+      // 秀出計分告示牌
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) {
+        scoreBadge.innerText = `答對 ${correctScore} / ${totalCount}`;
+        scoreBadge.classList.remove('hidden');
+      }
+    }
+
+    // 功能二：🧼 獨立清空單組功能
+    function clearGroupAnswers(groupIdx) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+      });
+      
+      groupContainers[groupIdx].querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      
+      // 隱藏計分牌
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) {
+        scoreBadge.innerText = '';
+        scoreBadge.classList.add('hidden');
+      }
+    }
+
+    // 功能三：💡 顯示/隱藏單組解答功能
+    function toggleGroupAnswers(groupIdx) {
+      const groupContainers = document.querySelectorAll('#groups-container > div');
+      if (!groupContainers[groupIdx]) return;
+      
+      const inputs = groupContainers[groupIdx].querySelectorAll('.match-input');
+      
+      let isAlreadyShowing = false;
+      if (inputs.length > 0 && inputs[0].value === inputs[0].getAttribute('data-ans') && inputs[0].classList.contains('bg-red-50')) {
+        isAlreadyShowing = true;
+      }
+      
+      inputs.forEach(input => {
+        const ans = input.getAttribute('data-ans');
+        if (!isAlreadyShowing) {
+          input.value = ans;
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-red-50 text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        } else {
+          input.value = '';
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 cursor-pointer pointer-events-none";
+        }
+      });
+
+      // 解答狀態下自動隱藏動態計分
+      const scoreBadge = document.getElementById(`score-${groupIdx}`);
+      if (scoreBadge) scoreBadge.classList.add('hidden');
     }
 
     function loadLesson(lessonKey) {
@@ -492,20 +569,22 @@
         const ans = input.getAttribute('data-ans');
         if (showAnswersState) {
           input.value = ans;
-          input.classList.add('bg-red-50', 'text-red-600');
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-red-50 text-[14px] p-0 shrink-0 pointer-events-none";
         } else {
           input.value = '';
-          input.classList.remove('bg-red-50', 'text-red-600');
+          input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 pointer-events-none";
         }
       });
+      document.querySelectorAll('[id^="score-"]').forEach(badge => badge.classList.add('hidden'));
     }
 
     function clearAnswers() {
       document.querySelectorAll('.match-input').forEach(input => {
         input.value = '';
-        input.classList.remove('bg-red-50', 'text-red-600');
+        input.className = "match-input w-5 h-5 text-center font-black text-red-600 focus:outline-none bg-transparent text-[14px] p-0 shrink-0 pointer-events-none";
       });
       document.querySelectorAll('.quiz-row').forEach(row => row.classList.remove('active-row'));
+      document.querySelectorAll('[id^="score-"]').forEach(badge => badge.classList.add('hidden'));
       showAnswersState = false;
       activeInput = null;
     }
