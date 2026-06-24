@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深入地心探險 - 數字英文互動挑戰賽</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Lexend & Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', 'Lexend', sans-serif;
+            background-color: #120b06;
+            overflow-hidden: true;
+        }
+        /* 滾動條美化 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e110a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cd853f;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d2691e;
+        }
+        /* 震動動畫 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .shake-animation {
+            animation: shake 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col text-white overflow-hidden select-none">
+
+    <!-- 頂部常駐高對比計分面板 -->
+    <header class="bg-gradient-to-r from-[#2c1a10] via-[#4a2e1b] to-[#2c1a10] border-b-4 border-[#8b5a2b] px-6 py-3 flex justify-between items-center z-10 shadow-2xl shrink-0">
+        <!-- 標題與製作者 -->
+        <div class="flex items-center gap-4">
+            <div class="bg-amber-500 text-slate-900 font-black px-3 py-1.5 rounded-lg text-lg animate-pulse">
+                <i class="fa-solid fa-gem mr-1"></i> 地底探勘
+            </div>
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black text-amber-100 tracking-wider">深入地心探險 <span class="text-sm font-normal text-amber-400/80 block md:inline md:ml-2">數字英文大作戰</span></h1>
+            </div>
+        </div>
+
+        <!-- 玩家與進度狀態 -->
+        <div class="flex items-center gap-6">
+            <!-- 冒險家姓名輸入 -->
+            <div class="bg-black/40 border border-amber-600/50 rounded-xl px-4 py-1.5 flex items-center gap-2">
+                <span class="text-amber-400 font-bold"><i class="fa-solid fa-user-astronaut"></i></span>
+                <input type="text" id="player-name" value="張小明" class="bg-transparent border-none text-white font-black text-lg focus:outline-none w-24 md:w-36 placeholder-amber-700" placeholder="輸入名字">
+            </div>
+
+            <!-- 進度指標 -->
+            <div class="hidden sm:flex flex-col text-right">
+                <span class="text-xs text-amber-400/70 uppercase tracking-widest font-bold">推進進度</span>
+                <span id="progress-indicator" class="text-xl font-black text-white Lexend">1-1 / 28關</span>
+            </div>
+
+            <!-- 總金幣累計 -->
+            <div class="bg-[#1e110a] border-2 border-yellow-500 rounded-2xl px-5 py-2 flex items-center gap-3 shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                <div class="w-9 h-9 rounded-full bg-yellow-500 flex items-center justify-center text-slate-950 font-black text-xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)] animate-spin-slow">
+                    🪙
+                </div>
+                <div>
+                    <div class="text-xs text-yellow-400 font-bold">總金幣枚數</div>
+                    <div id="total-coins" class="text-2xl font-black text-yellow-300 Lexend leading-none">0</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 中間主要遊戲排版區 (左側電梯、右側地圖) -->
+    <div class="flex-1 flex overflow-hidden w-full">
+        
+        <!-- 左側：地心快捷電梯艙 (TV 友善，大按鈕隨時上下切換) -->
+        <aside class="w-64 md:w-72 bg-gradient-to-b from-[#1a0f0a] to-[#0c0604] border-r-4 border-[#5c3a21] p-4 flex flex-col justify-between shrink-0 select-none">
+            <div class="space-y-4">
+                <div class="text-center py-2 bg-amber-950/40 border border-amber-800/40 rounded-xl">
+                    <span class="text-amber-400 font-black text-base"><i class="fa-solid fa-elevator mr-2 animate-bounce"></i>地底穿梭電梯</span>
+                </div>
+                
+                <!-- 電梯樓層按鈕 -->
+                <div class="space-y-3" id="elevator-buttons">
+                    <!-- F1 地表土壤層 -->
+                    <button onclick="jumpToLayer('soil')" class="w-full text-left p-3.5 rounded-2xl border-2 border-emerald-600 bg-emerald-950/20 hover:bg-emerald-900/30 transition-all flex items-center gap-3 group">
+                        <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-black flex items-center justify-center text-sm shadow-md">1F</span>
+                        <div>
+                            <div class="font-black text-emerald-400 text-sm">地表土壤層</div>
+                            <div class="text-xs text-emerald-200/60">數字 1 ~ 10</div>
+                        </div>
+                    </button>
+                    <!-- F2 堅硬岩石層 -->
+                    <button onclick="jumpToLayer('rock')" class="w-full text-left p-3.5 rounded-2xl border-2 border-zinc-600 bg-zinc-950/20 hover:bg-zinc-900/30 transition-all flex items-center gap-3 group">
+                        <span class="w-8 h-8 rounded-xl bg-zinc-600 text-white font-black flex items-center justify-center text-sm shadow-md">2F</span>
+                        <div>
+                            <div class="font-black text-zinc-300 text-sm">堅硬岩石層</div>
+                            <div class="text-xs text-zinc-400/80">數字 11 ~ 20</div>
+                        </div>
+                    </button>
+                    <!-- F3 滾燙地函層 -->
+                    <button onclick="jumpToLayer('mantle')" class="w-full text-left p-3.5 rounded-2xl border-2 border-orange-700 bg-orange-950/20 hover:bg-orange-900/30 transition-all flex items-center gap-3 group">
+                        <span class="w-8 h-8 rounded-xl bg-orange-700 text-white font-black flex items-center justify-center text-sm shadow-md">3F</span>
+                        <div>
+                            <div class="font-black text-orange-400 text-sm">滾燙地函層</div>
+                            <div class="text-xs text-orange-200/60">數字 21 ~ 99</div>
+                        </div>
+                    </button>
+                    <!-- F4 璀璨地核層 -->
+                    <button onclick="jumpToLayer('core')" class="w-full text-left p-3.5 rounded-2xl border-2 border-red-600 bg-red-950/20 hover:bg-red-900/30 transition-all flex items-center gap-3 group">
+                        <span class="w-8 h-8 rounded-xl bg-red-600 text-white font-black flex items-center justify-center text-sm shadow-md">4F</span>
+                        <div>
+                            <div class="font-black text-red-400 text-sm">璀璨地核層</div>
+                            <div class="text-xs text-red-200/60">數字 100 ~ 1000</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 教師/系統管理輔助按鈕 -->
+            <div class="pt-4 border-t border-[#442b19]/60 space-y-2">
+                <button onclick="triggerMasterUnlock()" class="w-full py-3 px-4 bg-gradient-to-r from-yellow-600 to-amber-700 text-slate-950 font-black rounded-xl hover:from-yellow-500 hover:to-amber-600 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 🌟 關卡一鍵全開
+                </button>
+                <button onclick="resetGame()" class="w-full py-2 px-4 bg-red-950/40 border border-red-800/40 text-red-400 rounded-xl hover:bg-red-900/30 transition-all text-xs text-center block">
+                    <i class="fa-solid fa-trash-can mr-1"></i> 清除紀錄重新探險
+                </button>
+            </div>
+        </aside>
+
+        <!-- 右側：地剖層結構滾動地圖 (寬幅剖面圖，完美適配大電視) -->
+        <main id="dig-map" class="flex-1 overflow-y-auto scroll-smooth relative select-none">
+            
+            <!-- 土壤層 (Soil Layer) - Level 1 -->
+            <section id="layer-soil" class="relative py-12 bg-gradient-to-b from-[#1b2b1a] via-[#3d2a1c] to-[#422213] border-b-8 border-[#2e1c0c]">
+                <div class="absolute top-4 left-6 bg-emerald-600 text-slate-950 font-black px-4 py-1.5 rounded-full shadow-lg">
+                    🌱 土壤層 (Soil Layer) - 深度 0m - 1000m
+                </div>
+                <div class="max-w-6xl mx-auto px-8 pt-10 space-y-8" id="soil-stations-container">
+                    <!-- JS 動態生成 Soil 關卡 -->
+                </div>
+            </section>
+
+            <!-- 岩石層 (Rock Layer) - Level 2 -->
+            <section id="layer-rock" class="relative py-12 bg-gradient-to-b from-[#422213] via-[#242426] to-[#1a1c1d] border-b-8 border-[#0f0f10]">
+                <div class="absolute top-4 left-6 bg-zinc-500 text-slate-950 font-black px-4 py-1.5 rounded-full shadow-lg">
+                    🪨 堅硬岩石層 (Rock Layer) - 深度 1000m - 2500m
+                </div>
+                <div class="max-w-6xl mx-auto px-8 pt-10 space-y-8" id="rock-stations-container">
+                    <!-- JS 動態生成 Rock 關卡 -->
+                </div>
+            </section>
+
+            <!-- 地函層 (Mantle Layer) - Level 3 -->
+            <section id="layer-mantle" class="relative py-12 bg-gradient-to-b from-[#1a1c1d] via-[#63200b] to-[#450e05] border-b-8 border-[#320801]">
+                <div class="absolute top-4 left-6 bg-orange-700 text-white font-black px-4 py-1.5 rounded-full shadow-lg">
+                    🔥 滾燙地函層 (Mantle Layer) - 深度 2500m - 5000m
+                </div>
+                <div class="max-w-6xl mx-auto px-8 pt-10 space-y-8" id="mantle-stations-container">
+                    <!-- JS 動態生成 Mantle 關卡 -->
+                </div>
+            </section>
+
+            <!-- 地核層 (Core Layer) - Level 4 -->
+            <section id="layer-core" class="relative py-12 bg-gradient-to-b from-[#450e05] via-[#240301] to-[#0c0000]">
+                <div class="absolute top-4 left-6 bg-red-600 text-white font-black px-4 py-1.5 rounded-full shadow-lg">
+                    💎 璀璨地核層 (Core Layer) - 深度 5000m - 6371m
+                </div>
+                <div class="max-w-6xl mx-auto px-8 pt-10 space-y-8" id="core-stations-container">
+                    <!-- JS 動態生成 Core 關卡 -->
+                </div>
+                <!-- 終點勝利標記 -->
+                <div class="text-center py-20 bg-gradient-to-t from-yellow-500/10 to-transparent">
+                    <div class="inline-block bg-yellow-500/20 border-4 border-yellow-500 rounded-3xl p-8 max-w-lg text-center backdrop-blur-md">
+                        <div class="text-6xl mb-4">🏆</div>
+                        <h3 class="text-3xl font-black text-yellow-300">地球中心點</h3>
+                        <p class="text-amber-100/70 mt-2 font-bold">成功抵達地心深處 6,371 公里！恭喜你完成了偉大的地心大冒險！</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 答題挑戰全畫面覆蓋面板 -->
+    <div id="quiz-overlay" class="hidden fixed inset-0 bg-[#0f0804]/98 z-50 flex flex-col items-center justify-center p-4">
+        
+        <!-- 頂部資訊列 -->
+        <div class="w-full max-w-5xl flex justify-between items-center pb-4 border-b-4 border-amber-800">
+            <div>
+                <span id="quiz-stage-id" class="text-amber-500 font-extrabold text-2xl Lexend">STAGE 1-1</span>
+                <span id="quiz-mode-badge" class="ml-3 px-3 py-1 bg-emerald-600 text-slate-950 rounded-full font-black text-sm">⛏️ 挖掘探險</span>
+            </div>
+            <!-- 計時挑戰計時器 -->
+            <div id="timer-box" class="hidden flex items-center gap-3">
+                <span class="text-amber-400 font-bold"><i class="fa-solid fa-hourglass-half animate-spin"></i></span>
+                <div class="w-48 bg-slate-800 rounded-full h-4 overflow-hidden border border-amber-600">
+                    <div id="timer-bar" class="bg-gradient-to-r from-amber-500 to-red-600 h-full w-full transition-all"></div>
+                </div>
+                <span id="timer-text" class="text-xl font-black text-white Lexend">60s</span>
+            </div>
+            <!-- 一般挑戰進度點 -->
+            <div id="quiz-progress-dots" class="flex gap-2">
+                <!-- 圓點指標由 JS 動態更新 -->
+            </div>
+        </div>
+
+        <!-- 中間：題目區 -->
+        <div class="flex-1 w-full max-w-5xl flex flex-col items-center justify-center py-10 relative">
+            
+            <!-- 題目主板 -->
+            <div class="bg-amber-950/20 border-4 border-amber-900/60 rounded-3xl p-8 w-full text-center relative shadow-inner">
+                <!-- 大音量慢速英語按鈕 -->
+                <button onclick="readQuestionText()" class="absolute top-4 right-4 w-14 h-14 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all" title="聽發音">
+                    <i class="fa-solid fa-volume-high text-2xl"></i>
+                </button>
+                
+                <div class="text-amber-500/80 font-bold text-lg mb-2">請看題目與聆聽</div>
+                <div id="question-text" class="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-wide leading-relaxed Lexend">one</div>
+                
+                <!-- 提示訊息 -->
+                <div id="quiz-hint-box" class="mt-6 text-amber-300 font-bold text-lg h-8"></div>
+            </div>
+        </div>
+
+        <!-- 底部：三大選項 (特大號按鈕，電視大字體防誤觸) -->
+        <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6 pb-8">
+            <button onclick="handleOptionSelect(0)" id="opt-0" class="group relative py-6 px-8 rounded-2xl border-4 border-amber-700 bg-[#351e12] hover:bg-[#4a2e1c] text-white font-black text-2xl md:text-3xl lg:text-4xl transition-all shadow-[0_8px_0_#1c100a] active:translate-y-2 active:shadow-none flex items-center justify-between">
+                <span class="w-12 h-12 rounded-full bg-amber-900/40 text-amber-200 text-xl font-bold flex items-center justify-center">A</span>
+                <span class="flex-1 text-center font-black" id="opt-0-text">1</span>
+                <span class="w-12 h-12"></span>
+            </button>
+            <button onclick="handleOptionSelect(1)" id="opt-1" class="group relative py-6 px-8 rounded-2xl border-4 border-amber-700 bg-[#351e12] hover:bg-[#4a2e1c] text-white font-black text-2xl md:text-3xl lg:text-4xl transition-all shadow-[0_8px_0_#1c100a] active:translate-y-2 active:shadow-none flex items-center justify-between">
+                <span class="w-12 h-12 rounded-full bg-amber-900/40 text-amber-200 text-xl font-bold flex items-center justify-center">B</span>
+                <span class="flex-1 text-center font-black" id="opt-1-text">2</span>
+                <span class="w-12 h-12"></span>
+            </button>
+            <button onclick="handleOptionSelect(2)" id="opt-2" class="group relative py-6 px-8 rounded-2xl border-4 border-amber-700 bg-[#351e12] hover:bg-[#4a2e1c] text-white font-black text-2xl md:text-3xl lg:text-4xl transition-all shadow-[0_8px_0_#1c100a] active:translate-y-2 active:shadow-none flex items-center justify-between">
+                <span class="w-12 h-12 rounded-full bg-amber-900/40 text-amber-200 text-xl font-bold flex items-center justify-center">C</span>
+                <span class="flex-1 text-center font-black" id="opt-2-text">3</span>
+                <span class="w-12 h-12"></span>
+            </button>
+        </div>
+
+        <!-- 防呆跳過/中止鍵 -->
+        <div class="pb-4">
+            <button onclick="exitQuiz()" class="px-6 py-2 bg-red-950 border border-red-800 text-red-400 font-bold rounded-xl hover:bg-red-900/30 transition-all">
+                <i class="fa-solid fa-person-running mr-1"></i> 中止挑戰返回
+            </button>
+        </div>
+    </div>
+
+    <!-- 回饋自訂對話彈窗 (替代傳統 alert) -->
+    <div id="custom-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+        <div class="bg-[#2c1a10] border-4 border-amber-600 rounded-3xl p-8 max-w-md w-full text-center shadow-2xl relative">
+            <div id="modal-icon" class="text-6xl mb-4">⛏️</div>
+            <h4 id="modal-title" class="text-2xl font-black text-amber-100 mb-2">關卡成功！</h4>
+            <p id="modal-body" class="text-amber-200/80 mb-6 font-bold">成功完成一般模式，獲得金幣獎勵！</p>
+            <button onclick="closeModal()" id="modal-btn" class="w-full py-4 px-6 bg-amber-500 hover:bg-amber-400 text-slate-900 font-black rounded-2xl text-xl shadow-lg transition-all active:scale-95">
+                好，繼續探險！
+            </button>
+        </div>
+    </div>
+
+    <!-- 8-Bit Web Audio API 聲音合成引擎 -->
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSynthSound(type) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    // 答對的清脆雙音
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(880, now + 0.1); // A5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'incorrect') {
+                    // 答錯的低沈震動
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.linearRampToValueAtTime(80, now + 0.25);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'click') {
+                    // 一般點擊
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, now);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'level-clear') {
+                    // 勝利琶音
+                    const freqs = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; // C大調
+                    osc.type = 'sine';
+                    gain.gain.setValueAtTime(0.15, now);
+                    freqs.forEach((f, idx) => {
+                        osc.frequency.setValueAtTime(f, now + idx * 0.08);
+                    });
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                    osc.start(now);
+                    osc.stop(now + 0.85);
+                }
+            } catch (err) {
+                console.log("Audio contextual play blocked or unsupported:", err);
+            }
+        }
+    </script>
+
+    <!-- 完整關卡定義、題庫資料、與核心遊戲邏輯 -->
+    <script>
+        // 28關的層級、題目架構
+        const levelConfig = [
+            // 土壤層 1-1 到 1-7
+            { id: "1-1", layer: "soil", title: "數字拼寫 (1-10)", desc: "英文單字讀音轉阿拉伯數字", boss: false },
+            { id: "1-2", layer: "soil", title: "數形對應 (1-10)", desc: "阿拉伯數字轉英文單字", boss: false },
+            { id: "1-3", layer: "soil", title: "地底加法 (1-10)", desc: "數字算式轉英文單字", boss: false },
+            { id: "1-4", layer: "soil", title: "地底減法 (1-10)", desc: "數字減法轉英文單字", boss: false },
+            { id: "1-5", layer: "soil", title: "文字加減混合", desc: "英文算式轉阿拉伯數字", boss: false },
+            { id: "1-6", layer: "soil", title: "文字式運算", desc: "英文算式轉英文單字答案", boss: false },
+            { id: "1-7", layer: "soil", title: "🔥 土壤層大魔王", desc: "綜合上述所有 1-10 混合試煉", boss: true },
+
+            // 岩石層 2-1 到 2-7
+            { id: "2-1", layer: "rock", title: "數字拼寫 (11-20)", desc: "11-20 單字對應阿拉伯數字", boss: false },
+            { id: "2-2", layer: "rock", title: "數形對應 (11-20)", desc: "11-20 阿拉伯數字對應單字", boss: false },
+            { id: "2-3", layer: "rock", title: "進階算式搭配", desc: "11-20 混合加減運算與辨識", boss: false },
+            { id: "2-4", layer: "rock", title: "前後序列辨識", desc: "尋找數列中的下一個單字數字", boss: false },
+            { id: "2-5", layer: "rock", title: "單字不完整辨識", desc: "拼字克漏字英文選讀", boss: false },
+            { id: "2-6", layer: "rock", title: "整十數混合加減", desc: "20內的綜合字詞算術", boss: false },
+            { id: "2-7", layer: "rock", title: "🔥 岩石層大魔王", desc: "綜合上述所有 11-20 混合試煉", boss: true },
+
+            // 地函層 3-1 到 3-7
+            { id: "3-1", layer: "mantle", title: "整十單字讀認 (30-90)", desc: "整十位英文單字認讀轉換", boss: false },
+            { id: "3-2", layer: "mantle", title: "雙位字詞組合 (21-99)", desc: "兩位數英文字詞轉數字", boss: false },
+            { id: "3-3", layer: "mantle", title: "雙位數字對照", desc: "數字對應雙位英文字詞", boss: false },
+            { id: "3-4", layer: "mantle", title: "十進位序列規律", desc: "十進位英文數列克漏字", boss: false },
+            { id: "3-5", layer: "mantle", title: "大數字加減運算", desc: "99內的中大型加法與減法", boss: false },
+            { id: "3-6", layer: "mantle", title: "文字算式實戰", desc: "全英文 21-99 運算大挑戰", boss: false },
+            { id: "3-7", layer: "mantle", title: "🔥 地函層大魔王", desc: "綜合上述所有 21-99 混合試煉", boss: true },
+
+            // 地核層 4-1 到 4-7
+            { id: "4-1", layer: "core", title: "百位單字認讀 (100-900)", desc: "百位整數英文轉數字", boss: false },
+            { id: "4-2", layer: "core", title: "大型字詞組合", desc: "複雜百位十位個位字詞認讀", boss: false },
+            { id: "4-3", layer: "core", title: "百位數字對照", desc: "數字轉英文大型字詞", boss: false },
+            { id: "4-4", layer: "core", title: "大型地底算術", desc: "百位數字加減法與一千的認識", boss: false },
+            { id: "4-5", layer: "core", title: "巨量數列與級數", desc: "大型序列英文單字克漏字", boss: false },
+            { id: "4-6", layer: "core", title: "地核百位頂峰", desc: "三位數大挑戰與細節辨認", boss: false },
+            { id: "4-7", layer: "core", title: "👑 地心終極大魔王", desc: "深入地心最深處，28關終極考驗", boss: true },
+        ];
+
+        // 完備的關卡題庫資料 (對照 csv 結構)
+        const rawQuestionBank = {
+            "1-1": [
+                { q: "one", a: "1", w: ["2", "3"] },
+                { q: "two", a: "2", w: ["4", "7"] },
+                { q: "three", a: "3", w: ["5", "8"] },
+                { q: "four", a: "4", w: ["5", "9"] },
+                { q: "five", a: "5", w: ["4", "9"] },
+                { q: "six", a: "6", w: ["9", "7"] },
+                { q: "seven", a: "7", w: ["6", "1"] },
+                { q: "eight", a: "8", w: ["3", "5"] },
+                { q: "nine", a: "9", w: ["6", "10"] },
+                { q: "ten", a: "10", w: ["1", "2"] }
+            ],
+            "1-2": [
+                { q: "1", a: "one", w: ["ten", "two"] },
+                { q: "2", a: "two", w: ["ten", "three"] },
+                { q: "3", a: "three", w: ["eight", "two"] },
+                { q: "4", a: "four", w: ["five", "nine"] },
+                { q: "5", a: "five", w: ["four", "fine"] },
+                { q: "6", a: "six", w: ["nine", "seven"] },
+                { q: "7", a: "seven", w: ["six", "ten"] },
+                { q: "8", a: "eight", w: ["three", "nine"] },
+                { q: "9", a: "nine", w: ["six", "four"] },
+                { q: "10", a: "ten", w: ["one", "two"] }
+            ],
+            "1-3": [
+                { q: "1 + 2 = ?", a: "three", w: ["two", "four"] },
+                { q: "2 + 2 = ?", a: "four", w: ["five", "three"] },
+                { q: "3 + 2 = ?", a: "five", w: ["four", "six"] },
+                { q: "4 + 2 = ?", a: "six", w: ["seven", "five"] },
+                { q: "5 + 2 = ?", a: "seven", w: ["six", "eight"] },
+                { q: "6 + 2 = ?", a: "eight", w: ["nine", "seven"] },
+                { q: "7 + 2 = ?", a: "nine", w: ["eight", "ten"] },
+                { q: "1 + 9 = ?", a: "ten", w: ["eight", "nine"] },
+                { q: "5 + 3 = ?", a: "eight", w: ["seven", "nine"] },
+                { q: "4 + 4 = ?", a: "eight", w: ["six", "ten"] }
+            ],
+            "1-4": [
+                { q: "5 - 2 = ?", a: "three", w: ["two", "four"] },
+                { q: "3 - 1 = ?", a: "two", w: ["one", "three"] },
+                { q: "10 - 5 = ?", a: "five", w: ["four", "six"] },
+                { q: "8 - 4 = ?", a: "four", w: ["three", "five"] },
+                { q: "6 - 5 = ?", a: "one", w: ["two", "three"] },
+                { q: "9 - 3 = ?", a: "six", w: ["five", "seven"] },
+                { q: "7 - 2 = ?", a: "five", w: ["four", "six"] },
+                { q: "4 - 3 = ?", a: "one", w: ["two", "four"] },
+                { q: "9 - 2 = ?", a: "seven", w: ["six", "eight"] },
+                { q: "10 - 2 = ?", a: "eight", w: ["seven", "nine"] }
+            ],
+            "1-5": [
+                { q: "one + two = ?", a: "3", w: ["2", "4"] },
+                { q: "five + five = ?", a: "10", w: ["8", "9"] },
+                { q: "three + four = ?", a: "7", w: ["6", "8"] },
+                { q: "two + six = ?", a: "8", w: ["7", "9"] },
+                { q: "four + two = ?", a: "6", w: ["5", "7"] },
+                { q: "eight - three = ?", a: "5", w: ["4", "6"] },
+                { q: "nine - four = ?", a: "5", w: ["3", "6"] },
+                { q: "ten - three = ?", a: "7", w: ["6", "8"] },
+                { q: "six - two = ?", a: "4", w: ["3", "5"] },
+                { q: "eight - six = ?", a: "2", w: ["1", "3"] }
+            ],
+            "1-6": [
+                { q: "four - two = ?", a: "two", w: ["one", "three"] },
+                { q: "five + three = ?", a: "eight", w: ["seven", "nine"] },
+                { q: "nine - three = ?", a: "six", w: ["five", "seven"] },
+                { q: "seven + two = ?", a: "nine", w: ["eight", "ten"] },
+                { q: "eight - four = ?", a: "four", w: ["three", "five"] },
+                { q: "one + six = ?", a: "seven", w: ["six", "eight"] },
+                { q: "ten - eight = ?", a: "two", w: ["one", "three"] },
+                { q: "three + three = ?", a: "six", w: ["five", "seven"] },
+                { q: "nine - five = ?", a: "four", w: ["three", "five"] },
+                { q: "two + three = ?", a: "five", w: ["four", "six"] }
+            ],
+            "1-7": [], // 混合生成 (1-1 ~ 1-6)
+            
+            // 岩石層
+            "2-1": [
+                { q: "eleven", a: "11", w: ["12", "13"] },
+                { q: "twelve", a: "12", w: ["11", "20"] },
+                { q: "thirteen", a: "13", w: ["12", "14"] },
+                { q: "fourteen", a: "14", w: ["13", "15"] },
+                { q: "fifteen", a: "15", w: ["14", "16"] },
+                { q: "sixteen", a: "16", w: ["15", "17"] },
+                { q: "seventeen", a: "17", w: ["16", "18"] },
+                { q: "eighteen", a: "18", w: ["17", "19"] },
+                { q: "nineteen", a: "19", w: ["18", "20"] },
+                { q: "twenty", a: "20", w: ["10", "12"] }
+            ],
+            "2-2": [
+                { q: "11", a: "eleven", w: ["twelve", "ten"] },
+                { q: "12", a: "twelve", w: ["eleven", "twenty"] },
+                { q: "13", a: "thirteen", w: ["three", "thirty"] },
+                { q: "14", a: "fourteen", w: ["four", "forty"] },
+                { q: "15", a: "fifteen", w: ["five", "fifty"] },
+                { q: "16", a: "sixteen", w: ["six", "sixty"] },
+                { q: "17", a: "seventeen", w: ["seven", "seventy"] },
+                { q: "18", a: "eighteen", w: ["eight", "eighty"] },
+                { q: "19", a: "nineteen", w: ["nine", "ninety"] },
+                { q: "20", a: "twenty", w: ["twelve", "two"] }
+            ],
+            "2-3": [
+                { q: "ten + two = ?", a: "twelve", w: ["eleven", "twenty"] },
+                { q: "ten + five = ?", a: "fifteen", w: ["fifty", "fourteen"] },
+                { q: "ten + eight = ?", a: "eighteen", w: ["eighty", "seventeen"] },
+                { q: "twenty - ten = ?", a: "ten", w: ["twenty", "two"] },
+                { q: "twenty - five = ?", a: "fifteen", w: ["fourteen", "thirteen"] },
+                { q: "thirteen - three = ?", a: "ten", w: ["three", "thirteen"] },
+                { q: "eleven + two = ?", a: "thirteen", w: ["twelve", "fourteen"] },
+                { q: "twelve + four = ?", a: "sixteen", w: ["fifteen", "seventeen"] },
+                { q: "fifteen - four = ?", a: "eleven", w: ["twelve", "ten"] },
+                { q: "eighteen - six = ?", a: "twelve", w: ["thirteen", "eleven"] }
+            ],
+            "2-4": [
+                { q: "11, 12, __?", a: "thirteen", w: ["twelve", "fourteen"] },
+                { q: "14, __, 16?", a: "fifteen", w: ["fourteen", "sixteen"] },
+                { q: "__, 18, 19?", a: "seventeen", w: ["sixteen", "eighteen"] },
+                { q: "18, 19, __?", a: "twenty", w: ["nineteen", "twenty-one"] },
+                { q: "12, 13, __?", a: "fourteen", w: ["fifteen", "thirteen"] },
+                { q: "15, 16, __?", a: "seventeen", w: ["eighteen", "sixteen"] },
+                { q: "13, __, 15?", a: "fourteen", w: ["twelve", "fifteen"] },
+                { q: "16, 17, __?", a: "eighteen", w: ["nineteen", "seventeen"] },
+                { q: "__, 12, 13?", a: "eleven", w: ["ten", "twelve"] },
+                { q: "17, 18, __?", a: "nineteen", w: ["twenty", "eighteen"] }
+            ],
+            "2-5": [
+                { q: "e_e_v_n", a: "eleven", w: ["elevent", "elevin"] },
+                { q: "t_e_l_e", a: "twelve", w: ["twelf", "twelv"] },
+                { q: "t_i_t_e_n", a: "thirteen", w: ["thirty", "thirtin"] },
+                { q: "f_u_r_t_e_n", a: "fourteen", w: ["forty", "fourtin"] },
+                { q: "f_i_f_t_e_e_n", a: "fifteen", w: ["fifty", "fiftin"] },
+                { q: "s_i_x_t_e_e_n", a: "sixteen", w: ["sixty", "sixetin"] },
+                { q: "s_e_v_e_n_t_e_e_n", a: "seventeen", w: ["seventy", "seventin"] },
+                { q: "e_i_g_h_t_e_e_n", a: "eighteen", w: ["eighty", "eightin"] },
+                { q: "n_i_n_e_t_e_e_n", a: "nineteen", w: ["ninety", "ninetin"] },
+                { q: "t_w_e_n_t_y", a: "twenty", w: ["twenti", "twente"] }
+            ],
+            "2-6": [
+                { q: "twenty - five = ?", a: "fifteen", w: ["fourteen", "sixteen"] },
+                { q: "eleven + nine = ?", a: "twenty", w: ["nineteen", "twelve"] },
+                { q: "nineteen - seven = ?", a: "twelve", w: ["eleven", "thirteen"] },
+                { q: "twelve + six = ?", a: "eighteen", w: ["seventeen", "nineteen"] },
+                { q: "fifteen - three = ?", a: "twelve", w: ["eleven", "thirteen"] },
+                { q: "thirteen + five = ?", a: "eighteen", w: ["seventeen", "nineteen"] },
+                { q: "seventeen - six = ?", a: "eleven", w: ["ten", "twelve"] },
+                { q: "fourteen + two = ?", a: "sixteen", w: ["fifteen", "seventeen"] },
+                { q: "sixteen - five = ?", a: "eleven", w: ["twelve", "ten"] },
+                { q: "twenty - eight = ?", a: "twelve", w: ["eleven", "thirteen"] }
+            ],
+            "2-7": [], // 岩石層魔王混合
+
+            // 地函層
+            "3-1": [
+                { q: "thirty", a: "30", w: ["13", "33"] },
+                { q: "forty", a: "40", w: ["14", "44"] },
+                { q: "fifty", a: "50", w: ["15", "55"] },
+                { q: "sixty", a: "60", w: ["16", "66"] },
+                { q: "seventy", a: "70", w: ["17", "77"] },
+                { q: "eighty", a: "80", w: ["18", "88"] },
+                { q: "ninety", a: "90", w: ["19", "99"] },
+                { q: "twenty", a: "20", w: ["12", "22"] },
+                { q: "thirty-five", a: "35", w: ["53", "30"] },
+                { q: "forty-six", a: "46", w: ["64", "40"] }
+            ],
+            "3-2": [
+                { q: "twenty-one", a: "21", w: ["12", "20"] },
+                { q: "thirty-three", a: "33", w: ["30", "13"] },
+                { q: "forty-five", a: "45", w: ["54", "40"] },
+                { q: "fifty-seven", a: "57", w: ["75", "50"] },
+                { q: "sixty-eight", a: "68", w: ["86", "60"] },
+                { q: "seventy-two", a: "72", w: ["27", "70"] },
+                { q: "eighty-four", a: "84", w: ["48", "80"] },
+                { q: "ninety-nine", a: "99", w: ["90", "19"] },
+                { q: "eighty-eight", a: "88", w: ["80", "18"] },
+                { q: "seventy-six", a: "76", w: ["67", "70"] }
+            ],
+            "3-3": [
+                { q: "32", a: "thirty-two", w: ["twenty-three", "thirty"] },
+                { q: "43", a: "forty-three", w: ["thirty-four", "forty"] },
+                { q: "55", a: "fifty-five", w: ["fifteen", "fifty"] },
+                { q: "61", a: "sixty-one", w: ["sixteen", "sixty"] },
+                { q: "74", a: "seventy-four", w: ["forty-seven", "seventy"] },
+                { q: "87", a: "eighty-seven", w: ["seventy-eight", "eighty"] },
+                { q: "92", a: "ninety-two", w: ["twenty-nine", "ninety"] },
+                { q: "29", a: "twenty-nine", w: ["ninety-two", "twenty"] },
+                { q: "38", a: "thirty-eight", w: ["eighty-three", "thirty"] },
+                { q: "46", a: "forty-six", w: ["sixty-four", "forty"] }
+            ],
+            "3-4": [
+                { q: "30, 40, __?", a: "fifty", w: ["forty", "sixty"] },
+                { q: "60, __, 80?", a: "seventy", w: ["sixty", "ninety"] },
+                { q: "__, 30, 40?", a: "twenty", w: ["ten", "thirty"] },
+                { q: "20, 30, __?", a: "forty", w: ["fifty", "thirty"] },
+                { q: "50, 60, __?", a: "seventy", w: ["eighty", "sixty"] },
+                { q: "70, 80, __?", a: "ninety", w: ["one hundred", "eighty"] },
+                { q: "45, 46, __?", a: "forty-seven", w: ["forty-eight", "forty-six"] },
+                { q: "88, 89, __?", a: "ninety", w: ["ninety-one", "eighty-nine"] },
+                { q: "21, 22, __?", a: "twenty-three", w: ["twenty-four", "twenty-two"] },
+                { q: "65, __, 67?", a: "sixty-six", w: ["sixty-five", "sixty-seven"] }
+            ],
+            "3-5": [
+                { q: "thirty + five = ?", a: "35", w: ["53", "305"] },
+                { q: "forty + six = ?", a: "46", w: ["64", "406"] },
+                { q: "fifty + eight = ?", a: "58", w: ["85", "508"] },
+                { q: "sixty + two = ?", a: "62", w: ["26", "602"] },
+                { q: "seventy + seven = ?", a: "77", w: ["70", "707"] },
+                { q: "eighty + three = ?", a: "83", w: ["38", "803"] },
+                { q: "ninety + one = ?", a: "91", w: ["19", "901"] },
+                { q: "twenty + nine = ?", a: "29", w: ["92", "209"] },
+                { q: "fifty - ten = ?", a: "forty", w: ["fifty", "thirty"] },
+                { q: "eighty - twenty = ?", a: "sixty", w: ["seventy", "fifty"] }
+            ],
+            "3-6": [
+                { q: "20 + 30 = ?", a: "fifty", w: ["forty", "sixty"] },
+                { q: "40 + 40 = ?", a: "eighty", w: ["seventy", "ninety"] },
+                { q: "90 - 30 = ?", a: "sixty", w: ["fifty", "seventy"] },
+                { q: "50 + 20 = ?", a: "seventy", w: ["sixty", "eighty"] },
+                { q: "80 - 45 = ?", a: "thirty-five", w: ["forty-five", "twenty-five"] },
+                { q: "30 + 12 = ?", a: "forty-two", w: ["thirty-two", "fifty-two"] },
+                { q: "75 - 25 = ?", a: "fifty", w: ["forty", "sixty"] },
+                { q: "15 + 15 = ?", a: "thirty", w: ["twenty", "forty"] },
+                { q: "60 - 20 = ?", a: "forty", w: ["fifty", "thirty"] },
+                { q: "80 + 15 = ?", a: "ninety-five", w: ["eighty-five", "ninety"] }
+            ],
+            "3-7": [], // 地函層魔王混合
+
+            // 地核層
+            "4-1": [
+                { q: "one hundred", a: "100", w: ["10", "1000"] },
+                { q: "two hundred", a: "200", w: ["20", "2000"] },
+                { q: "three hundred", a: "300", w: ["30", "3000"] },
+                { q: "four hundred", a: "400", w: ["40", "4000"] },
+                { q: "five hundred", a: "500", w: ["50", "5000"] },
+                { q: "six hundred", a: "600", w: ["60", "6000"] },
+                { q: "seven hundred", a: "700", w: ["70", "7000"] },
+                { q: "eight hundred", a: "800", w: ["80", "8000"] },
+                { q: "nine hundred", a: "900", w: ["90", "9000"] },
+                { q: "one thousand", a: "1000", w: ["100", "10000"] }
+            ],
+            "4-2": [
+                { q: "one hundred and ten", a: "110", w: ["101", "111"] },
+                { q: "two hundred and fifty", a: "250", w: ["205", "255"] },
+                { q: "three hundred and five", a: "305", w: ["350", "355"] },
+                { q: "four hundred and fifteen", a: "415", w: ["450", "455"] },
+                { q: "five hundred and eighty", a: "580", w: ["508", "588"] },
+                { q: "six hundred and twenty-three", a: "623", w: ["632", "620"] },
+                { q: "seven hundred and forty-one", a: "741", w: ["714", "740"] },
+                { q: "eight hundred and sixty-six", a: "866", w: ["860", "806"] },
+                { q: "nine hundred and ninety-nine", a: "999", w: ["909", "990"] },
+                { q: "five hundred and five", a: "505", w: ["550", "555"] }
+            ],
+            "4-3": [
+                { q: "120", a: "one hundred and twenty", w: ["one hundred and two", "twelve"] },
+                { q: "201", a: "two hundred and one", w: ["two hundred and ten", "twenty-one"] },
+                { q: "350", a: "three hundred and fifty", w: ["three hundred and five", "thirty-five"] },
+                { q: "404", a: "four hundred and four", w: ["four hundred and forty", "forty-four"] },
+                { q: "680", a: "six hundred and eighty", w: ["six hundred and eight", "sixty-eight"] },
+                { q: "711", a: "seven hundred and eleven", w: ["seven hundred and one", "seventy-one"] },
+                { q: "835", a: "eight hundred and thirty-five", w: ["eight hundred and fifty-three", "eighty-five"] },
+                { q: "900", a: "nine hundred", w: ["ninety", "nine thousand"] },
+                { q: "1000", a: "one thousand", w: ["one hundred", "ten thousand"] },
+                { q: "520", a: "five hundred and twenty", w: ["five hundred and two", "fifty-two"] }
+            ],
+            "4-4": [
+                { q: "one hundred + fifty = ?", a: "150", w: ["105", "155"] },
+                { q: "two hundred + three hundred = ?", a: "500", w: ["400", "600"] },
+                { q: "five hundred - one hundred = ?", a: "400", w: ["300", "500"] },
+                { q: "eight hundred + one hundred = ?", a: "900", w: ["800", "1000"] },
+                { q: "one thousand - five hundred = ?", a: "500", w: ["400", "600"] },
+                { q: "three hundred + twenty = ?", a: "320", w: ["302", "322"] },
+                { q: "four hundred + fifty-five = ?", a: "455", w: ["450", "405"] },
+                { q: "six hundred - fifty = ?", a: "550", w: ["500", "650"] },
+                { q: "seven hundred + seventy = ?", a: "770", w: ["707", "777"] },
+                { q: "nine hundred + ninety-nine = ?", a: "999", w: ["909", "990"] }
+            ],
+            "4-5": [
+                { q: "100, 200, __?", a: "three hundred", w: ["two hundred", "four hundred"] },
+                { q: "500, 600, __?", a: "seven hundred", w: ["eight hundred", "six hundred"] },
+                { q: "__, 800, 900?", a: "seven hundred", w: ["six hundred", "eight hundred"] },
+                { q: "980, 990, __?", a: "one thousand", w: ["nine hundred", "one hundred"] },
+                { q: "250, 300, __?", a: "three hundred and fifty", w: ["four hundred", "three hundred"] },
+                { q: "400, 500, __?", a: "six hundred", w: ["seven hundred", "five hundred"] },
+                { q: "100, 300, __?", a: "five hundred", w: ["four hundred", "six hundred"] },
+                { q: "200, 400, __?", a: "six hundred", w: ["five hundred", "seven hundred"] },
+                { q: "800, 900, __?", a: "one thousand", w: ["nine hundred", "one thousand one hundred"] },
+                { q: "300, __, 500?", a: "four hundred", w: ["three hundred", "five hundred"] }
+            ],
+            "4-6": [
+                { q: "Which is 999?", a: "nine hundred and ninety-nine", w: ["nine hundred and nine", "nine hundred and ninety"] },
+                { q: "Which is 707?", a: "seven hundred and seven", w: ["seven hundred and seventy", "seventy-seven"] },
+                { q: "Which is 555?", a: "five hundred and fifty-five", w: ["five hundred and five", "fifty-five"] },
+                { q: "Which is 111?", a: "one hundred and eleven", w: ["one hundred and one", "eleven"] },
+                { q: "Which is 222?", a: "two hundred and twenty-two", w: ["two hundred and two", "twenty-two"] },
+                { q: "Which is 333?", a: "three hundred and thirty-three", w: ["three hundred and three", "thirty-three"] },
+                { q: "Which is 444?", a: "four hundred and forty-four", w: ["four hundred and four", "forty-four"] },
+                { q: "Which is 666?", a: "six hundred and sixty-six", w: ["six hundred and six", "sixty-six"] },
+                { q: "Which is 888?", a: "eight hundred and eighty-eight", w: ["eight hundred and eight", "eighty-eight"] },
+                { q: "Which is 1000?", a: "one thousand", w: ["one hundred", "one thousand and ten"] }
+            ],
+            "4-7": [] // 終極地心魔王
+        };
+
+        // 魔王關卡混合題庫生成
+        function buildBossLevels() {
+            // 1-7 (混合 1-1 ~ 1-6)
+            let soilPool = [];
+            for(let i=1; i<=6; i++) {
+                soilPool = soilPool.concat(rawQuestionBank[`1-${i}`]);
+            }
+            rawQuestionBank["1-7"] = getRandomSubset(soilPool, 10);
+
+            // 2-7 (混合 2-1 ~ 2-6)
+            let rockPool = [];
+            for(let i=1; i<=6; i++) {
+                rockPool = rockPool.concat(rawQuestionBank[`2-${i}`]);
+            }
+            rawQuestionBank["2-7"] = getRandomSubset(rockPool, 10);
+
+            // 3-7 (混合 3-1 ~ 3-6)
+            let mantlePool = [];
+            for(let i=1; i<=6; i++) {
+                mantlePool = mantlePool.concat(rawQuestionBank[`3-${i}`]);
+            }
+            rawQuestionBank["3-7"] = getRandomSubset(mantlePool, 10);
+
+            // 4-7 (混合 4-1 ~ 4-6 & 其他大魔王)
+            let corePool = [];
+            for(let i=1; i<=6; i++) {
+                corePool = corePool.concat(rawQuestionBank[`4-${i}`]);
+            }
+            rawQuestionBank["4-7"] = getRandomSubset(corePool, 10);
+        }
+
+        function getRandomSubset(arr, n) {
+            let shuffled = [...arr].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, n);
+        }
+
+        // 本地儲存資料結構定義
+        let playerProgress = {
+            playerName: "張小明",
+            totalCoins: 0,
+            completedNormal: {}, // { "1-1": true }
+            bestTimeScores: {}  // { "1-1": 10 }
+        };
+
+        // 載入與初始化玩家進度
+        function loadPlayerProgress() {
+            const saved = localStorage.getItem("deep_earth_explorer_progress");
+            if (saved) {
+                try {
+                    playerProgress = JSON.parse(saved);
+                    if (!playerProgress.completedNormal) playerProgress.completedNormal = {};
+                    if (!playerProgress.bestTimeScores) playerProgress.bestTimeScores = {};
+                    document.getElementById("player-name").value = playerProgress.playerName || "張小明";
+                    updateProgressDOM();
+                } catch (e) {
+                    console.error("Failed to load local progress:", e);
+                }
+            } else {
+                savePlayerProgress();
+            }
+        }
+
+        function savePlayerProgress() {
+            playerProgress.playerName = document.getElementById("player-name").value.trim() || "張小明";
+            localStorage.setItem("deep_earth_explorer_progress", JSON.stringify(playerProgress));
+        }
+
+        function updateProgressDOM() {
+            // 計算目前累積金幣
+            document.getElementById("total-coins").innerText = playerProgress.totalCoins;
+            
+            // 計算最高解鎖關卡 (28關進度)
+            let unlockedCount = 1; // 至少第一關解鎖
+            let activeStageStr = "1-1";
+
+            // 遍歷找出最新的未解鎖
+            for(let i=0; i<levelConfig.length; i++) {
+                let lvl = levelConfig[i];
+                if (playerProgress.completedNormal[lvl.id]) {
+                    unlockedCount = Math.max(unlockedCount, i + 2); // 下一關解鎖
+                }
+            }
+            
+            // 防止溢出
+            if (unlockedCount > 28) unlockedCount = 28;
+            
+            // 更新進度條文字
+            document.getElementById("progress-indicator").innerText = `${unlockedCount} / 28 關`;
+            
+            // 重新繪製關卡地圖
+            renderMap();
+        }
+
+        // 地心電梯跳轉控制
+        function jumpToLayer(layerId) {
+            playSynthSound('click');
+            const target = document.getElementById(`layer-${layerId}`);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // 一鍵關卡全開防呆功能 (教師極度需要)
+        function triggerMasterUnlock() {
+            levelConfig.forEach(lvl => {
+                playerProgress.completedNormal[lvl.id] = true;
+                playerProgress.bestTimeScores[lvl.id] = 10; // 全滿星
+            });
+            playerProgress.totalCoins += 150;
+            savePlayerProgress();
+            updateProgressDOM();
+            playSynthSound('level-clear');
+            showModal("✨ 一鍵解鎖成功！", "所有 28 關採礦車與深地挑戰已全面啟動，可以隨意跳轉探索囉！", "🥇 太棒了！");
+        }
+
+        // 清除紀錄重來
+        function resetGame() {
+            if (confirm("確定要清除所有金幣與探險進度重新開始嗎？")) {
+                playerProgress = {
+                    playerName: "張小明",
+                    totalCoins: 0,
+                    completedNormal: {},
+                    bestTimeScores: {}
+                };
+                savePlayerProgress();
+                updateProgressDOM();
+                playSynthSound('click');
+            }
+        }
+
+        // 動態生成關卡卡片地圖
+        function renderMap() {
+            const containers = {
+                soil: document.getElementById("soil-stations-container"),
+                rock: document.getElementById("rock-stations-container"),
+                mantle: document.getElementById("mantle-stations-container"),
+                core: document.getElementById("core-stations-container")
+            };
+
+            // 清空舊 HTML
+            Object.values(containers).forEach(el => el.innerHTML = "");
+
+            // 判斷哪些關卡是解鎖狀態
+            let unlockedSet = new Set(["1-1"]);
+            let previousCleared = true;
+
+            levelConfig.forEach((lvl, index) => {
+                // 如果上一關過了，這關就解鎖
+                if (index > 0) {
+                    let prevLvl = levelConfig[index - 1];
+                    if (playerProgress.completedNormal[prevLvl.id]) {
+                        unlockedSet.add(lvl.id);
+                    }
+                }
+            });
+
+            // 遍歷生成關卡 HTML
+            levelConfig.forEach(lvl => {
+                const container = containers[lvl.layer];
+                const isUnlocked = unlockedSet.has(lvl.id);
+                const isNormalCleared = playerProgress.completedNormal[lvl.id] || false;
+                const bestTimeScore = playerProgress.bestTimeScores[lvl.id] || 0;
+
+                // 礦車色彩渲染 (解鎖與否)
+                let cardBg = "bg-[#25150c]/80 border-amber-900/50";
+                let mineCartIcon = "fa-solid fa-truck-monster text-amber-950/60"; // 未完成
+                let cartColor = "opacity-40 grayscale";
+
+                if (isUnlocked) {
+                    if (isNormalCleared) {
+                        cardBg = "bg-gradient-to-r from-[#442918] to-[#361e10] border-amber-600 shadow-xl shadow-yellow-950/10";
+                        mineCartIcon = "fa-solid fa-truck-pickup text-yellow-400"; // 鑽探車發光
+                        cartColor = "opacity-100 filter-none";
+                    } else {
+                        cardBg = "bg-[#331c10] border-amber-800 animate-pulse";
+                        mineCartIcon = "fa-solid fa-truck-monster text-amber-500"; // 待解鎖/進行中
+                        cartColor = "opacity-90 grayscale-0";
+                    }
+                }
+
+                // 寶石生成 HTML
+                let gemsHtml = "";
+                if (bestTimeScore > 0) {
+                    gemsHtml = `<div class="flex gap-1.5 items-center mt-1 bg-black/40 px-2 py-1 rounded-full text-xs">`;
+                    if (bestTimeScore >= 1) gemsHtml += `<span class="text-red-500" title="紅寶石">💎</span>`;
+                    if (bestTimeScore >= 5) gemsHtml += `<span class="text-emerald-400" title="綠寶石">💎</span>`;
+                    if (bestTimeScore >= 9) gemsHtml += `<span class="text-blue-400" title="藍寶石">💎</span>`;
+                    gemsHtml += `<span class="text-white text-[10px] font-bold ml-1">x${bestTimeScore}</span>`;
+                    gemsHtml += `</div>`;
+                }
+
+                const cardHtml = `
+                    <div class="flex flex-col lg:flex-row items-center gap-6 p-5 rounded-2xl border-4 ${cardBg} transition-all duration-300">
+                        
+                        <!-- 關卡編號徽章 -->
+                        <div class="flex flex-col items-center justify-center shrink-0 w-20 h-20 rounded-2xl bg-black/40 border-2 border-amber-600/50">
+                            <span class="text-[10px] text-amber-500 uppercase font-black tracking-widest leading-none">關卡</span>
+                            <span class="text-2xl font-black text-amber-100 Lexend leading-tight">${lvl.id}</span>
+                            ${lvl.boss ? `<span class="text-[9px] bg-red-600 text-white font-black px-1.5 py-0.5 rounded-full mt-1">BOSS</span>` : ""}
+                        </div>
+
+                        <!-- 礦車主題意象與實體寶石 -->
+                        <div class="flex flex-col items-center justify-center w-28 h-20 shrink-0 border border-amber-900/30 bg-black/20 rounded-xl px-2">
+                            <i class="${mineCartIcon} text-4xl mb-1 ${cartColor}"></i>
+                            ${gemsHtml}
+                        </div>
+
+                        <!-- 關卡題目說明描述 -->
+                        <div class="flex-1 text-center lg:text-left">
+                            <h4 class="text-lg font-black text-amber-100 flex items-center justify-center lg:justify-start gap-2">
+                                ${lvl.title}
+                                ${isNormalCleared ? '<i class="fa-solid fa-circle-check text-emerald-400"></i>' : ''}
+                            </h4>
+                            <p class="text-xs text-amber-200/60 mt-1 font-bold">${lvl.desc}</p>
+                        </div>
+
+                        <!-- 雙重模式按鈕操作區 -->
+                        <div class="flex flex-wrap items-center justify-center gap-3 shrink-0">
+                            <!-- 一般模式 ⛏️ -->
+                            <button onclick="startQuiz('${lvl.id}', 'normal')" 
+                                    class="py-3 px-5 rounded-xl font-black text-sm transition-all flex items-center gap-2 active:scale-95 shadow-md
+                                    ${isUnlocked 
+                                        ? 'bg-emerald-600 hover:bg-emerald-500 text-slate-950' 
+                                        : 'bg-stone-800 text-stone-500 cursor-not-allowed border-none'}"
+                                    ${isUnlocked ? "" : "disabled"}>
+                                <i class="fa-solid fa-pickaxe"></i> ⛏️ 一般挖掘 ${isNormalCleared ? '已通關' : ''}
+                            </button>
+                            
+                            <!-- 限時模式 ⏳ -->
+                            <button onclick="startQuiz('${lvl.id}', 'timed')" 
+                                    class="py-3 px-5 rounded-xl font-black text-sm transition-all flex items-center gap-2 active:scale-95 shadow-md
+                                    ${isNormalCleared 
+                                        ? 'bg-amber-500 hover:bg-amber-400 text-slate-950' 
+                                        : 'bg-stone-800 text-stone-500 cursor-not-allowed border-none'}"
+                                    ${isNormalCleared ? "" : "disabled"}>
+                                <i class="fa-solid fa-stopwatch"></i> ⏳ 限時衝刺 ${bestTimeScore > 0 ? `(高分 ${bestTimeScore})` : ''}
+                            </button>
+                        </div>
+
+                    </div>
+                `;
+                
+                // 插入對應 geological container
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+    </script>
+
+    <!-- 答題與防呆雙向修正機制系統 -->
+    <script>
+        let currentQuiz = {
+            stageId: "1-1",
+            mode: "normal", // "normal" or "timed"
+            questions: [],
+            currQIdx: 0,
+            score: 0, // 答對題數
+            correctCoinsEarned: 0, // 答對獲得金幣累計
+            isFirstAttempt: true, // 一般模式是否第一次就答對
+            timeLeft: 60,
+            timerInterval: null
+        };
+
+        // 啟動關卡挑戰
+        function startQuiz(stageId, mode) {
+            playSynthSound('click');
+            
+            // 尋找關卡設定
+            const lvlObj = levelConfig.find(l => l.id === stageId);
+            if (!lvlObj) return;
+
+            // 抓取題目源
+            let qPool = [...rawQuestionBank[stageId]];
+            if (!qPool || qPool.length === 0) {
+                // 防呆萬一魔王關未生成
+                buildBossLevels();
+                qPool = [...rawQuestionBank[stageId]];
+            }
+
+            // 洗牌打亂
+            qPool.sort(() => 0.5 - Math.random());
+
+            // 限制題數
+            let finalQuestions = [];
+            if (mode === 'normal') {
+                finalQuestions = qPool.slice(0, 5); // 一般模式只要 5 題
+            } else {
+                finalQuestions = qPool.slice(0, 10); // 計時挑戰 10 題
+            }
+
+            currentQuiz = {
+                stageId: stageId,
+                mode: mode,
+                questions: finalQuestions,
+                currQIdx: 0,
+                score: 0,
+                correctCoinsEarned: 0,
+                isFirstAttempt: true,
+                timeLeft: 60,
+                timerInterval: null
+            };
+
+            // 顯示答題畫面
+            document.getElementById("quiz-overlay").classList.remove("hidden");
+            document.getElementById("quiz-stage-id").innerText = `關卡 STAGE ${stageId}`;
+
+            if (mode === 'normal') {
+                document.getElementById("quiz-mode-badge").innerText = "⛏️ 一般挖掘模式";
+                document.getElementById("quiz-mode-badge").className = "ml-3 px-3 py-1 bg-emerald-600 text-slate-950 rounded-full font-black text-sm";
+                document.getElementById("timer-box").classList.add("hidden");
+                document.getElementById("quiz-progress-dots").classList.remove("hidden");
+                
+                // 生成進度圓點
+                let dotsHtml = "";
+                for(let d=0; d<5; d++) {
+                    dotsHtml += `<div id="quiz-dot-${d}" class="w-4 h-4 rounded-full bg-stone-700 border border-stone-500"></div>`;
+                }
+                document.getElementById("quiz-progress-dots").innerHTML = dotsHtml;
+            } else {
+                document.getElementById("quiz-mode-badge").innerText = "⏳ 限時衝刺挑戰";
+                document.getElementById("quiz-mode-badge").className = "ml-3 px-3 py-1 bg-amber-500 text-slate-950 rounded-full font-black text-sm";
+                document.getElementById("timer-box").classList.remove("hidden");
+                document.getElementById("quiz-progress-dots").classList.add("hidden");
+
+                // 啟動 60 秒倒數
+                document.getElementById("timer-text").innerText = "60s";
+                document.getElementById("timer-bar").style.width = "100%";
+                
+                currentQuiz.timerInterval = setInterval(() => {
+                    currentQuiz.timeLeft--;
+                    document.getElementById("timer-text").innerText = `${currentQuiz.timeLeft}s`;
+                    let pct = (currentQuiz.timeLeft / 60) * 100;
+                    document.getElementById("timer-bar").style.width = `${pct}%`;
+
+                    if (currentQuiz.timeLeft <= 0) {
+                        clearInterval(currentQuiz.timerInterval);
+                        endQuizSession();
+                    }
+                }, 1000);
+            }
+
+            // 載入第一題
+            loadQuestion();
+        }
+
+        // 載入題目到介面
+        function loadQuestion() {
+            if (currentQuiz.currQIdx >= currentQuiz.questions.length) {
+                // 已回答完所有題目
+                clearInterval(currentQuiz.timerInterval);
+                endQuizSession();
+                return;
+            }
+
+            const qObj = currentQuiz.questions[currentQuiz.currQIdx];
+            currentQuiz.isFirstAttempt = true;
+
+            // 更新題目文字
+            document.getElementById("question-text").innerText = qObj.q;
+
+            // 自動慢速發音 (特教鷹架)
+            setTimeout(() => {
+                speakWord(qObj.q);
+            }, 300);
+
+            // 清除上次的選項震動與顏色
+            for(let i=0; i<3; i++) {
+                const optBtn = document.getElementById(`opt-${i}`);
+                optBtn.className = "group relative py-6 px-8 rounded-2xl border-4 border-amber-700 bg-[#351e12] hover:bg-[#4a2e1c] text-white font-black text-2xl md:text-3xl lg:text-4xl transition-all shadow-[0_8px_0_#1c100a] active:translate-y-2 active:shadow-none flex items-center justify-between";
+                optBtn.disabled = false;
+            }
+
+            // 準備選項與正確答案混合 (A, B, C)
+            let choices = [qObj.a, ...qObj.w];
+            // 洗牌選項，但記住正確答案
+            choices.sort(() => 0.5 - Math.random());
+
+            for(let i=0; i<3; i++) {
+                document.getElementById(`opt-${i}-text`).innerText = choices[i];
+                // 綁定正確屬性
+                if (choices[i] === qObj.a) {
+                    document.getElementById(`opt-${i}`).setAttribute("data-is-correct", "true");
+                } else {
+                    document.getElementById(`opt-${i}`).setAttribute("data-is-correct", "false");
+                }
+            }
+
+            // 清除提示內容
+            document.getElementById("quiz-hint-box").innerText = "";
+
+            // 更新一般模式的圓點進度
+            if (currentQuiz.mode === 'normal') {
+                for(let d=0; d<5; d++) {
+                    const dot = document.getElementById(`quiz-dot-${d}`);
+                    if (d < currentQuiz.currQIdx) {
+                        dot.className = "w-4 h-4 rounded-full bg-emerald-500 border border-emerald-400";
+                    } else if (d === currentQuiz.currQIdx) {
+                        dot.className = "w-4 h-4 rounded-full bg-amber-500 border border-amber-400 animate-pulse";
+                    } else {
+                        dot.className = "w-4 h-4 rounded-full bg-stone-700 border border-stone-500";
+                    }
+                }
+            }
+        }
+
+        // 當點選選項時的處理邏輯 (包含特教防呆與訂正機制)
+        function handleOptionSelect(optIndex) {
+            const btn = document.getElementById(`opt-${optIndex}`);
+            const isCorrect = btn.getAttribute("data-is-correct") === "true";
+
+            if (isCorrect) {
+                // 答對了！
+                playSynthSound('correct');
+                btn.className = "group relative py-6 px-8 rounded-2xl border-4 border-emerald-600 bg-emerald-950/80 text-white font-black text-2xl md:text-3xl lg:text-4xl transition-all shadow-[0_8px_0_#064e3b] flex items-center justify-between";
+                
+                // 禁用所有按鈕，防止重複點擊
+                for(let i=0; i<3; i++) {
+                    document.getElementById(`opt-${i}`).disabled = true;
+                }
+
+                // 計算金幣 (一般模式：第一次即對得 2 金幣，訂正才對得 1 金幣。限時模式：對得 1 金幣)
+                let coinAdd = 0;
+                if (currentQuiz.mode === 'normal') {
+                    coinAdd = currentQuiz.isFirstAttempt ? 2 : 1;
+                } else {
+                    coinAdd = 1; // 限時衝刺對即得一分/一金幣
+                }
+
+                // 如果是魔王關卡 (XX-7)，分數金幣加倍!
+                const isBoss = levelConfig.find(l => l.id === currentQuiz.stageId)?.boss || false;
+                if (isBoss) {
+                    coinAdd = coinAdd * 2;
+                }
+
+                currentQuiz.correctCoinsEarned += coinAdd;
+                currentQuiz.score++;
+
+                // 答對回饋文字
+                document.getElementById("quiz-hint-box").innerHTML = `<span class="text-emerald-400 font-extrabold text-2xl"><i class="fa-solid fa-circle-check mr-2"></i>非常好！答對了！ +${coinAdd}金幣</span>`;
+
+                // 自動加載下一題
+                setTimeout(() => {
+                    currentQuiz.currQIdx++;
+                    loadQuestion();
+                }, 1200);
+
+            } else {
+                // 答錯了！
+                playSynthSound('incorrect');
+                btn.className = "group relative py-6 px-8 rounded-2xl border-4 border-red-600 bg-red-950/80 text-white font-black text-2xl md:text-3xl lg:text-4xl transition-all shadow-[0_8px_0_#7f1d1d] flex items-center justify-between shake-animation";
+                
+                // 移除震動 class 方便下次重複觸發
+                setTimeout(() => {
+                    btn.classList.remove("shake-animation");
+                }, 300);
+
+                if (currentQuiz.mode === 'normal') {
+                    // 一般模式：不直接扣分、不能跳過。需引導至正確答案 (防呆雙向修正機制)
+                    currentQuiz.isFirstAttempt = false;
+                    document.getElementById("quiz-hint-box").innerHTML = `<span class="text-red-400 font-extrabold text-xl"><i class="fa-solid fa-triangle-exclamation mr-1"></i>不對喔，再試著點擊 🔊 聽聽發音看！</span>`;
+                    
+                    // 鎖定已被選錯的選項
+                    btn.disabled = true;
+                } else {
+                    // 限時衝刺模式：不作修正，直接記錄答錯並跳下一題
+                    document.getElementById("quiz-hint-box").innerHTML = `<span class="text-red-400 font-extrabold text-xl">不對喔，下一題！</span>`;
+                    for(let i=0; i<3; i++) {
+                        document.getElementById(`opt-${i}`).disabled = true;
+                    }
+                    setTimeout(() => {
+                        currentQuiz.currQIdx++;
+                        loadQuestion();
+                    }, 800);
+                }
+            }
+        }
+
+        // Web Speech API 慢速英文朗讀發音
+        function speakWord(text) {
+            if ('speechSynthesis' in window) {
+                // 清理之前的語音
+                window.speechSynthesis.cancel();
+                // 過濾算式符號，只讀數字與運算英文
+                let readText = text.replace("+", "plus").replace("-", "minus").replace("?", "");
+                
+                const utterance = new SpeechSynthesisUtterance(readText);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.70; // 慢速朗讀，極度適合聽音學習障礙
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // 手動朗讀
+        function readQuestionText() {
+            const qObj = currentQuiz.questions[currentQuiz.currQIdx];
+            if (qObj) {
+                speakWord(qObj.q);
+            }
+        }
+
+        // 中止挑戰返回
+        function exitQuiz() {
+            clearInterval(currentQuiz.timerInterval);
+            document.getElementById("quiz-overlay").classList.add("hidden");
+            playSynthSound('click');
+        }
+
+        // 結束關卡結算
+        function endQuizSession() {
+            document.getElementById("quiz-overlay").classList.add("hidden");
+            playSynthSound('level-clear');
+
+            const lvlId = currentQuiz.stageId;
+            const mode = currentQuiz.mode;
+            const coinsEarned = currentQuiz.correctCoinsEarned;
+            const questionsCount = currentQuiz.questions.length;
+
+            let finalMsg = "";
+            let finalTitle = "";
+
+            if (mode === 'normal') {
+                // 標記該關一般模式已通關
+                playerProgress.completedNormal[lvlId] = true;
+                playerProgress.totalCoins += coinsEarned;
+                savePlayerProgress();
+                updateProgressDOM();
+
+                finalTitle = "⛏️ 挖掘成功！";
+                finalMsg = `恭喜你在 ${lvlId} 關卡掘得豐富礦砂！累計獲得 <span class='text-yellow-400 font-extrabold text-2xl'>🪙 ${coinsEarned} 枚金幣</span>。現在可以開始挑戰「⏳ 限時衝刺」囉！`;
+                showModal(finalTitle, finalMsg, "好，繼續前進！");
+            } else {
+                // 限時衝刺模式，依對題數填充實體寶石
+                let bestPrev = playerProgress.bestTimeScores[lvlId] || 0;
+                let isNewBest = false;
+                
+                if (currentQuiz.score > bestPrev) {
+                    playerProgress.bestTimeScores[lvlId] = currentQuiz.score;
+                    isNewBest = true;
+                }
+
+                playerProgress.totalCoins += coinsEarned;
+                savePlayerProgress();
+                updateProgressDOM();
+
+                // 判定寶石回饋
+                let gemReward = "煤炭";
+                let gemEmoji = "🪨";
+                if (currentQuiz.score >= 9) {
+                    gemReward = "璀璨藍寶石";
+                    gemEmoji = "💎💎💎 (紅、綠、藍)";
+                } else if (currentQuiz.score >= 5) {
+                    gemReward = "翠綠翡翠";
+                    gemEmoji = "💎💎 (紅、綠)";
+                } else if (currentQuiz.score >= 1) {
+                    gemReward = "鮮紅紅寶石";
+                    gemEmoji = "💎 (紅)";
+                }
+
+                finalTitle = "⏳ 衝刺挑戰結束！";
+                finalMsg = `你在 60 秒內成功答對了 <span class='text-amber-400 font-extrabold text-2xl'>${currentQuiz.score} / ${questionsCount} 題</span>！<br>`;
+                finalMsg += `礦車成功填充了 <span class='text-cyan-300 font-extrabold'>${gemEmoji}</span>！<br>`;
+                finalMsg += `本次衝刺帶回了 <span class='text-yellow-400 font-bold'>🪙 ${coinsEarned} 枚金幣</span>！`;
+                
+                if (isNewBest && bestPrev > 0) {
+                    finalMsg += `<br><span class='text-emerald-400 font-black text-sm'>✨ 創下新個人紀錄！</span>`;
+                }
+
+                showModal(finalTitle, finalMsg, "太棒了！");
+            }
+        }
+    </script>
+
+    <!-- 彈窗控制系統 -->
+    <script>
+        function showModal(title, bodyHtml, btnText) {
+            document.getElementById("modal-title").innerText = title;
+            document.getElementById("modal-body").innerHTML = bodyHtml;
+            document.getElementById("modal-btn").innerText = btnText;
+            document.getElementById("custom-modal").classList.remove("hidden");
+        }
+
+        function closeModal() {
+            playSynthSound('click');
+            document.getElementById("custom-modal").classList.add("hidden");
+        }
+    </script>
+
+    <!-- 開機自動加載 -->
+    <script>
+        window.onload = function() {
+            // 生成魔王關卡混合題庫
+            buildBossLevels();
+            // 載入 localStorage 進度
+            loadPlayerProgress();
+        }
+    </script>
+</body>
+</html>
