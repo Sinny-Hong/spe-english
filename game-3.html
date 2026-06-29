@@ -6,45 +6,42 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #000; color: #fff; font-family: '微軟正黑體', sans-serif; }
-        .border-red { border: 4px solid #b91c1c; }
-        .text-shadow { text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .border-red { border: 6px solid #b91c1c; }
     </style>
 </head>
-<body class="h-screen flex items-center justify-center overflow-hidden p-6">
+<body class="h-screen flex items-center justify-center p-4">
 
-    <div id="app" class="w-full max-w-5xl h-[80vh] flex flex-col justify-center">
-        <!-- 開始畫面 -->
-        <div id="start-screen" class="text-center space-y-8">
-            <h1 class="text-6xl font-black text-yellow-500 italic">你能看穿壞人的陷阱嗎？</h1>
-            <p class="text-3xl text-gray-300">你以為你很聰明，但壞人比你更專業。</p>
-            <button onclick="startGame()" class="bg-red-700 text-white text-4xl font-bold py-6 px-16 rounded-2xl animate-pulse">開始偵探任務</button>
+    <div id="app" class="w-full max-w-4xl bg-gray-900 rounded-3xl border-red shadow-2xl p-8">
+        
+        <!-- 開場畫面 -->
+        <div id="start-screen" class="text-center space-y-6">
+            <img src="game-3start.png" alt="開場提示" class="mx-auto rounded-xl max-h-64 mb-4">
+            <h1 class="text-5xl font-black text-yellow-500">你能看穿壞人的陷阱嗎？</h1>
+            <button onclick="startGame()" class="bg-red-700 hover:bg-red-800 text-white text-4xl font-bold py-8 px-20 rounded-2xl animate-pulse">開始偵探任務</button>
         </div>
 
         <!-- 遊戲主體 -->
-        <div id="game-screen" class="hidden h-full flex flex-col justify-center">
-            <div id="content-container" class="bg-gray-900 p-10 rounded-3xl border-red shadow-2xl">
-                <div id="scene-box" class="space-y-8">
-                    <p id="scene-text" class="text-4xl font-bold leading-relaxed"></p>
-                    <div id="options" class="grid grid-cols-2 gap-6"></div>
-                </div>
-                
-                <div id="feedback-box" class="hidden space-y-6">
-                    <p id="analysis" class="text-3xl font-medium text-yellow-300 leading-relaxed"></p>
-                    <button onclick="nextScene()" class="w-full bg-yellow-600 text-black text-3xl font-black py-5 rounded-xl">下一題</button>
-                </div>
+        <div id="game-screen" class="hidden space-y-8">
+            <div id="scene-box" class="space-y-6">
+                <p id="scene-text" class="text-4xl font-bold text-center leading-tight min-h-[120px] flex items-center justify-center"></p>
+                <div id="options" class="grid grid-cols-1 gap-6"></div>
+            </div>
+            
+            <div id="feedback-box" class="hidden space-y-6 text-center">
+                <p id="analysis" class="text-3xl font-medium text-yellow-300 bg-black p-8 rounded-2xl"></p>
+                <button onclick="nextScene()" class="w-full bg-yellow-600 text-black text-4xl font-black py-6 rounded-2xl">下一題</button>
             </div>
         </div>
 
-        <!-- 結尾 -->
-        <div id="end-screen" class="hidden text-center space-y-10">
-            <h2 class="text-5xl font-black text-red-500">保護自己，不是因為你笨！</h2>
-            <div class="bg-gray-800 p-10 rounded-3xl border-red">
-                <p class="text-3xl font-bold italic mb-8">而是因為有人專門利用你的相信。</p>
-                <div class="grid grid-cols-3 gap-6 text-2xl font-bold">
-                    <div class="p-6 bg-gray-700 rounded-xl">🔴 有疑問，先問老師。</div>
-                    <div class="p-6 bg-gray-700 rounded-xl">🔴 有壓力，先拒絕。</div>
-                    <div class="p-6 bg-gray-700 rounded-xl">🔴 有秘密，先懷疑。</div>
-                </div>
+        <!-- 結尾畫面 -->
+        <div id="end-screen" class="hidden text-center space-y-6">
+            <img src="game-3end.png" alt="保護自己" class="mx-auto rounded-xl max-h-64 mb-4">
+            <h2 class="text-4xl font-black text-red-500">偵探任務完成！</h2>
+            <p class="text-3xl font-bold italic text-white">保護自己，不是因為你笨，而是因為有人專門利用你的相信。</p>
+            <div class="grid grid-cols-1 gap-4 text-2xl font-bold mt-6">
+                <div class="p-5 bg-gray-700 rounded-xl border border-yellow-600">🔴 有疑問，先問老師。</div>
+                <div class="p-5 bg-gray-700 rounded-xl border border-yellow-600">🔴 有壓力，先拒絕。</div>
+                <div class="p-5 bg-gray-700 rounded-xl border border-yellow-600">🔴 有秘密，先懷疑。</div>
             </div>
         </div>
     </div>
@@ -73,7 +70,7 @@
             optDiv.innerHTML = '';
             s.options.forEach(o => {
                 const btn = document.createElement('button');
-                btn.className = "bg-gray-700 hover:bg-gray-600 p-8 rounded-2xl text-2xl font-bold transition";
+                btn.className = "bg-gray-700 hover:bg-gray-600 p-8 rounded-2xl text-3xl font-bold transition border-2 border-transparent hover:border-white";
                 btn.innerText = o;
                 btn.onclick = () => {
                     document.getElementById('scene-box').classList.add('hidden');
