@@ -1,102 +1,92 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>網路偵探：你能看穿壞人的陷阱嗎？</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: white; font-family: 'Noto Sans TC', sans-serif; }
-        .card-border { border: 4px solid #f59e0b; } /* 警示黃 */
-        .danger-red { color: #ef4444; }
-        .safe-green { color: #22c55e; }
+        body { background-color: #000; color: #fff; font-family: '微軟正黑體', sans-serif; }
+        .border-red { border: 4px solid #b91c1c; }
+        .text-shadow { text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="h-screen flex items-center justify-center overflow-hidden p-6">
 
-    <div id="app" class="w-full max-w-2xl">
-        <!-- 初始畫面 -->
-        <div id="start-screen" class="text-center space-y-6">
-            <h1 class="text-4xl font-black text-yellow-500 uppercase italic">你能看穿<br>壞人的陷阱嗎？</h1>
-            <p class="text-xl text-gray-300">你以為你很聰明，但壞人比你更專業。</p>
-            <button onclick="startGame()" class="bg-red-600 hover:bg-red-700 text-white text-2xl font-bold py-4 px-10 rounded-xl shadow-lg transition transform hover:scale-105">開始偵探任務</button>
+    <div id="app" class="w-full max-w-5xl h-[80vh] flex flex-col justify-center">
+        <!-- 開始畫面 -->
+        <div id="start-screen" class="text-center space-y-8">
+            <h1 class="text-6xl font-black text-yellow-500 italic">你能看穿壞人的陷阱嗎？</h1>
+            <p class="text-3xl text-gray-300">你以為你很聰明，但壞人比你更專業。</p>
+            <button onclick="startGame()" class="bg-red-700 text-white text-4xl font-bold py-6 px-16 rounded-2xl animate-pulse">開始偵探任務</button>
         </div>
 
-        <!-- 遊戲畫面 -->
-        <div id="game-screen" class="hidden space-y-6">
-            <div id="progress" class="text-sm text-yellow-500 font-bold mb-2"></div>
-            <div id="scene-card" class="bg-slate-800 p-8 rounded-2xl card-border shadow-2xl">
-                <p id="scene-text" class="text-2xl font-bold mb-8"></p>
-                <div id="options" class="grid gap-4"></div>
-            </div>
-            <div id="feedback" class="hidden bg-slate-900 p-6 rounded-xl border border-gray-600 mt-4">
-                <p id="analysis" class="text-xl leading-relaxed text-gray-200"></p>
-                <button onclick="nextScene()" class="mt-6 w-full bg-yellow-500 text-black font-bold py-3 rounded-lg">下一題</button>
+        <!-- 遊戲主體 -->
+        <div id="game-screen" class="hidden h-full flex flex-col justify-center">
+            <div id="content-container" class="bg-gray-900 p-10 rounded-3xl border-red shadow-2xl">
+                <div id="scene-box" class="space-y-8">
+                    <p id="scene-text" class="text-4xl font-bold leading-relaxed"></p>
+                    <div id="options" class="grid grid-cols-2 gap-6"></div>
+                </div>
+                
+                <div id="feedback-box" class="hidden space-y-6">
+                    <p id="analysis" class="text-3xl font-medium text-yellow-300 leading-relaxed"></p>
+                    <button onclick="nextScene()" class="w-full bg-yellow-600 text-black text-3xl font-black py-5 rounded-xl">下一題</button>
+                </div>
             </div>
         </div>
 
-        <!-- 結尾畫面 -->
-        <div id="end-screen" class="hidden text-center space-y-8">
-            <h2 class="text-4xl font-black text-red-500">偵探任務完成！</h2>
-            <div class="bg-slate-800 p-8 rounded-2xl card-border">
-                <p class="text-2xl font-bold mb-6 italic">保護自己，不是因為你笨，<br>而是有人專門利用你的相信。</p>
-                <ul class="text-left text-xl space-y-4 text-yellow-400 font-bold">
-                    <li>🔴 有疑問，先問老師。</li>
-                    <li>🔴 有壓力，先拒絕。</li>
-                    <li>🔴 有秘密，先懷疑。</li>
-                </ul>
+        <!-- 結尾 -->
+        <div id="end-screen" class="hidden text-center space-y-10">
+            <h2 class="text-5xl font-black text-red-500">保護自己，不是因為你笨！</h2>
+            <div class="bg-gray-800 p-10 rounded-3xl border-red">
+                <p class="text-3xl font-bold italic mb-8">而是因為有人專門利用你的相信。</p>
+                <div class="grid grid-cols-3 gap-6 text-2xl font-bold">
+                    <div class="p-6 bg-gray-700 rounded-xl">🔴 有疑問，先問老師。</div>
+                    <div class="p-6 bg-gray-700 rounded-xl">🔴 有壓力，先拒絕。</div>
+                    <div class="p-6 bg-gray-700 rounded-xl">🔴 有秘密，先懷疑。</div>
+                </div>
             </div>
-            <button onclick="location.reload()" class="bg-gray-700 text-white py-3 px-8 rounded-lg">重新開始</button>
         </div>
     </div>
 
     <script>
         const scenes = [
-            { text: "👧 LINE 聊天：他每天陪你聊天三個月，說他很懂你。", options: ["這很安全，是好朋友", "即使聊很久，還是要小心"], analysis: "🟡 很多人都會這樣想。其實網路聊天多久，都不能代表真正認識對方。照片、姓名、年齡都可能是假冒的。" },
-            { text: "❤️ 對方說：『如果愛我，就傳照片給我。』", options: ["傳給他證明愛", "這有危險，不可以傳"], analysis: "💡 真正愛你的人，不會叫你證明。照片一旦傳出去，就可能被保存、威脅甚至散布。" },
-            { text: "👦 對方說：『不要跟老師或爸媽說喔！』", options: ["好，這是我們的秘密", "危險！馬上找老師"], analysis: "🔴 這句話絕對是紅旗。任何要求保密、刪除紀錄、不要截圖的行為，都是危險的開始。" },
-            { text: "🏫 同班同學約你去麥當勞。", options: ["很危險，不去", "判斷：有同學陪、在公共場所且告知家長，較安全"], analysis: "💡 不一定喔！判斷重點在於：是不是公共場所？有沒有信任的同伴？有沒有告知家人？不是所有社交都是危險的。" },
-            { text: "💬 對方說：『我借你一萬元買遊戲裝備。』", options: ["正常，他是真心對我", "危險，可能是誘餌"], analysis: "🟡 很多人會覺得是好事。但『天下沒有白吃的午餐』，這通常是為了騙取你的帳號、照片或讓你成為車手的陷阱。" }
+            { text: "LINE 聊天：他每天陪你聊天三個月，說他很懂你。", options: ["這很安全", "要小心，聊久不代表認識"], analysis: "🟡 很多人都會這樣想。網路聊多久，都不能代表對方真實的年齡、長相或身分。" },
+            { text: "對方說：『如果愛我，就傳照片給我。』", options: ["傳照片證明愛", "這有危險，絕對不傳"], analysis: "💡 真正愛你的人，不會叫你證明。照片傳出去，就可能被保存、威脅，甚至散布。" },
+            { text: "對方說：『不要跟老師或爸媽說喔！』", options: ["好，這是秘密", "危險！馬上找老師"], analysis: "🔴 任何要求保密、刪紀錄、不要截圖的行為，都是危險的開始。" },
+            { text: "遊戲中：『給我帳號密碼，送你稀有裝備。』", options: ["領免費裝備", "帳號是我的秘密，拒絕"], analysis: "💡 帳號密碼是你的鎖匙，任何人要帳密，通常都是為了騙走你的財產。" },
+            { text: "網友約見面：『約在人多的車站很安全。』", options: ["車站人多很安全", "依然危險，沒告知家人就不去"], analysis: "💡 人多不代表安全。沒有家長或老師同意的網友見面，就是紅旗。" }
         ];
 
-        let currentScene = 0;
-
-        function startGame() {
+        let current = 0;
+        function startGame() { 
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            showScene();
+            showScene(); 
         }
-
         function showScene() {
-            const scene = scenes[currentScene];
-            document.getElementById('progress').innerText = `偵探任務：第 ${currentScene + 1} / ${scenes.length} 關`;
-            document.getElementById('scene-text').innerText = scene.text;
-            document.getElementById('feedback').classList.add('hidden');
-            document.getElementById('scene-card').classList.remove('hidden');
-            
-            const optionsDiv = document.getElementById('options');
-            optionsDiv.innerHTML = '';
-            scene.options.forEach(opt => {
+            document.getElementById('scene-box').classList.remove('hidden');
+            document.getElementById('feedback-box').classList.add('hidden');
+            const s = scenes[current];
+            document.getElementById('scene-text').innerText = s.text;
+            const optDiv = document.getElementById('options');
+            optDiv.innerHTML = '';
+            s.options.forEach(o => {
                 const btn = document.createElement('button');
-                btn.innerText = opt;
-                btn.className = "text-left bg-gray-700 hover:bg-gray-600 p-4 rounded-lg text-lg font-medium transition";
-                btn.onclick = () => showFeedback(scene.analysis);
-                optionsDiv.appendChild(btn);
+                btn.className = "bg-gray-700 hover:bg-gray-600 p-8 rounded-2xl text-2xl font-bold transition";
+                btn.innerText = o;
+                btn.onclick = () => {
+                    document.getElementById('scene-box').classList.add('hidden');
+                    document.getElementById('feedback-box').classList.remove('hidden');
+                    document.getElementById('analysis').innerText = s.analysis;
+                };
+                optDiv.appendChild(btn);
             });
         }
-
-        function showFeedback(analysis) {
-            document.getElementById('scene-card').classList.add('hidden');
-            document.getElementById('feedback').classList.remove('hidden');
-            document.getElementById('analysis').innerText = analysis;
-        }
-
         function nextScene() {
-            currentScene++;
-            if (currentScene < scenes.length) {
-                showScene();
-            } else {
+            current++;
+            if(current < scenes.length) showScene();
+            else {
                 document.getElementById('game-screen').classList.add('hidden');
                 document.getElementById('end-screen').classList.remove('hidden');
             }
